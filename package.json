@@ -1,0 +1,25 @@
+{
+    "name": "js-merge-excel",
+    "version": "0.0.1",
+    "description": "JavaScript excel template engine",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/hagasatoshi/js-merge-xlsx.git"
+    },
+    "author": "Satoshi Haga (satoshi.haga.github@gmail.com)",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/hagasatoshi/js-merge-xlsx/issues"
+    },
+    "homepage": "https://github.com/hagasatoshi/js-merge-xlsx",
+    "dependencies": {
+        "bluebird": "^2.9.13",
+        "jszip": "^2.5.0",
+        "log": "^1.4.0",
+        "underscore": "^1.8.2",
+        "xml2js": "^0.4.5"
+    }
+}
