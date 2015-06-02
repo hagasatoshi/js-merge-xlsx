@@ -14,26 +14,26 @@ Log = require('log');
 log = new Log(Log.DEBUG);
 
 
-class spreadsheet  
+class SpreadSheet
   ###
     Constructor
     Read
     @param {arraybuffer} excel file data(openXML format)
   ###
-  constructor: (excel)->
-    @zip = new JSZip(excel);
-    Promise.props
-      shared_strings: parseString @zip.file('xl/sharedStrings.xml').asText(),
-      workbookxml_rels: parseString @zip.file('xl/_rels/workbook.xml.rels').asText(),
-      workbookxml: parseString @zip.file('xl/workbook.xml').asText(),
-      sheet_xmls :@_parse_dir_in_excel('xl/worksheets')
-    .then (template_obj)=>
-      @shared_strings.initialize template_obj.shared_strings;
-      @workbookxml_rels = template_obj.workbookxml_rels;
-      @workbookxml = template_obj.workbookxml;
-      @sheet_xmls = template_obj.sheet_xmls;
+  initialize: (excel)=>
+    spread = this
+    @zip = new JSZip(excel)
+    return Promise.props({
+      shared_strings: parseString(spread.zip.file('xl/sharedStrings.xml').asText()),
+      workbookxml_rels: parseString(spread.zip.file('xl/_rels/workbook.xml.rels').asText()),
+      workbookxml: parseString(spread.zip.file('xl/workbook.xml').asText()),
+      sheet_xmls :spread._parse_dir_in_excel('xl/worksheets')
+    }).then (template_obj)=>
+      @shared_strings = new shared_strings(template_obj.shared_strings)
+      @workbookxml_rels = template_obj.workbookxml_rels
+      @workbookxml = template_obj.workbookxml
+      @sheet_xmls = template_obj.sheet_xmls
       log.info 'SpreadSheet is initialized successfully'
-
   ###
     Return excel data
     @param {String} blob/ arraybuffer / nodebuffer
@@ -72,33 +72,32 @@ class spreadsheet
   ###
   delete_sheet: (sheetname)=>
     target_sheet = @sheet_by_name sheetname
-    for sheet,index in @workbookxml_rels.Relationships.Relationship
+    _.each @workbookxml_rels.Relationships.Relationship,(sheet,index)=>
       if sheet['$'].Target == target_sheet.path
         @workbookxml_rels.Relationships.Relationship.splice index,1
-    for sheet,index in @workbookxml.workbook.sheets[0].sheet
+    _.each @workbookxml.workbook.sheets[0].sheet,(sheet,index)=>
       if sheet['$'].name == sheetname
         @workbookxml.workbook.sheets[0].sheet.splice index,1
-    for sheet_xml,index in @sheet_xmls
+    _.each @sheet_xmls,(sheet_xml,index)=>
       if sheet_xml.name == target_sheet.value.name
         @sheet_xmls.splice index,1
 
   copy_sheet: (src_sheet_name,dest_sheet_name)=>
     next_id = @available_sheetid();
-    @workbookxml_rels.Relationships.Relationship.push { 
+    @workbookxml_rels.Relationships.Relationship.push {
       '$': { 
         Id: next_id,
         Type: "http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet",
         Target: "worksheets/sheet#{next_id}.xml"
       }
     }
-    @workbookxml.workbook.sheets[0].sheet.push { 
+    @workbookxml.workbook.sheets[0].sheet.push {
       '$': { 
         name: dest_sheet_name, 
         sheetId: next_id.replace('rId',''), 
         'r:id': next_id 
       } 
     };
-
     src_sheet = @sheet_by_name(src_sheet_name).value;
     copied_sheet = JSON.parse(JSON.stringify(src_sheet));
     copied_sheet.name = "sheet#{next_id}.xml";
@@ -117,7 +116,7 @@ class spreadsheet
     sheetid = _.find(@workbookxml.workbook.sheets[0].sheet, (e)-> e['$'].name == sheetname)['$']['r:id']
     target_file_path = _.max(@workbookxml_rels.Relationships.Relationship,(e)->e['$'].Id == sheetid)['$'].Target
     target_file_name = target_file_path.split('/')[target_file_path.split('/').length-1];
-    sheet_xml = _.find this.sheet_xmls,(e)-> e.name == target_file_name
+    sheet_xml = _.find @sheet_xmls,(e)-> e.name == target_file_name
     sheet = path: target_file_path, value: sheet_xml
 
 
@@ -206,18 +205,19 @@ class spreadsheet
   _parse_dir_in_excel: (dir)=>
     files = @zip.folder(dir).file(/.xml/);
     file_xmls = [];
-    files.reduce (promise, file)->
-      promise.then (prior_file)->
+    files.reduce (promise, file)=>
+      promise.then (prior_file)=>
         Promise.resolve()
-        .then ()->
+        .then ()=>
           parseString @zip.file(file.name).asText()
-        .then (file_xml)->
+        .then (file_xml)=>
           file_xml.name = file.name.split('/')[file.name.split('/').length-1]
           file_xmls.push(file_xml)
-      ,Promise.resolve()
+          return file_xmls
+    ,Promise.resolve()
 
   class shared_strings
-    initialize: (obj)=>
+    constructor: (obj)->
       @obj = obj
       @count = parseInt(obj.sst.si.length)-parseInt(1)
       
@@ -271,7 +271,7 @@ _col_string = (cell_name)->
   cell_name_array = cell_name.split ''
   index = 0
   _.each cell_name_array, (c)->
-    index++; if (/^[a-zA-Z()]+$/.test(c))
+    index++ if (/^[a-zA-Z()]+$/.test(c))
   col_string = cell_name.substr(0, index)
 
 
@@ -293,5 +293,5 @@ _get_col_string = (cell_name)->
 load_config = ()->
   config = yaml.safeLoad(fs.readFileSync('./yaml/config.yml', 'utf8'))
 
-module.exports = spreadsheet;
+module.exports = SpreadSheet;
 
