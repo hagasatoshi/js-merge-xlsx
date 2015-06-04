@@ -11,11 +11,10 @@
 
   spread = new SpreadSheet;
 
-  fs.readFileAsync("./example/template/CustomField.xlsx").then(function(data) {
+  fs.readFileAsync("./example/template/Blank.xlsx").then(function(data) {
     return spread.initialize(data);
   }).then(function() {
-    spread.copy_sheet('base', 'copied');
-    spread.delete_sheet('base');
+    spread.set_row('Sheet1', 8, ['sample', 'user', 'pass', 'word']);
     return fs.writeFileAsync('writetest.xlsx', spread.generate('nodebuffer'));
   }).then(function() {
     return console.log('Success');

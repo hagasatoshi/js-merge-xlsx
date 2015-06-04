@@ -16,7 +16,7 @@ class Analytics
       _.each result.factMap["T!T"].rows, (row)->
         cells = []
         _.each row.dataCells, (cell)->
-          cells.push cell.value
+          cells.push cell.label
         report_data.push cells
       return report_data
 

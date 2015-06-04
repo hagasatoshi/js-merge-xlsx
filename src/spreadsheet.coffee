@@ -139,7 +139,7 @@ class SpreadSheet
     
   bulk_set_value: (sheetname,key_values,existing_setting)->
     sheet_xml = @sheet_by_name sheetname
-    _.each key_values, (cell)->
+    _.each key_values, (cell)=>
         @set_value sheet_xml,sheetname,cell.cell_name,cell.value,existing_setting
 
 
@@ -242,8 +242,8 @@ _convert_alphabet = (value)->
   number1 = Math.floor value/(26*26);
   number2 = Math.floor (value-number1*26*26)/26;
   number3 = value-(number1*26*26+number2*26);
-  alphabet1 = _convert(number1) == 'A' ? '' : _convert(number1 - 1)
-  alphabet2 = (alphabet1 == '' && _convert(number2) == 'A') ? '' : _convert(number2 - 1);
+  alphabet1 = if _convert(number1) == 'A' then '' else _convert(number1 - 1)
+  alphabet2 = if (alphabet1 == '' && _convert(number2) == 'A') then '' else _convert(number2 - 1)
   alphabet3 = _convert(number3)
 
   alphabet = alphabet1 + alphabet2 + alphabet3;

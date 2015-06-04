@@ -236,9 +236,11 @@
     SpreadSheet.prototype.bulk_set_value = function(sheetname, key_values, existing_setting) {
       var sheet_xml;
       sheet_xml = this.sheet_by_name(sheetname);
-      return _.each(key_values, function(cell) {
-        return this.set_value(sheet_xml, sheetname, cell.cell_name, cell.value, existing_setting);
-      });
+      return _.each(key_values, (function(_this) {
+        return function(cell) {
+          return _this.set_value(sheet_xml, sheetname, cell.cell_name, cell.value, existing_setting);
+        };
+      })(this));
     };
 
     SpreadSheet.prototype.set_value = function(sheet_xml, sheetname, cell_name, value, existing_setting) {
@@ -398,16 +400,12 @@
   };
 
   _convert_alphabet = function(value) {
-    var alphabet, alphabet1, alphabet2, alphabet3, number1, number2, number3, ref, ref1;
+    var alphabet, alphabet1, alphabet2, alphabet3, number1, number2, number3;
     number1 = Math.floor(value / (26 * 26));
     number2 = Math.floor((value - number1 * 26 * 26) / 26);
     number3 = value - (number1 * 26 * 26 + number2 * 26);
-    alphabet1 = (ref = _convert(number1) === 'A') != null ? ref : {
-      '': _convert(number1 - 1)
-    };
-    alphabet2 = (ref1 = alphabet1 === '' && _convert(number2) === 'A') != null ? ref1 : {
-      '': _convert(number2 - 1)
-    };
+    alphabet1 = _convert(number1) === 'A' ? '' : _convert(number1 - 1);
+    alphabet2 = alphabet1 === '' && _convert(number2) === 'A' ? '' : _convert(number2 - 1);
     alphabet3 = _convert(number3);
     return alphabet = alphabet1 + alphabet2 + alphabet3;
   };
