@@ -10,9 +10,6 @@ parseString = Promise.promisify(xml2js.parseString);
 builder = new xml2js.Builder();
 JSZip = require("jszip");
 _ = require("underscore");
-Log = require('log');
-log = new Log(Log.DEBUG);
-
 
 class SpreadSheet
   ###
@@ -33,14 +30,14 @@ class SpreadSheet
       @workbookxml_rels = template_obj.workbookxml_rels
       @workbookxml = template_obj.workbookxml
       @sheet_xmls = template_obj.sheet_xmls
-      log.info 'SpreadSheet is initialized successfully'
+      console.log 'SpreadSheet is initialized successfully'
   ###
     Return excel data
     @param {String} blob/ arraybuffer / nodebuffer
     @return {Object} excel data formatted by parameter 'generate_type'
   ###
   generate: (generate_type)=>
-    log.info 'SpreadSheet:generate'
+    console.log 'SpreadSheet:generate'
     @zip
     .file "xl/_rels/workbook.xml.rels",builder.buildObject(@workbookxml_rels)
     .file "xl/workbook.xml",builder.buildObject(@workbookxml)
@@ -293,5 +290,5 @@ _get_col_string = (cell_name)->
 load_config = ()->
   config = yaml.safeLoad(fs.readFileSync('./yaml/config.yml', 'utf8'))
 
-module.exports = SpreadSheet;
+module.exports = SpreadSheet
 

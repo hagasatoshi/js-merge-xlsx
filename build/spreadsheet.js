@@ -5,7 +5,7 @@
  */
 
 (function() {
-  var JSZip, Log, Promise, SpreadSheet, _, _col_string, _convert, _convert_alphabet, _get_col_string, _get_row_string, _is_number, _revert, _revert_number, builder, load_config, log, parseString, xml2js,
+  var JSZip, Promise, SpreadSheet, _, _col_string, _convert, _convert_alphabet, _get_col_string, _get_row_string, _is_number, _revert, _revert_number, builder, load_config, parseString, xml2js,
     bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
   Promise = require('bluebird');
@@ -19,10 +19,6 @@
   JSZip = require("jszip");
 
   _ = require("underscore");
-
-  Log = require('log');
-
-  log = new Log(Log.DEBUG);
 
   SpreadSheet = (function() {
     var shared_strings;
@@ -66,7 +62,7 @@
           _this.workbookxml_rels = template_obj.workbookxml_rels;
           _this.workbookxml = template_obj.workbookxml;
           _this.sheet_xmls = template_obj.sheet_xmls;
-          return log.info('SpreadSheet is initialized successfully');
+          return console.log('SpreadSheet is initialized successfully');
         };
       })(this));
     };
@@ -79,7 +75,7 @@
      */
 
     SpreadSheet.prototype.generate = function(generate_type) {
-      log.info('SpreadSheet:generate');
+      console.log('SpreadSheet:generate');
       this.zip.file("xl/_rels/workbook.xml.rels", builder.buildObject(this.workbookxml_rels)).file("xl/workbook.xml", builder.buildObject(this.workbookxml)).file('xl/sharedStrings.xml', builder.buildObject(this.shared_strings.get_obj()));
       _.each(this.sheet_xmls, (function(_this) {
         return function(sheet) {
