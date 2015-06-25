@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="x14ac" xmlns:x14ac="http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac">
+    <dimension ref="A1:A8"/>
+    <sheetViews>
+        <sheetView tabSelected="1" workbookViewId="0">
+            <selection activeCell="B8" sqref="B8"/>
+        </sheetView>
+    </sheetViews>
+    <sheetFormatPr baseColWidth="12" defaultRowHeight="18" x14ac:dyDescent="0"/>
+    <sheetData>
+        <row r="1" spans="1:1">
+            <c r="A1" s="1" t="s">
+                <v>0</v>
+            </c>
+        </row>
+        <row r="2" spans="1:1">
+            <c r="A2" s="2">
+                <v>1</v>
+            </c>
+        </row>
+        <row r="3" spans="1:1">
+            <c r="A3" s="3">
+                <v>1234</v>
+            </c>
+        </row>
+        <row r="4" spans="1:1">
+            <c r="A4" s="4">
+                <v>2345</v>
+            </c>
+        </row>
+        <row r="5" spans="1:1">
+            <c r="A5" s="1">
+                <v>42106</v>
+            </c>
+        </row>
+        <row r="6" spans="1:1">
+            <c r="A6" s="5">
+                <v>0.375</v>
+            </c>
+        </row>
+        <row r="7" spans="1:1">
+            <c r="A7" s="6">
+                <v>0.12230000000000001</v>
+            </c>
+        </row>
+        <row r="8" spans="1:1">
+            <c r="A8" s="7" t="s">
+                <v>1</v>
+            </c>
+        </row>
+    </sheetData>
+    <phoneticPr fontId="1"/>
+    <pageMargins left="0.7" right="0.7" top="0.75" bottom="0.75" header="0.3" footer="0.3"/>
+    <pageSetup paperSize="9" orientation="portrait" horizontalDpi="4294967292" verticalDpi="4294967292"/>
+    <extLst>
+        <ext uri="{64002731-A6B0-56B0-2670-7721B7C09600}" xmlns:mx="http://schemas.microsoft.com/office/mac/excel/2008/main">
+            <mx:PLV Mode="0" OnePage="0" WScale="0"/>
+        </ext>
+    </extLst>
+</worksheet>

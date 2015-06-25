@@ -31,9 +31,11 @@
     "jsforce": "^1.4.1",
     "jszip": "^2.5.0",
     "log": "^1.4.0",
+    "moment": "^2.10.3",
     "node-libs-browser": "^0.5.2",
     "path": "^0.11.14",
     "underscore": "^1.8.3",
+    "underscore.string": "^3.0.3",
     "webpack": "^1.9.10",
     "xml2js": "^0.4.5"
   }

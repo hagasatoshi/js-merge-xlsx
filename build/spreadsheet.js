@@ -5,7 +5,7 @@
  */
 
 (function() {
-  var JSZip, Promise, SpreadSheet, _, _col_string, _convert, _convert_alphabet, _get_col_string, _get_row_string, _is_number, _revert, _revert_number, builder, load_config, parseString, xml2js,
+  var JSZip, Promise, SpreadSheet, _, _col_string, _convert, _convert_alphabet, _get_col_string, _get_row_string, _revert, _revert_number, builder, load_config, parseString, xml2js,
     bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
   Promise = require('bluebird');
@@ -16,9 +16,11 @@
 
   builder = new xml2js.Builder();
 
-  JSZip = require("jszip");
+  JSZip = require('jszip');
 
-  _ = require("underscore");
+  _ = require('underscore');
+
+  require('./mixin');
 
   SpreadSheet = (function() {
     var shared_strings;
@@ -52,10 +54,10 @@
       spread = this;
       this.zip = new JSZip(excel);
       return Promise.props({
-        shared_strings: parseString(spread.zip.file('xl/sharedStrings.xml').asText()),
-        workbookxml_rels: parseString(spread.zip.file('xl/_rels/workbook.xml.rels').asText()),
-        workbookxml: parseString(spread.zip.file('xl/workbook.xml').asText()),
-        sheet_xmls: spread._parse_dir_in_excel('xl/worksheets')
+        shared_strings: parseString(this.zip.file('xl/sharedStrings.xml').asText()),
+        workbookxml_rels: parseString(this.zip.file('xl/_rels/workbook.xml.rels').asText()),
+        workbookxml: parseString(this.zip.file('xl/workbook.xml').asText()),
+        sheet_xmls: this._parse_dir_in_excel('xl/worksheets')
       }).then((function(_this) {
         return function(template_obj) {
           _this.shared_strings = new shared_strings(template_obj.shared_strings);
@@ -244,12 +246,46 @@
     };
 
     SpreadSheet.prototype.set_value = function(sheet_xml, sheetname, cell_name, value, existing_setting) {
-      var cell, cell_value, new_row, next_index, row, row_string;
+      var cell, cell_value, data_type, new_row, next_index, row, row_string;
       if (!value) {
         return;
       }
       cell_value = {};
-      if (_is_number(value)) {
+      data_type = _(value).data_type();
+      if (data_type === 'number') {
+        cell_value = {
+          '$': {
+            r: cell_name,
+            s: '2'
+          },
+          v: [value]
+        };
+      } else if (data_type === 'date') {
+        cell_value = {
+          '$': {
+            r: cell_name,
+            s: '1'
+          },
+          v: [value]
+        };
+      } else if (data_type === 'currency') {
+        cell_value = {
+          '$': {
+            r: cell_name,
+            s: '3'
+          },
+          v: [value]
+        };
+      } else if (data_type === 'percent') {
+        cell_value = {
+          '$': {
+            r: cell_name,
+            s: '4'
+          },
+          v: [value]
+        };
+      }
+      if (_(value).is_number()) {
         cell_value = {
           '$': {
             r: cell_name
@@ -386,14 +422,6 @@
     return SpreadSheet;
 
   })();
-
-  _is_number = function(value) {
-    if (typeof value !== 'number' && typeof value !== 'string') {
-      return false;
-    } else {
-      return value === parseFloat(value) && isFinite(value);
-    }
-  };
 
   _convert = function(value) {
     return 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')[value];

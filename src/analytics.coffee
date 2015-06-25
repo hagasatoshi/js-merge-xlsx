@@ -1,13 +1,12 @@
 jsforce = require 'jsforce'
 Promise = require 'bluebird'
 _ = require 'underscore'
+require './mixin'
 
 class Analytics
-  initialize: (username, password, loginUrl)->
-    loginUrl = if loginUrl then loginUrl else 'https://login.salesforce.com'
-    @conn = new jsforce.Connection(loginUrl : loginUrl)
-    @conn.login(username, password)
-    
+  initialize: (conn)->
+    @conn = conn
+
   report_data: (report_id)->
     @conn.analytics.report report_id
     .execute { details: true }
@@ -18,6 +17,9 @@ class Analytics
         _.each row.dataCells, (cell)->
           cells.push cell.label
         report_data.push cells
+      console.log report_data
       return report_data
+    .fail (err)->
+      console.log err
 
 module.exports = Analytics

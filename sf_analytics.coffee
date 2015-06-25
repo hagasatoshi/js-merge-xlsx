@@ -17,7 +17,8 @@ fs.readFileAsync "./example/template/Blank.xlsx"
     spread.initialize data
   ]
 .then ()->
-  analytics.report_data '00O10000003zja4'
+  #analytics.report_data '00O10000004NerC'
+  analytics.report_data '00O10000003uj5S'
 .then (report_data)->
   _.each report_data, (row,index)->
     spread.set_row 'Sheet1',index,row

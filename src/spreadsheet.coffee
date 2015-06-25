@@ -4,12 +4,13 @@
 ###
   
 #require
-Promise = require('bluebird');
-xml2js = require('xml2js');
+Promise = require 'bluebird'
+xml2js = require 'xml2js'
 parseString = Promise.promisify(xml2js.parseString);
 builder = new xml2js.Builder();
-JSZip = require("jszip");
-_ = require("underscore");
+JSZip = require 'jszip'
+_ = require 'underscore'
+require './mixin'
 
 class SpreadSheet
   ###
@@ -21,10 +22,10 @@ class SpreadSheet
     spread = this
     @zip = new JSZip(excel)
     return Promise.props({
-      shared_strings: parseString(spread.zip.file('xl/sharedStrings.xml').asText()),
-      workbookxml_rels: parseString(spread.zip.file('xl/_rels/workbook.xml.rels').asText()),
-      workbookxml: parseString(spread.zip.file('xl/workbook.xml').asText()),
-      sheet_xmls :spread._parse_dir_in_excel('xl/worksheets')
+      shared_strings: parseString(@zip.file('xl/sharedStrings.xml').asText()),
+      workbookxml_rels: parseString(@zip.file('xl/_rels/workbook.xml.rels').asText()),
+      workbookxml: parseString(@zip.file('xl/workbook.xml').asText()),
+      sheet_xmls :@_parse_dir_in_excel('xl/worksheets')
     }).then (template_obj)=>
       @shared_strings = new shared_strings(template_obj.shared_strings)
       @workbookxml_rels = template_obj.workbookxml_rels
@@ -146,7 +147,18 @@ class SpreadSheet
   set_value: (sheet_xml,sheetname,cell_name,value,existing_setting)=>
     return if !value
     cell_value = {}
-    if _is_number(value)
+    
+    data_type = _(value).data_type()
+    if data_type == 'number'
+      cell_value = { '$': { r: cell_name, s:'2' }, v: [ value ] }
+    else if data_type == 'date'
+      cell_value = { '$': { r: cell_name, s:'1' }, v: [ value ] }
+    else if data_type == 'currency'
+      cell_value = { '$': { r: cell_name, s:'3' }, v: [ value ] }
+    else if data_type == 'percent'
+      cell_value = { '$': { r: cell_name, s:'4' }, v: [ value ] }
+      
+    if _(value).is_number()
       cell_value = { '$': { r: cell_name }, v: [ value ] }
     else
       next_index =
@@ -225,14 +237,6 @@ class SpreadSheet
       new_string = t: [ value ], phoneticPr: ['$': { fontId: '1' } ]
       @obj.sst.si.push(new_string);
       @count = parseInt(this.obj.sst.si.length) - parseInt(1);
-
-      
-_is_number = (value)->
-  if typeof(value) != 'number' && typeof(value) != 'string'
-    false;
-  else
-    value == parseFloat(value) && isFinite(value)
-
 
 _convert = (value)-> 
   'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')[value]
