@@ -1,7 +1,6 @@
 # Created by .gitignore support plugin (hsz.mobi)
 node_modules
 .idea
-public/bower_components
 build
-**/*.js
+build_example/**/*.js
 .env

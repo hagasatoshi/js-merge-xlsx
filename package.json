@@ -27,16 +27,24 @@
     "fs": "0.0.2",
     "grunt": "^0.4.5",
     "grunt-contrib-coffee": "^0.13.0",
+    "gulp": "^3.9.0",
     "jade": "^1.10.0",
     "jsforce": "^1.4.1",
     "jszip": "^2.5.0",
+    "katex": "^0.5.1",
     "log": "^1.4.0",
     "moment": "^2.10.3",
+    "mustache": "^2.1.3",
     "node-libs-browser": "^0.5.2",
     "path": "^0.11.14",
+    "run-sequence": "^1.1.4",
     "underscore": "^1.8.3",
     "underscore.string": "^3.0.3",
     "webpack": "^1.9.10",
+    "webpack-stream": "^2.1.1",
     "xml2js": "^0.4.5"
+  },
+  "devDependencies": {
+    "gulp-babel": "^5.2.1"
   }
 }
