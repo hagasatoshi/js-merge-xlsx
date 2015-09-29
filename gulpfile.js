@@ -10,9 +10,9 @@ var babel = require('gulp-babel');
 gulp.task('babel', function () {
 
     //source JavaScript files
-    gulp.src('src/**/*.js')
+    gulp.src('src/excelmerge.js')
         .pipe(babel())
-        .pipe(gulp.dest('build'));
+        .pipe(gulp.dest('./'));
 
     //example JavaScript files
     gulp.src('example/**/*.js')
