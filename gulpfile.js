@@ -14,6 +14,11 @@ gulp.task('babel', function () {
         .pipe(babel())
         .pipe(gulp.dest('./'));
 
+    //test JavaScript files
+    gulp.src('src_test/**/*.js')
+        .pipe(babel())
+        .pipe(gulp.dest('test/'));
+
     //example JavaScript files
     gulp.src('example/**/*.js')
         .pipe(babel())
