@@ -10,9 +10,11 @@
   "license": "ISC",
   "dependencies": {
     "fs": "0.0.2",
-    "gulp": "^3.9.0",
-    "gulp-babel": "^5.2.1",
-    "js-merge-xlsx": "0.0.1",
+    "js-merge-xlsx": "0.0.2",
     "jszip": "^2.5.0"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.0",
+    "gulp-babel": "^5.2.1"
   }
 }
