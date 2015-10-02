@@ -19,10 +19,6 @@ gulp.task('babel', function () {
         .pipe(babel())
         .pipe(gulp.dest('test/'));
 
-    //example JavaScript files
-    gulp.src('example/**/*.js')
-        .pipe(babel())
-        .pipe(gulp.dest('build_example'));
 });
 
 /* default task */
