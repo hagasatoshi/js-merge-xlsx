@@ -14,11 +14,12 @@
   },
   "dependencies": {
     "bluebird": "^2.9.13",
+    "colors": "^1.1.2",
     "dotenv": "^1.1.0",
     "jszip": "^2.5.0",
     "mustache": "^2.1.3",
     "underscore": "^1.8.3",
-    "xml2js": "^0.4.5"
+    "xml2js": "^0.4.12"
   },
   "devDependencies": {
     "assert": "^1.3.0",

@@ -10,7 +10,7 @@ var babel = require('gulp-babel');
 gulp.task('babel', function () {
 
     //source JavaScript files
-    gulp.src('src/excelmerge.js')
+    gulp.src('src/**/*.js')
         .pipe(babel())
         .pipe(gulp.dest('./'));
 

@@ -1,56 +1,124 @@
 /**
  * * ExcelMerge
- * * Template managing class. wrapping JsZip object.
  * * @author Satoshi Haga
  * * @date 2015/09/30
  **/
 
-"use strict";
+'use strict';
 
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
 var _mustache = require('mustache');
 
 var _mustache2 = _interopRequireDefault(_mustache);
 
+var _bluebird = require('bluebird');
+
+var _bluebird2 = _interopRequireDefault(_bluebird);
+
+var _underscore = require('underscore');
+
+var _underscore2 = _interopRequireDefault(_underscore);
+
+var _jszip = require('jszip');
+
+var _jszip2 = _interopRequireDefault(_jszip);
+
+var _libSpreadsheet = require('./lib/spreadsheet');
+
+var _libSpreadsheet2 = _interopRequireDefault(_libSpreadsheet);
+
+require('colors');
+
 var ExcelMerge = (function () {
 
-  /**
-   * * constructor
-   * * @param {Object} excel JsZip object including MS-Excel file
-   **/
+    /** member variables */
+    //spreadsheet : {Object} SpreadSheet instance
 
-  function ExcelMerge(excel) {
-    _classCallCheck(this, ExcelMerge);
+    /**
+     * * constructor
+     * *
+     **/
 
-    this.excel = excel;
-  }
+    function ExcelMerge() {
+        _classCallCheck(this, ExcelMerge);
 
-  //Exports
-
-  /**
-   * * render
-   * * @param {Object} bind_data binding data
-   * * @param {Object} jszip_option JsZip#generate() option.
-   * * @returns {Object} rendered MS-Excel data. data-format is determined by jszip_option
-   **/
-
-  _createClass(ExcelMerge, [{
-    key: "render",
-    value: function render(bind_data) {
-      var jszip_option = arguments.length <= 1 || arguments[1] === undefined ? { type: "blob", compression: "DEFLATE" } : arguments[1];
-
-      var template = this.excel.file('xl/sharedStrings.xml').asText();
-      this.excel.file('xl/sharedStrings.xml', _mustache2["default"].render(template, bind_data));
-      return this.excel.generate(jszip_option);
+        this.spreadsheet = new _libSpreadsheet2['default']();
     }
-  }]);
 
-  return ExcelMerge;
+    //Exports
+
+    /**
+     * * load
+     * * @param {Object} excel JsZip object including MS-Excel file
+     * * @return {Promise} Promise instance including this
+     **/
+
+    _createClass(ExcelMerge, [{
+        key: 'load',
+        value: function load(excel) {
+            var _this = this;
+
+            return this.spreadsheet.load(excel).then(function () {
+                return _this;
+            });
+        }
+
+        /**
+         * * render
+         * * @param {Object} bind_data binding data
+         * * @param {Object} jszip_option JsZip#generate() option.
+         * * @returns {Object} rendered MS-Excel data. data-format is determined by jszip_option
+         **/
+    }, {
+        key: 'render',
+        value: function render(bind_data) {
+            var jszip_option = arguments.length <= 1 || arguments[1] === undefined ? { type: "blob", compression: "DEFLATE" } : arguments[1];
+
+            return this.spreadsheet.simple_render(bind_data, jszip_option);
+        }
+
+        /**
+         * * bulk_render_multi_file
+         * * @param {Array} bind_data_array including data{name: file's name, data: binding-data}
+         * * @param {Object} jszip_option JsZip#generate() option.
+         * * @returns {Object} rendered MS-Excel data.
+         **/
+    }, {
+        key: 'bulk_render_multi_file',
+        value: function bulk_render_multi_file(bind_data_array, jszip_option) {
+            return this.spreadsheet.bulk_render_multi_file(bind_data_array, jszip_option);
+        }
+
+        /**
+         * * bulk_render_multi_sheet
+         * * @param {Array} bind_data_array including data{name: file's name, data: binding-data}
+         * * @param {Object} output_option JsZip#generate() option.
+         * * @returns {Object} rendered MS-Excel data. data-format is determined by jszip_option
+         **/
+    }, {
+        key: 'bulk_render_multi_sheet',
+        value: function bulk_render_multi_sheet(bind_data_array, jszip_option) {
+            var _this2 = this;
+
+            return bind_data_array.reduce(function (promise, bind_data) {
+                return promise.then(function (prior) {
+                    return _this2.spreadsheet.add_sheet_binding_data(bind_data.name, bind_data.data);
+                });
+            }, _bluebird2['default'].resolve()).then(function () {
+                return _this2.spreadsheet.generate(jszip_option);
+            })['catch'](function (err) {
+                console.error(new Error(err).stack.red);
+                _bluebird2['default'].reject();
+            });
+        }
+    }]);
+
+    return ExcelMerge;
 })();
 
 module.exports = ExcelMerge;
