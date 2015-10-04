@@ -1,6 +1,6 @@
 /**
  * * app.js
- * * Example for the usage of ExcelMerge#render() on Node.js
+ * * Example for the usage of ExcelMerge#bulk_render_multi_file() on Node.js
  * * @author Satoshi Haga
  * * @date 2015/09/30
  **/
@@ -12,6 +12,7 @@ var readYamlAsync = Promise.promisify(readYaml);
 import fs from 'fs'
 var fsAsync = Promise.promisifyAll(fs);
 import JSZip from 'jszip'
+import _ from 'underscore'
 import 'colors'
 
 fsAsync.readFileAsync('./template/Template.xlsx')
@@ -21,11 +22,14 @@ fsAsync.readFileAsync('./template/Template.xlsx')
         merge: new ExcelMerge().load(new JSZip(excel_template))
     });
 }).then((result)=>{
-    let rendering_data = result.rendering_data;
+    let rendering_data = [];
+    _.each(result.rendering_data, (data,index)=>{
+        rendering_data.push({name:'file'+(index+1)+'.xlsx', data:data});
+    });
     let merge =  result.merge;
-    return merge.render(rendering_data, {type: "nodebuffer",compression:"DEFLATE"});
-}).then((excel_data)=>{
-    fsAsync.writeFileAsync('Example.xlsx',excel_data);
+    return merge.bulk_render_multi_file(rendering_data, {type: "nodebuffer",compression:"DEFLATE"});
+}).then((zip_data)=>{
+    fsAsync.writeFileAsync('Example.zip',zip_data);
 }).then(()=>{
     console.log('Success!!');
 }).catch((err)=>{
