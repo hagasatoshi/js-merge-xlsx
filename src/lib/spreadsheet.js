@@ -75,7 +75,7 @@ class SpreadSheet{
             sharedstrings_obj: parseString(this.sharedstrings_str),
             workbookxml_rels: parseString(this.excel.file('xl/_rels/workbook.xml.rels').asText()),
             workbookxml: parseString(this.excel.file('xl/workbook.xml').asText()),
-            sheet_xmls :this.parse_dir_in_excel('xl/worksheets')
+            sheet_xmls :this._parse_dir_in_excel('xl/worksheets')
         }).then((templates)=>{
             this.sharedstrings_obj = templates.sharedstrings_obj;
             this.sharedstrings = templates.sharedstrings_obj.sst.si;
@@ -144,7 +144,7 @@ class SpreadSheet{
      **/
     add_sheet_binding_data(dest_sheet_name, data){
         //1.add relation of next sheet
-        let next_id = this.available_sheetid();
+        let next_id = this._available_sheetid();
         this.workbookxml_rels.Relationships.Relationship.push(
             { '$':
                 { Id: next_id,
@@ -170,7 +170,7 @@ class SpreadSheet{
         });
 
         //2-4.update index of newly added string
-        let src_sheet = this.sheet_by_name(this.template_sheet_name).value;
+        let src_sheet = this._sheet_by_name(this.template_sheet_name).value;
         let added_sheet = JSON.parse(JSON.stringify(src_sheet));
         _.each(rendered_strings,(e,index)=>{
             _.each(e.using_cells, (cell_address)=>{
@@ -192,11 +192,11 @@ class SpreadSheet{
     }
 
     /**
-     * * parse_dir_in_excel
+     * * _parse_dir_in_excel
      * * @param {String} dir directory name in Zip file.
      * * @return {Array} array including files parsed by xml2js
      **/
-    parse_dir_in_excel(dir){
+    _parse_dir_in_excel(dir){
         let files = this.excel.folder(dir).file(/.xml/);
         let file_xmls = [];
         return files.reduce(
@@ -216,21 +216,23 @@ class SpreadSheet{
     }
 
     /**
-     * * available_sheetid
+     * * _available_sheetid
      * * @return {String} id of next sheet
+     * * @private
      **/
-    available_sheetid(){
+    _available_sheetid(){
         let max_rel = _.max(this.workbookxml_rels.Relationships.Relationship, (e)=> Number(e['$'].Id.replace('rId','')));
         let next_id = 'rId' + ('00' + (parseInt((max_rel['$'].Id.replace('rId','')))+parseInt(1))).slice(-3);
         return next_id;
     }
 
     /**
-     * * sheet_by_name
+     * * _sheet_by_name
      * * @param {String} sheetname target sheet name
      * * @return {Object} sheet object
+     * * @private
      **/
-    sheet_by_name(sheetname){
+    _sheet_by_name(sheetname){
         let sheetid = _.find(this.workbookxml.workbook.sheets[0].sheet, (e)=> (e['$'].name === sheetname))['$']['r:id'];
         let target_file_path = _.max(this.workbookxml_rels.Relationships.Relationship, (e)=>(e['$'].Id === sheetid))['$'].Target;
         let target_file_name = target_file_path.split('/')[target_file_path.split('/').length-1];
