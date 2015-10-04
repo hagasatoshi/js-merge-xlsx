@@ -1,7 +1,7 @@
 {
   "name": "js-merge-xlsx",
   "description": "JavaScript-based MS-Excel template engine",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "homepage": "https://github.com/hagasatoshi/js-merge-xlsx",
   "main": "./excelmerge.js",
   "scripts": {
