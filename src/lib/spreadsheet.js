@@ -70,11 +70,7 @@ class SpreadSheet{
      * * @returns {Promise|Object} rendered MS-Excel data. data-format is determined by jszip_option
      **/
     simple_render(bind_data, jszip_option){
-        return Promise.resolve().then(()=>{
-                return this.excel
-                    .file('xl/sharedStrings.xml', Mustache.render(this.sharedstrings_str, bind_data))
-                    .generate(jszip_option);
-        });
+        return Promise.resolve().then(()=>this._simple_render(bind_data, jszip_option));
     }
 
     /**
@@ -86,7 +82,7 @@ class SpreadSheet{
     bulk_render_multi_file(bind_data_array, jszip_option){
         var all_excels = new JSZip();
         _.each(bind_data_array, (bind_data)=>{
-            all_excels.file(bind_data.name, this.simple_render(bind_data.data,jszip_option));
+            all_excels.file(bind_data.name, this._simple_render(bind_data.data,jszip_option));
         });
         return Promise.resolve().then(()=> all_excels.generate(jszip_option));
     }
@@ -162,6 +158,19 @@ class SpreadSheet{
         });
         //call JSZip#generate()
         return this.excel.generate(option);
+    }
+
+    /**
+     * * _simple_render
+     * * @param {Object} bind_data binding data
+     * * @param {Object} jszip_option JsZip#generate() option.
+     * * @returns {Object} rendered MS-Excel data. data-format is determined by jszip_option
+     * * @private
+     **/
+    _simple_render(bind_data, jszip_option){
+        return this.excel
+            .file('xl/sharedStrings.xml', Mustache.render(this.sharedstrings_str, bind_data))
+            .generate(jszip_option);
     }
 
     /**
