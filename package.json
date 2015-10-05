@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "bluebird": "^2.9.13",
-    "colors": "^1.1.2",
+    "detect-node": "^2.0.3",
     "dotenv": "^1.1.0",
     "jszip": "^2.5.0",
     "mustache": "^2.1.3",

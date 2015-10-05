@@ -9,6 +9,9 @@ import Promise from 'bluebird'
 import _ from 'underscore'
 import './underscore_mixin'
 import JSZip from 'jszip'
+import isNode from 'detect-node'
+const output_buffer = {type: (isNode?'nodebuffer':'blob'), compression:"DEFLATE"};
+const jszip_buffer = {type: (isNode?'nodebuffer':'arraybuffer'), compression:"DEFLATE"};
 import xml2js from 'xml2js'
 var parseString = Promise.promisify(xml2js.parseString);
 var builder = new xml2js.Builder();
@@ -66,25 +69,24 @@ class SpreadSheet{
     /**
      * * simple_render
      * * @param {Object} bind_data binding data
-     * * @param {Object} jszip_option JsZip#generate() option.
      * * @returns {Promise|Object} rendered MS-Excel data. data-format is determined by jszip_option
      **/
-    simple_render(bind_data, jszip_option){
-        return Promise.resolve().then(()=>this._simple_render(bind_data, jszip_option));
+    simple_render(bind_data){
+        return Promise.resolve().then(()=>this._simple_render(bind_data, output_buffer));
     }
 
     /**
      * * bulk_render_multi_file
      * * @param {Array} bind_data_array including data{name: file's name, data: binding-data}
-     * * @param {Object} jszip_option JsZip#generate() option.
      * * @returns {Promise|Object} rendered MS-Excel data.
      **/
-    bulk_render_multi_file(bind_data_array, jszip_option){
+    bulk_render_multi_file(bind_data_array){
+
         var all_excels = new JSZip();
         _.each(bind_data_array, (bind_data)=>{
-            all_excels.file(bind_data.name, this._simple_render(bind_data.data,jszip_option));
+            all_excels.file(bind_data.name, this._simple_render(bind_data.data, jszip_buffer));
         });
-        return Promise.resolve().then(()=> all_excels.generate(jszip_option));
+        return Promise.resolve().then(()=> all_excels.generate(output_buffer));
     }
 
     /**
@@ -163,14 +165,14 @@ class SpreadSheet{
     /**
      * * _simple_render
      * * @param {Object} bind_data binding data
-     * * @param {Object} jszip_option JsZip#generate() option.
+     * * @param {Object} option JsZip#generate() option.
      * * @returns {Object} rendered MS-Excel data. data-format is determined by jszip_option
      * * @private
      **/
-    _simple_render(bind_data, jszip_option){
+    _simple_render(bind_data, option){
         return this.excel
             .file('xl/sharedStrings.xml', Mustache.render(this.sharedstrings_str, bind_data))
-            .generate(jszip_option);
+            .generate(option);
     }
 
     /**

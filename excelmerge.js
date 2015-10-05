@@ -32,7 +32,11 @@ var _libSpreadsheet = require('./lib/spreadsheet');
 
 var _libSpreadsheet2 = _interopRequireDefault(_libSpreadsheet);
 
-require('colors');
+var _detectNode = require('detect-node');
+
+var _detectNode2 = _interopRequireDefault(_detectNode);
+
+var output_buffer = { type: _detectNode2['default'] ? 'nodebuffer' : 'blob', compression: "DEFLATE" };
 
 var ExcelMerge = (function () {
 
@@ -71,38 +75,34 @@ var ExcelMerge = (function () {
         /**
          * * render
          * * @param {Object} bind_data binding data
-         * * @param {Object} jszip_option JsZip#generate() option.
          * * @returns {Object} rendered MS-Excel data. data-format is determined by jszip_option
          **/
     }, {
         key: 'render',
         value: function render(bind_data) {
-            var jszip_option = arguments.length <= 1 || arguments[1] === undefined ? { type: "blob", compression: "DEFLATE" } : arguments[1];
-
-            return this.spreadsheet.simple_render(bind_data, jszip_option);
+            return this.spreadsheet.simple_render(bind_data);
         }
 
         /**
          * * bulk_render_multi_file
          * * @param {Array} bind_data_array including data{name: file's name, data: binding-data}
-         * * @param {Object} jszip_option JsZip#generate() option.
          * * @returns {Object} rendered MS-Excel data.
          **/
     }, {
         key: 'bulk_render_multi_file',
-        value: function bulk_render_multi_file(bind_data_array, jszip_option) {
-            return this.spreadsheet.bulk_render_multi_file(bind_data_array, jszip_option);
+        value: function bulk_render_multi_file(bind_data_array) {
+            return this.spreadsheet.bulk_render_multi_file(bind_data_array);
         }
 
         /**
-         * * bulk_render_multi_sheet
+         * * 3_bulk_render_multi_sheet
          * * @param {Array} bind_data_array including data{name: file's name, data: binding-data}
          * * @param {Object} output_option JsZip#generate() option.
          * * @returns {Object} rendered MS-Excel data. data-format is determined by jszip_option
          **/
     }, {
         key: 'bulk_render_multi_sheet',
-        value: function bulk_render_multi_sheet(bind_data_array, jszip_option) {
+        value: function bulk_render_multi_sheet(bind_data_array) {
             var _this2 = this;
 
             return bind_data_array.reduce(function (promise, bind_data) {
@@ -110,9 +110,9 @@ var ExcelMerge = (function () {
                     return _this2.spreadsheet.add_sheet_binding_data(bind_data.name, bind_data.data);
                 });
             }, _bluebird2['default'].resolve()).then(function () {
-                return _this2.spreadsheet.generate(jszip_option);
+                return _this2.spreadsheet.generate(output_buffer);
             })['catch'](function (err) {
-                console.error(new Error(err).stack.red);
+                console.error(new Error(err).stack);
                 _bluebird2['default'].reject();
             });
         }
