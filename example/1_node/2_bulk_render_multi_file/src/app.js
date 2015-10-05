@@ -13,7 +13,6 @@ import fs from 'fs'
 var fsAsync = Promise.promisifyAll(fs);
 import JSZip from 'jszip'
 import _ from 'underscore'
-import 'colors'
 
 fsAsync.readFileAsync('./template/Template.xlsx')
 .then((excel_template)=>{
@@ -27,11 +26,11 @@ fsAsync.readFileAsync('./template/Template.xlsx')
         rendering_data.push({name:'file'+(index+1)+'.xlsx', data:data});
     });
     let merge =  result.merge;
-    return merge.bulk_render_multi_file(rendering_data, {type: "nodebuffer",compression:"DEFLATE"});
+    return merge.bulk_render_multi_file(rendering_data);
 }).then((zip_data)=>{
     fsAsync.writeFileAsync('Example.zip',zip_data);
 }).then(()=>{
     console.log('Success!!');
 }).catch((err)=>{
-    console.error(new Error(err).stack.red);
+    console.error(new Error(err).stack);
 });

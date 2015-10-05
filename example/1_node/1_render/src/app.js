@@ -12,7 +12,6 @@ var readYamlAsync = Promise.promisify(readYaml);
 import fs from 'fs'
 var fsAsync = Promise.promisifyAll(fs);
 import JSZip from 'jszip'
-import 'colors'
 
 fsAsync.readFileAsync('./template/Template.xlsx')
 .then((excel_template)=>{
@@ -23,11 +22,11 @@ fsAsync.readFileAsync('./template/Template.xlsx')
 }).then((result)=>{
     let rendering_data = result.rendering_data;
     let merge =  result.merge;
-    return merge.render(rendering_data, {type: "nodebuffer",compression:"DEFLATE"});
+    return merge.render(rendering_data);
 }).then((excel_data)=>{
     fsAsync.writeFileAsync('Example.xlsx',excel_data);
 }).then(()=>{
     console.log('Success!!');
 }).catch((err)=>{
-    console.error(new Error(err).stack.red);
+    console.error(new Error(err).stack);
 });
