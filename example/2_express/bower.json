@@ -1,0 +1,19 @@
+{
+  "name": "js-merge-xlsx",
+  "version": "1.0.0",
+  "authors": [
+    "Satoshi Haga"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components"
+  ],
+  "dependencies": {
+    "bootstrap": "~3.3.4",
+    "font-awesome": "~4.4.0",
+    "filesaver": "*"
+  }
+}

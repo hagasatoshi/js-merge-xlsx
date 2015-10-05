@@ -1,0 +1,24 @@
+{
+  "scripts": {
+    "start": "gulp;node server.js"
+  },
+  "dependencies": {
+    "angular": "^1.4.7",
+    "angular-bootstrap": "^0.12.2",
+    "bluebird": "^2.10.2",
+    "body-parser": "^1.14.1",
+    "detect-node": "^2.0.3",
+    "express": "^4.13.3",
+    "js-merge-xlsx": "*",
+    "jszip": "^2.5.0",
+    "path": "^0.12.7",
+    "underscore": "^1.8.3"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.0",
+    "gulp-babel": "^5.2.1",
+    "gulp-sass": "^2.0.4",
+    "run-sequence": "^1.1.4",
+    "webpack-stream": "^2.1.1"
+  }
+}

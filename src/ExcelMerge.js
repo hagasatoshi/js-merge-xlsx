@@ -9,7 +9,8 @@ import Promise from 'bluebird'
 import _ from 'underscore'
 import JSZip from 'jszip'
 import SpreadSheet from './lib/spreadsheet'
-import 'colors'
+import isNode from 'detect-node'
+const output_buffer = {type: (isNode?'nodebuffer':'blob'), compression:"DEFLATE"};
 
 class ExcelMerge{
 
@@ -36,30 +37,28 @@ class ExcelMerge{
     /**
      * * render
      * * @param {Object} bind_data binding data
-     * * @param {Object} jszip_option JsZip#generate() option.
      * * @returns {Object} rendered MS-Excel data. data-format is determined by jszip_option
      **/
-    render(bind_data, jszip_option={type: "blob",compression:"DEFLATE"}){
-        return this.spreadsheet.simple_render(bind_data,jszip_option);
+    render(bind_data){
+        return this.spreadsheet.simple_render(bind_data);
     }
 
     /**
      * * bulk_render_multi_file
      * * @param {Array} bind_data_array including data{name: file's name, data: binding-data}
-     * * @param {Object} jszip_option JsZip#generate() option.
      * * @returns {Object} rendered MS-Excel data.
      **/
-    bulk_render_multi_file(bind_data_array, jszip_option){
-        return this.spreadsheet.bulk_render_multi_file(bind_data_array,jszip_option);
+    bulk_render_multi_file(bind_data_array){
+        return this.spreadsheet.bulk_render_multi_file(bind_data_array);
     }
 
     /**
-     * * bulk_render_multi_sheet
+     * * 3_bulk_render_multi_sheet
      * * @param {Array} bind_data_array including data{name: file's name, data: binding-data}
      * * @param {Object} output_option JsZip#generate() option.
      * * @returns {Object} rendered MS-Excel data. data-format is determined by jszip_option
      **/
-    bulk_render_multi_sheet(bind_data_array, jszip_option){
+    bulk_render_multi_sheet(bind_data_array){
         return bind_data_array.reduce(
             (promise, bind_data)=>
                 promise.then((prior)=>{
@@ -68,9 +67,9 @@ class ExcelMerge{
             ,
             Promise.resolve()
         ).then(()=>{
-            return this.spreadsheet.generate(jszip_option);
+            return this.spreadsheet.generate(output_buffer);
         }).catch((err)=>{
-            console.error(new Error(err).stack.red);
+            console.error(new Error(err).stack);
             Promise.reject();
         });
     }
