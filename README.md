@@ -23,7 +23,7 @@ Note: Only string cell is supported. Please make sure that the format of cells h
 
 # Usage(Node.js)  
 js-merge-xlsx supports Promises A+(bluebird). So, it is called basically in Promise-chain.  
-ExcelMerge#load() ES6 syntax  
+Example(ES6 syntax)  
 ```
 fs.readFileAsync('./template/Template.xlsx')
 .then((excel_template)=>{
@@ -31,10 +31,6 @@ fs.readFileAsync('./template/Template.xlsx')
         rendering_data: readYamlAsync('./data/data.yml'),
         merge: new ExcelMerge().load(new JSZip(excel_template))
     });
-```
-
-ExcelMerge#render() ES6 syntax  
-```
 }).then((result)=>{
     let rendering_data = result.rendering_data;
     let merge =  result.merge;
