@@ -1,5 +1,5 @@
 # js-merge-xlsx  
-Minimum JavaScript-based template engine for MS-Excel. js-merge-xlsx allows you to print JavaScript objects.
+Minimum JavaScript-based template engine for MS-Excel. js-merge-xlsx empowers you to print JavaScript objects.
 
 - Available for both web browser and Node.js .
 - Bulk printing. It is possible to print array as 'multiple files'. 
@@ -36,6 +36,10 @@ fs.readFileAsync('./template/Template.xlsx')
     let merge =  result.merge;
     return merge.render(rendering_data);
 }).then((excel_data)=>{
+    fs.writeFileAsync('Example.xlsx',excel_data);
+}).catch((err)=>{
+    console.error(new Error(err).stack);
+});
 ```
 
 Please check [example codes](https://github.com/hagasatoshi/js-merge-xlsx/tree/master/example/1_node) and API below for detail.
