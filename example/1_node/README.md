@@ -2,17 +2,17 @@
 Here is example on Node.js.
   
 # git clone
-```
+```bash
 git clone git@github.com:hagasatoshi/js-merge-xlsx.git
 cd js-merge-xlsx/example/1_node
 ```
 # Build
-```
+```bash
 npm install
 gulp
 ```
 # Execute
-```
+```bash
 node app.js
 ```
 The following 3 files are created.
@@ -22,7 +22,7 @@ The following 3 files are created.
   
 # Source  
 app.js(ES6 syntax)
-```
+```JavaScript
 /**
  * * app.js
  * * Example on Node.js
