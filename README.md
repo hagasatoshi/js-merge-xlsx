@@ -18,7 +18,7 @@ npm install js-merge-xlsx
 # Prepare template  
 Prepare the template with bind-variables as mustache format {{}}.
 ![Template](https://raw.githubusercontent.com/hagasatoshi/js-merge-xlsx/master/image/before2.png)  
-Note: Only string cell is supported. Please make sure that the format of cells having variables is STRING.  
+**Note**: Only string cell is supported. Please make sure that the format of cells having variables is String.  
 ![Note](https://raw.githubusercontent.com/hagasatoshi/js-merge-xlsx/master/image/cell_format.png)
 
 # Node.js  
