@@ -1,5 +1,5 @@
 # js-merge-xlsx  
-Minimum JavasScript-based template engine for MS-Excel. js-merge-xlsx allows you to print JavaScript objects.
+Minimum JavaScript-based template engine for MS-Excel. js-merge-xlsx allows you to print JavaScript objects.
 
 - Available for both web browser and Node.js .
 - Bulk printing. It is possible to print array as 'multiple files'. 
@@ -47,7 +47,7 @@ Please check [example codes](https://github.com/hagasatoshi/js-merge-xlsx/tree/m
 # Usage(on web browser)
 You can also use it on web browser by using webpack(browserify). 
 Bluebird automatically casts thenable object, such as object returned by "$http.get()" or "$.get()", to trusted Promise. https://github.com/petkaantonov/bluebird/blob/master/API.md#promiseresolvedynamic-value---promise  
-So you can use it in Promise-chain as follows.  
+So, you can code in the same way as Node.js.    
 Example(ES6 syntax)  
 ```
 Promise.resolve($http.get('/template/Template.xlsx', {responseType: "arraybuffer"}))
