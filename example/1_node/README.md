@@ -1,120 +1,82 @@
-# example on web browser  
-Here is example on web browser. Webpack(or browserify) empower you to use node-modules on web-browser as well. Also bluebird automatically casts thenable object, such as object returned by '$http.get()' and '$.get()', to trusted Promise. So, you can code in the same way as Node.js.  
+# example on Node.js  
+Here is example on Node.js.
   
 # git clone
 ```
 git clone git@github.com:hagasatoshi/js-merge-xlsx.git
-cd js-merge-xlsx/example/2_express
+cd js-merge-xlsx/example/1_node
 ```
 # Build
 ```
 npm install
-bower install
 gulp
 ```
-# Start server
+# Execute
 ```
-node server.js
+node app.js
 ```
-
-You can access 'http://localhost:3000/' as follows.  
-![Experss](https://raw.githubusercontent.com/hagasatoshi/js-merge-xlsx/master/image/express.png)  
-  
-Each button prints using js-merge-xlsx.
-
-- ExcelMerge#render() : single printing.
-- ExcelMerge#bulk_render_multi_file() : bulk printing as 'multiple file'.
-- ExcelMerge#bulk_render_multi_sheet() : bulk printing as 'multiple sheet'.
+The following 3 files are created.
+- Example1.xlsx : single printing.
+- Example2.zip : bulk printing. This zip file contains 3 files.
+- Example3.xlsx : bulk printing. This file has 3 Excel-sheets.
   
 # Source  
-Angular's controller(ES6 syntax)
+app.js(ES6 syntax)
 ```
 /**
- * * index_controller.js
- * * angular controller definition
+ * * app.js
+ * * Example on Node.js
  * * @author Satoshi Haga
- * * @date 2015/10/06
+ * * @date 2015/09/30
  **/
 
-import Promise from 'bluebird'
 import ExcelMerge from 'js-merge-xlsx'
+import Promise from 'bluebird'
+var readYamlAsync = Promise.promisify(require('read-yaml'));
+var fs = Promise.promisifyAll(require('fs'));
 import JSZip from 'jszip'
 import _ from 'underscore'
 
-var index_controller = ($scope, $http)=>{
+//Load Template
+fs.readFileAsync('./template/Template.xlsx')
+.then((excel_template)=>{
+    return Promise.props({
+        rendering_data1: readYamlAsync('./data/data1.yml'),     //Load single data
+        rendering_data2: readYamlAsync('./data/data2.yml'),     //Load array data
+        merge: new ExcelMerge().load(new JSZip(excel_template)) //Initialize ExcelMerge object
+    });
+}).then((result)=>{
+    //Single-printing
+    let rendering_data1 = result.rendering_data1;
 
-    /**
-     * * example_render
-     * * example of ExcelMerge#render()
-     */
-    $scope.example_render = ()=>{
-        Promise.resolve($http.get('/template/Template.xlsx', {responseType: "arraybuffer"}))
-        .then((excel_template)=>{
-            return Promise.props({
-                rendering_data: $http.get('/data/data1.json'),
-                merge: new ExcelMerge().load(new JSZip(excel_template.data))
-            });
-        }).then((result)=>{
-            let rendering_data = result.rendering_data.data;
-            let merge =  result.merge;
-            return merge.render(rendering_data);
-        }).then((excel_data)=>{
-            saveAs(excel_data,'Example.xlsx');
-        }).catch((err)=>{
-            console.error(err);
-        });
-    };
+    //Bulk-printing as 'multiple files'
+    let rendering_data2 = [];
+    _.each(result.rendering_data2, (data,index)=>{
+        rendering_data2.push({name:'file'+(index+1)+'.xlsx', data:data});
+    });
 
-    /**
-     * * example_bulk_render_multi_file
-     * * example of ExcelMerge#bulk_render_multi_file()
-     */
-    $scope.example_bulk_render_multi_file = ()=>{
-        Promise.resolve($http.get('/template/Template.xlsx', {responseType: "arraybuffer"}))
-            .then((excel_template)=>{
-                return Promise.props({
-                    rendering_data: $http.get('/data/data2.json'),
-                    merge: new ExcelMerge().load(new JSZip(excel_template.data))
-                });
-            }).then((result)=>{
-                let rendering_data = [];
-                _.each(result.rendering_data.data, (data,index)=>{
-                    rendering_data.push({name:'file'+(index+1)+'.xlsx', data:data});
-                });
-                let merge =  result.merge;
-                return merge.bulk_render_multi_file(rendering_data);
-            }).then((zip_data)=>{
-                saveAs(zip_data,'Example.zip');
-            }).catch((err)=>{
-                console.error(err);
-            });
-    };
+    //Bulk-printing as 'multiple sheets'
+    let rendering_data3 = [];
+    _.each(result.rendering_data2, (data,index)=>{
+        rendering_data3.push({name:'example'+(index+1), data:data});
+    });
 
-    /**
-     * * example_bulk_render_multi_sheet
-     * * example of ExcelMerge#bulk_render_multi_sheet()
-     */
-    $scope.example_bulk_render_multi_sheet = ()=>{
-        Promise.resolve($http.get('/template/Template.xlsx', {responseType: "arraybuffer"}))
-            .then((excel_template)=>{
-                return Promise.props({
-                    rendering_data: $http.get('/data/data2.json'),
-                    merge: new ExcelMerge().load(new JSZip(excel_template.data))
-                });
-            }).then((result)=>{
-                let rendering_data = [];
-                _.each(result.rendering_data.data, (data,index)=>{
-                    rendering_data.push({name:'sample'+(index+1), data:data});
-                });
-                let merge =  result.merge;
-                return merge.bulk_render_multi_sheet(rendering_data);
-            }).then((excel_data)=>{
-                saveAs(excel_data,'Example.xlsx');
-            }).catch((err)=>{
-                console.error(err);
-            });
-    };
-};
+    //ExcelMerge object
+    let merge =  result.merge;
 
-module.exports = index_controller;
+    //Execute rendering
+    return Promise.props({
+        excel_data1: merge.render(rendering_data1),
+        excel_data2: merge.bulk_render_multi_file(rendering_data2),
+        excel_data3: merge.bulk_render_multi_sheet(rendering_data3)
+    });
+}).then((result)=>{
+    return Promise.all([
+        fs.writeFileAsync('Example1.xlsx',result.excel_data1),
+        fs.writeFileAsync('Example2.zip',result.excel_data2),
+        fs.writeFileAsync('Example3.xlsx',result.excel_data3)
+    ]);
+}).catch((err)=>{
+    console.error(new Error(err).stack);
+});
 ```
