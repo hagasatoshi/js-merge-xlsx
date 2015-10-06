@@ -11,7 +11,7 @@ After printing
 ![Rendered](https://raw.githubusercontent.com/hagasatoshi/js-merge-xlsx/master/image/after.png)  
 
 # Install
-```
+```bash
 npm install js-merge-xlsx
 ```
 
@@ -24,7 +24,7 @@ Note: Only string cell is supported. Please make sure that the format of cells h
 # Node.js  
 js-merge-xlsx supports Promises/A+([bluebird](https://github.com/petkaantonov/bluebird)). So, it is called basically in Promise-chain.  
 Example(ES6 syntax)  
-```
+```JavaScript
 fs.readFileAsync('./template/Template.xlsx')
 .then((excel_template)=>{
     return Promise.props({
@@ -49,7 +49,7 @@ You can also use it on web browser by using webpack(browserify).
 Bluebird automatically casts thenable object, such as object returned by "$http.get()" or "$.get()", to trusted Promise. https://github.com/petkaantonov/bluebird/blob/master/API.md#promiseresolvedynamic-value---promise  
 So, you can code in the same way as Node.js.    
 Example(ES6 syntax)  
-```
+```JavaScript
 Promise.resolve($http.get('/template/Template.xlsx', {responseType: "arraybuffer"}))
 .then((excel_template)=>{
     return Promise.props({
