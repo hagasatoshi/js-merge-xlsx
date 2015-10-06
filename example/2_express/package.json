@@ -9,6 +9,7 @@
     "body-parser": "^1.14.1",
     "detect-node": "^2.0.3",
     "express": "^4.13.3",
+    "jade": "^1.11.0",
     "js-merge-xlsx": "*",
     "jszip": "^2.5.0",
     "path": "^0.12.7",
