@@ -21,7 +21,7 @@ Prepare the template with bind-variables as mustache format {{}}.
 Note: Only string cell is supported. Please make sure that the format of cells having variables is STRING.  
 ![Note](https://raw.githubusercontent.com/hagasatoshi/js-merge-xlsx/master/image/cell_format.png)
 
-# Usage(Node.js)  
+# Node.js  
 js-merge-xlsx supports Promises A+(bluebird). So, it is called basically in Promise-chain.  
 Example(ES6 syntax)  
 ```
@@ -44,7 +44,7 @@ fs.readFileAsync('./template/Template.xlsx')
 
 Please check [example codes](https://github.com/hagasatoshi/js-merge-xlsx/tree/master/example/1_node) and API below for detail.
 
-# Usage(on web browser)
+# Browser  
 You can also use it on web browser by using webpack(browserify). 
 Bluebird automatically casts thenable object, such as object returned by "$http.get()" or "$.get()", to trusted Promise. https://github.com/petkaantonov/bluebird/blob/master/API.md#promiseresolvedynamic-value---promise  
 So, you can code in the same way as Node.js.    
