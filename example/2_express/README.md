@@ -1,19 +1,19 @@
-# example on web browser  
+# Example on web browser  
 Here is example on web browser. Webpack(or browserify) empower you to use node-modules on web-browser as well. Also bluebird automatically casts thenable object, such as object returned by '$http.get()' and '$.get()', to trusted Promise. So, you can code in the same way as Node.js.  
   
 # git clone
-```
+```bash
 git clone git@github.com:hagasatoshi/js-merge-xlsx.git
 cd js-merge-xlsx/example/2_express
 ```
 # Build
-```
+```bash
 npm install
 bower install
 gulp
 ```
 # Start server
-```
+```bash
 node server.js
 ```
 
@@ -28,7 +28,7 @@ Each button prints using js-merge-xlsx.
   
 # Source  
 Angular's controller(ES6 syntax)
-```
+```JavaScript
 /**
  * * index_controller.js
  * * angular controller definition
