@@ -1,12 +1,12 @@
 # API Reference  
   
 - [Initialize](#core)
-    - [`new ExcelMerge()`](#new-promisefunctionfunction-resolve-function-reject-resolver---promise)
-    - [`.load(JSZip zip)`](#thenfunction-fulfilledhandler--function-rejectedhandler----promise)
+    - [`new ExcelMerge()`](#new-excelmerge---excelmerge)
+    - [`.load(JSZip zip)`](#loadjszip-zip---promise)
 - [Rendering](#core)
-    - [`.render()`](#new-promisefunctionfunction-resolve-function-reject-resolver---promise)
-    - [`.bulk_render_multi_file()`](#new-promisefunctionfunction-resolve-function-reject-resolver---promise)
-    - [`.bulk_render_multi_sheet()`](#new-promisefunctionfunction-resolve-function-reject-resolver---promise)
+    - [`.render()`](#renderobject-data---promise)
+    - [`.bulk_render_multi_file()`](#bulk_render_multi_filenamefiles-name-of-file1-datadata-of-file1namefiles-name-of-file2-datadata-of-file2---promise)
+    - [`.bulk_render_multi_sheet()`](#bulk_render_multi_sheetnamesheets-name-of-file1-datadata-of-file1namesheets-name-of-file1-datadata-of-file1---promise)
 
 Each code sample is written with ES6 syntax
 # Initialize  
@@ -23,7 +23,7 @@ fs.readFileAsync('./Template.xlsx')
 }).then((merge)=>{
     //merge is ExcelMerge instance.
 ```
-  
+# Render    
 #####`render(Object data)` -> `Promise`  
 Render single object, not array. Returns Promise instance including MS-Excel data. If on Node.js, the type of data is Buffer instance. If on web browser, blob is returned.
 ```
