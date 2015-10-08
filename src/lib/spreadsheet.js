@@ -93,7 +93,7 @@ class SpreadSheet{
      * * add_sheet_binding_data
      * * @param {String} dest_sheet_name name of new sheet
      * * @param {Object} data binding data
-     * * @return {Promise|Object} Excel data. format is determinated by parameter
+     * * @return {Object} this instance for chaining
      **/
     add_sheet_binding_data(dest_sheet_name, data){
         //1.add relation of next sheet
@@ -131,10 +131,93 @@ class SpreadSheet{
 
         //2-6.add this sheet into sheet_xmls
         this.sheet_xmls.push(added_sheet);
+
+        return this;
     }
 
+    /**
+     * * activate_sheet
+     * * @param {String} sheetname target sheet name
+     * * @return {Object} this instance for chaining
+     **/
+    activate_sheet(sheetname){
+        let target_sheet_name = this._sheet_by_name(sheetname);
+        _.each(this.sheet_xmls, (sheet)=>{
+            if(sheet.worksheet && (sheet.name === target_sheet_name.value.worksheet.name)){
+                sheet.worksheet.sheetViews[0].sheetView[0]['$'].tabSelected = '1';
+            }else if(sheet.worksheet){
+                sheet.worksheet.sheetViews[0].sheetView[0]['$'].tabSelected = '0';
+            }
+        });
+        return this;
+    }
 
-        /**
+    /**
+     * * _first_sheet_name
+     * * @return {String} name of first-sheet of MS-Excel file
+     **/
+    _first_sheet_name(){
+        return this.workbookxml.workbook.sheets[0].sheet[0]['$'].name;
+    }
+
+    /**
+     * * forcus_on_first_sheet
+     * * @return {Object} this instance for chaining
+     **/
+    forcus_on_first_sheet(){
+        return this.activate_sheet(this._first_sheet_name());
+    }
+
+    /**
+     * * active_sheets
+     * * @return {Array} array including only active sheets.
+     **/
+    _active_sheets(){
+        return _.filter(this.sheet_xmls, (sheet)=>(sheet.worksheet.sheetViews[0].sheetView[0]['$'].tabSelected === '1'));
+    }
+
+    /**
+     * * deactive_sheets
+     * * @return {Array} array including only deactive sheets.
+     **/
+    _deactive_sheets(){
+        return _.filter(this.sheet_xmls, (sheet)=>(sheet.worksheet.sheetViews[0].sheetView[0]['$'].tabSelected === '0'));
+    }
+
+    /**
+     * * delete_sheet
+     * * @param {String} sheetname target sheet name
+     * * @return {Object} this instance for chaining
+     **/
+    delete_sheet(sheetname){
+        let target_sheet = this._sheet_by_name(sheetname);
+        _.each(this.workbookxml_rels.Relationships.Relationship, (sheet,index)=>{
+            if(sheet && (sheet['$'].Target === target_sheet.path)) {
+                this.workbookxml_rels.Relationships.Relationship.splice(index,1);
+            }
+        });
+        _.each(this.workbookxml.workbook.sheets[0].sheet, (sheet,index)=>{
+            if(sheet && (sheet['$'].name === sheetname)){
+                this.workbookxml.workbook.sheets[0].sheet.splice(index,1);
+            }
+        });
+        _.each(this.sheet_xmls, (sheet_xml,index)=>{
+            if(sheet_xml && (sheet_xml.name === target_sheet.value.name)){
+                this.sheet_xmls.splice(index,1);
+            }
+        });
+        return this;
+    }
+
+    /**
+     * * delete_template_sheet
+     * * @return {Object} this instance for chaining
+     **/
+    delete_template_sheet(){
+        return this.delete_sheet(this.template_sheet_name);
+    }
+
+    /**
      * * generate
      * * call JSZip#generate() binding current data
      * * @param {Object} option option for JsZip#genereate()
@@ -161,6 +244,7 @@ class SpreadSheet{
         //call JSZip#generate()
         return this.excel.generate(option);
     }
+
 
     /**
      * * _simple_render
@@ -251,6 +335,7 @@ class SpreadSheet{
                 });
             });
         });
+        added_sheet.worksheet.sheetViews[0].sheetView[0]['$'].tabSelected = '0';
         return added_sheet;
     }
 
@@ -279,6 +364,16 @@ class SpreadSheet{
         let sheet = {path: target_file_path, value: sheet_xml};
         return sheet;
     }
+
+    /**
+     * * _sheet_names
+     * * @return {Array} array including sheet name
+     * * @private
+     **/
+    _sheet_names(){
+        return _.map(this.sheet_xmls, (e)=>e.name);
+    }
+
 
 }
 

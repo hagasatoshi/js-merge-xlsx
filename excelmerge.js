@@ -110,7 +110,7 @@ var ExcelMerge = (function () {
                     return _this2.spreadsheet.add_sheet_binding_data(bind_data.name, bind_data.data);
                 });
             }, _bluebird2['default'].resolve()).then(function () {
-                return _this2.spreadsheet.generate(output_buffer);
+                return _this2.spreadsheet.delete_template_sheet().forcus_on_first_sheet().generate(output_buffer);
             })['catch'](function (err) {
                 console.error(new Error(err).stack);
                 _bluebird2['default'].reject();
