@@ -1,70 +1,40 @@
-# js-merge-xlsx  
-Minimum JavaScript-based template engine for MS-Excel. js-merge-xlsx empowers you to print JavaScript objects.
+# API Reference  
+  
+- [Initialize](#core)
+    - [`new ExcelMerge()`](#new-promisefunctionfunction-resolve-function-reject-resolver---promise)
+    - [`.load(JSZip zip)`](#thenfunction-fulfilledhandler--function-rejectedhandler----promise)
+- [Rendering](#core)
+    - [`.render()`](#new-promisefunctionfunction-resolve-function-reject-resolver---promise)
+    - [`.bulk_render_multi_file()`](#new-promisefunctionfunction-resolve-function-reject-resolver---promise)
+    - [`.bulk_render_multi_sheet()`](#new-promisefunctionfunction-resolve-function-reject-resolver---promise)
+  
+# Initialize  
+Create ExcelMerge instance and load Excel data.
+#####`new ExcelMerge()` -> `ExcelMerge`  
+Contructor. No arguments are required. 
 
-- Available for both web browser and Node.js .
-- Bulk printing. It is possible to print array as 'multiple files'. 
-- Bulk printing. It is possible to print array as 'multiple sheets'. 
-
-Template  
-![Template](https://raw.githubusercontent.com/hagasatoshi/js-merge-xlsx/master/image/before2.png)  
-After printing  
-![Rendered](https://raw.githubusercontent.com/hagasatoshi/js-merge-xlsx/master/image/after.png)  
-
-# Install
-```bash
-npm install js-merge-xlsx
+#####`load(JSZip zip)` -> `Promise`  
+Load MS-Excel template. Parameter is JSZip instance including MS-Excel data. Returns a new promise instance including this ExcelMerge instance. So you can code like method-chain as follows.  
 ```
-
-# Prepare template  
-Prepare the template with bind-variables as mustache format {{}}.
-![Template](https://raw.githubusercontent.com/hagasatoshi/js-merge-xlsx/master/image/before2.png)  
-**Note**: Only string cell is supported. Please make sure that the format of cells having variables is String.  
-![Note](https://raw.githubusercontent.com/hagasatoshi/js-merge-xlsx/master/image/cell_format.png)
-
-# Node.js  
-js-merge-xlsx supports Promises/A+([bluebird](https://github.com/petkaantonov/bluebird)). So, it is called basically in Promise-chain.  
-Example(ES6 syntax)  
-```JavaScript
-fs.readFileAsync('./template/Template.xlsx')
+fs.readFileAsync('./Template.xlsx')
 .then((excel_template)=>{
-    return Promise.props({
-        rendering_data: readYamlAsync('./data/data.yml'),
-        merge: new ExcelMerge().load(new JSZip(excel_template))
-    });
-}).then((result)=>{
-    let rendering_data = result.rendering_data;
-    let merge =  result.merge;
-    return merge.render(rendering_data);
-}).then((excel_data)=>{
-    fs.writeFileAsync('Example.xlsx',excel_data);
-}).catch((err)=>{
-    console.error(new Error(err).stack);
-});
+    return new ExcelMerge().load(new JSZip(excel_template)); //Initialize ExcelMerge object
+}).then((merge)=>{
+    //merge is ExcelMerge instance.
 ```
-
-Please check [example codes](https://github.com/hagasatoshi/js-merge-xlsx/tree/master/example/1_node) and API below for detail.
-
-# Browser  
-You can also use it on web browser by using webpack(browserify). 
-Bluebird automatically casts thenable object, such as object returned by "$http.get()" or "$.get()", to trusted Promise. https://github.com/petkaantonov/bluebird/blob/master/API.md#promiseresolvedynamic-value---promise  
-So, you can code in the same way as Node.js.    
-Example(ES6 syntax)  
-```JavaScript
-Promise.resolve($http.get('/template/Template.xlsx', {responseType: "arraybuffer"}))
-.then((excel_template)=>{
-    return Promise.props({
-        rendering_data: $http.get('/data/data1.json'),
-        merge: new ExcelMerge().load(new JSZip(excel_template.data))
-    });
-}).then((result)=>{
-    let rendering_data = result.rendering_data.data;
-    let merge =  result.merge;
-    return merge.render(rendering_data);
+  
+#####`render(Object data)` -> `Promise`  
+Render single object, not array. Returns Promise instance including MS-Excel data. If on Node.js, the type of data is Buffer instance. If on web browser, blob is returned.
+```
+    return merge.render(some_data);
 }).then((excel_data)=>{
-    saveAs(excel_data,'Example.xlsx');  //FileSaver
+    fs.writeFileAsync('Example1.xlsx',excel_data);
 }).catch((err)=>{
     console.error(err);
 });
 ```
 
-Please check [example codes](https://github.com/hagasatoshi/js-merge-xlsx/tree/master/example/2_express) and API below for detail.
+#####`bulk_render_multi_file([{name:name of file1, data:data of file1},{name:name of file1, data:data of file1},,,])` -> `Promise`  
+Render array as multiple files. Returns Promise instance including Zip-file data. If on Node.js, the type of data is Buffer instance. If on web browser, blob is returned.  
+```
+```
