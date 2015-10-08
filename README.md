@@ -42,7 +42,7 @@ fs.readFileAsync('./template/Template.xlsx')
 });
 ```
 
-Please check [example codes](https://github.com/hagasatoshi/js-merge-xlsx/tree/master/example/1_node) and API below for detail.
+Please check [example codes](https://github.com/hagasatoshi/js-merge-xlsx/tree/master/example/1_node) and [API](https://github.com/hagasatoshi/js-merge-xlsx/blob/master/API.md) for detail.
 
 # Browser  
 You can also use it on web browser by using webpack(browserify). 
@@ -67,4 +67,4 @@ Promise.resolve($http.get('/template/Template.xlsx', {responseType: "arraybuffer
 });
 ```
 
-Please check [example codes](https://github.com/hagasatoshi/js-merge-xlsx/tree/master/example/2_express) and API below for detail.
+Please check [example codes](https://github.com/hagasatoshi/js-merge-xlsx/tree/master/example/2_express) and [API](https://github.com/hagasatoshi/js-merge-xlsx/blob/master/API.md) for detail.
