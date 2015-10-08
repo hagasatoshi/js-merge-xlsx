@@ -1,14 +1,14 @@
 # API Reference  
   
-- [Initialize](#core)
+- [Initialize](#initialize---initialize)
     - [`new ExcelMerge()`](#new-excelmerge---excelmerge)
     - [`.load(JSZip zip)`](#loadjszip-zip---promise)
-- [Rendering](#core)
+- [Rendering](#rendering---rendering)
     - [`.render()`](#renderobject-data---promise)
     - [`.bulk_render_multi_file()`](#bulk_render_multi_filenamefiles-name-of-file1-datadata-of-file1namefiles-name-of-file2-datadata-of-file2---promise)
     - [`.bulk_render_multi_sheet()`](#bulk_render_multi_sheetnamesheets-name-of-file1-datadata-of-file1namesheets-name-of-file1-datadata-of-file1---promise)
 
-Each code sample is written with ES6 syntax
+Each code example is written with ES6 syntax
 # Initialize  
 Create ExcelMerge instance and load Excel data.
 #####`new ExcelMerge()` -> `ExcelMerge`  
