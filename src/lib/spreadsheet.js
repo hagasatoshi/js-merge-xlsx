@@ -27,6 +27,7 @@ class SpreadSheet{
     //sharedstrings_str : {String} whole sharedstrings string
     //common_strings_with_variable : {Array} including common strings only having mustache variables
     //sheet_xmls : {Array} including objects parsed from  'xl/worksheets/*.xml'
+    //sheet_xmls_rels : {Array} including objects pared from 'xl/worksheets/_rels/*.xml.rels'
     //template_sheet_data : {Object} object parsed from 'xl/worksheets/*.xml'. this is used as template-file
     //template_sheet_name : {String} sheet-name of template-file
     //workbookxml_rels : {Object} parsed from 'xl/_rels/workbook.xml.rels'
@@ -50,15 +51,18 @@ class SpreadSheet{
             sharedstrings_obj: parseString(this.sharedstrings_str),
             workbookxml_rels: parseString(this.excel.file('xl/_rels/workbook.xml.rels').asText()),
             workbookxml: parseString(this.excel.file('xl/workbook.xml').asText()),
-            sheet_xmls :this._parse_dir_in_excel('xl/worksheets')
+            sheet_xmls: this._parse_dir_in_excel('xl/worksheets'),
+            sheet_xmls_rels: this._parse_dir_in_excel('xl/worksheets/_rels')
         }).then((templates)=>{
             this.sharedstrings_obj = templates.sharedstrings_obj;
             this.sharedstrings = templates.sharedstrings_obj.sst.si;
             this.workbookxml_rels = templates.workbookxml_rels;
             this.workbookxml = templates.workbookxml;
             this.sheet_xmls = templates.sheet_xmls;
+            this.sheet_xmls_rels = templates.sheet_xmls_rels;
             this.template_sheet_data = _.find(templates.sheet_xmls,(e)=>(e.name.indexOf('.rels') === -1)).worksheet.sheetData[0].row;
             this.template_sheet_name = this.workbookxml.workbook.sheets[0].sheet[0]['$'].name;
+            this.template_sheet_rels_data = JSON.parse(JSON.stringify(this._template_sheet_rels()));
             this.common_strings_with_variable = this._parse_common_string_with_variable();
 
             //return this for chaining
@@ -241,6 +245,13 @@ class SpreadSheet{
                 this.excel.file('xl/worksheets/'+sheet.name, builder.buildObject(sheet_obj));
             }
         });
+        //sheet_xmls_rels
+        let str_template_sheet_rels = builder.buildObject(this.template_sheet_rels_data);
+        _.each(this.sheet_xmls, (sheet)=>{
+            if(sheet.name){
+                this.excel.file('xl/worksheets/_rels/'+sheet.name+'.rels', str_template_sheet_rels);
+            }
+        });
         //call JSZip#generate()
         return this.excel.generate(option);
     }
@@ -364,6 +375,30 @@ class SpreadSheet{
         let sheet = {path: target_file_path, value: sheet_xml};
         return sheet;
     }
+
+    /**
+     * * _sheet_rels_by_name
+     * * @param {String} sheetname target sheet name
+     * * @return {Object} sheet_rels object
+     * * @private
+     **/
+    _sheet_rels_by_name(sheetname){
+        let target_file_path = this._sheet_by_name(sheetname).path;
+        let target_name = target_file_path.split('/')[target_file_path.split('/').length-1] + '.rels';
+        let sheet_xml_rels = _.find(this.sheet_xmls_rels, (e)=>(e.name === target_name));
+        let sheet = {name: target_name, value: sheet_xml_rels};
+        return sheet;
+    }
+
+    /**
+     * * _template_sheet_rels
+     * * @return {Object} sheet_rels object of template-sheet
+     * * @private
+     **/
+    _template_sheet_rels(){
+        return this._sheet_rels_by_name(this.template_sheet_name);
+    }
+
 
     /**
      * * _sheet_names
