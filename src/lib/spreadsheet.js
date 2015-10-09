@@ -36,9 +36,10 @@ class SpreadSheet{
     /**
      * * load
      * * @param {Object} excel JsZip object including MS-Excel file
+     * * @param {Object} option option parameter
      * * @return {Promise|Object} Promise instance including this
      **/
-    load(excel){
+    load(excel, option){
 
         //set member variable
         this.excel = excel;
@@ -60,9 +61,15 @@ class SpreadSheet{
             this.workbookxml = templates.workbookxml;
             this.sheet_xmls = templates.sheet_xmls;
             this.sheet_xmls_rels = templates.sheet_xmls_rels;
-            this.template_sheet_data = _.find(templates.sheet_xmls,(e)=>(e.name.indexOf('.rels') === -1)).worksheet.sheetData[0].row;
-            this.template_sheet_name = this.workbookxml.workbook.sheets[0].sheet[0]['$'].name;
-            this.template_sheet_rels_data = JSON.parse(JSON.stringify(this._template_sheet_rels()));
+
+            if(option && option.sheetname){
+                this.template_sheet_name = option.sheetname;
+                this.template_sheet_data = this._sheet_by_name(option.sheetname).worksheet.sheetData[0].row;
+            }else{
+                this.template_sheet_name = this.workbookxml.workbook.sheets[0].sheet[0]['$'].name;
+                this.template_sheet_data = _.find(templates.sheet_xmls,(e)=>(e.name.indexOf('.rels') === -1)).worksheet.sheetData[0].row;
+            }
+            this.template_sheet_rels_data = _(this._template_sheet_rels()).deep_copy();
             this.common_strings_with_variable = this._parse_common_string_with_variable();
 
             //return this for chaining
@@ -114,7 +121,7 @@ class SpreadSheet{
 
         //2.add sheet file.
         //2-1.prepare rendered-strings
-        let rendered_strings = JSON.parse(JSON.stringify(this.common_strings_with_variable));
+        let rendered_strings = _(this.common_strings_with_variable).deep_copy();
         _.each(rendered_strings,(e)=>{
             e.t[0] = Mustache.render(_(e.t).string_value(), data);
         });
@@ -334,7 +341,7 @@ class SpreadSheet{
      * * @private
      **/
     _build_new_sheet(source_sheet, common_strings_with_variable){
-        let added_sheet = JSON.parse(JSON.stringify(source_sheet));
+        let added_sheet = _(source_sheet).deep_copy();
         _.each(common_strings_with_variable,(e,index)=>{
             _.each(e.using_cells, (cell_address)=>{
                 _.each(added_sheet.worksheet.sheetData[0].row,(row)=>{

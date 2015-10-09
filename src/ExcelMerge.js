@@ -28,10 +28,11 @@ class ExcelMerge{
     /**
      * * load
      * * @param {Object} excel JsZip object including MS-Excel file
+     * * @param {Object} option option parameter
      * * @return {Promise} Promise instance including this
      **/
-    load(excel){
-        return this.spreadsheet.load(excel).then(()=>this);
+    load(excel, option){
+        return this.spreadsheet.load(excel, option).then(()=>this);
     }
 
     /**
