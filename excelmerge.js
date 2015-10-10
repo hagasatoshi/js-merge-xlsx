@@ -59,15 +59,16 @@ var ExcelMerge = (function () {
     /**
      * * load
      * * @param {Object} excel JsZip object including MS-Excel file
+     * * @param {Object} option option parameter
      * * @return {Promise} Promise instance including this
      **/
 
     _createClass(ExcelMerge, [{
         key: 'load',
-        value: function load(excel) {
+        value: function load(excel, option) {
             var _this = this;
 
-            return this.spreadsheet.load(excel).then(function () {
+            return this.spreadsheet.load(excel, option).then(function () {
                 return _this;
             });
         }

@@ -24,7 +24,6 @@ class SpreadSheet{
     //variables : {Array} including mustache-variables defined in sharedstrings.xml
     //sharedstrings : {Array} includings common strings defined in sharedstrings.xml
     //sharedstrings_obj : {Object} whole sharedstrings object
-    //sharedstrings_str : {String} whole sharedstrings string
     //common_strings_with_variable : {Array} including common strings only having mustache variables
     //sheet_xmls : {Array} including objects parsed from  'xl/worksheets/*.xml'
     //sheet_xmls_rels : {Array} including objects pared from 'xl/worksheets/_rels/*.xml.rels'
@@ -41,21 +40,22 @@ class SpreadSheet{
      **/
     load(excel, option){
 
+        if(!(excel instanceof JSZip)){
+            return Promise.reject('First parameter must be JSZip instance including MS-Excel data');
+        }
+
         //set member variable
         this.excel = excel;
-        this.sharedstrings_str = excel.file('xl/sharedStrings.xml').asText();
-        this.variables = _(this.sharedstrings_str).variables();
+        this.variables = _(excel.file('xl/sharedStrings.xml').asText()).variables();
         this.common_strings_with_variable = [];
-
         //some members are parsed in promise-chain because xml2js parses asynchronously
         return Promise.props({
-            sharedstrings_obj: parseString(this.sharedstrings_str),
+            sharedstrings_obj: parseString(excel.file('xl/sharedStrings.xml').asText()),
             workbookxml_rels: parseString(this.excel.file('xl/_rels/workbook.xml.rels').asText()),
             workbookxml: parseString(this.excel.file('xl/workbook.xml').asText()),
             sheet_xmls: this._parse_dir_in_excel('xl/worksheets'),
             sheet_xmls_rels: this._parse_dir_in_excel('xl/worksheets/_rels')
         }).then((templates)=>{
-            this.sharedstrings_obj = templates.sharedstrings_obj;
             this.sharedstrings = templates.sharedstrings_obj.sst.si;
             this.workbookxml_rels = templates.workbookxml_rels;
             this.workbookxml = templates.workbookxml;
@@ -63,8 +63,12 @@ class SpreadSheet{
             this.sheet_xmls_rels = templates.sheet_xmls_rels;
 
             if(option && option.sheetname){
+                let target_sheet = this._sheet_by_name(option.sheetname);
+                if(!target_sheet){
+                    return Promise.reject("sheetname is invalid. Please check if sheet'" + option.sheetname + "' exists in tempalte file");
+                }
                 this.template_sheet_name = option.sheetname;
-                this.template_sheet_data = this._sheet_by_name(option.sheetname).worksheet.sheetData[0].row;
+                this.template_sheet_data = target_sheet.worksheet.sheetData[0].row;
             }else{
                 this.template_sheet_name = this.workbookxml.workbook.sheets[0].sheet[0]['$'].name;
                 this.template_sheet_data = _.find(templates.sheet_xmls,(e)=>(e.name.indexOf('.rels') === -1)).worksheet.sheetData[0].row;
@@ -236,31 +240,35 @@ class SpreadSheet{
      **/
     generate(option){
         //sharedstrings
-        this.sharedstrings_obj.sst.si = this.sharedstrings;
-        this.sharedstrings_obj.sst['$'].count = this.sharedstrings_obj.sst['$'].uniqueCount = this.sharedstrings.length;
-        this.excel.file('xl/sharedStrings.xml', builder.buildObject(this.sharedstrings_obj));
-        //workbook.xml.rels
-        this.excel.file("xl/_rels/workbook.xml.rels",builder.buildObject(this.workbookxml_rels));
-        //workbook.xml
-        this.excel.file("xl/workbook.xml",builder.buildObject(this.workbookxml));
-        //sheet_xmls
-        _.each(this.sheet_xmls, (sheet)=>{
-            if(sheet.name){
-                var sheet_obj = {};
-                sheet_obj.worksheet = {};
-                _.extend(sheet_obj.worksheet, sheet.worksheet);
-                this.excel.file('xl/worksheets/'+sheet.name, builder.buildObject(sheet_obj));
-            }
-        });
-        //sheet_xmls_rels
-        let str_template_sheet_rels = builder.buildObject(this.template_sheet_rels_data);
-        _.each(this.sheet_xmls, (sheet)=>{
-            if(sheet.name){
-                this.excel.file('xl/worksheets/_rels/'+sheet.name+'.rels', str_template_sheet_rels);
-            }
-        });
-        //call JSZip#generate()
-        return this.excel.generate(option);
+        parseString(this.excel.file('xl/sharedStrings.xml').asText())
+        .then((sharedstrings_obj)=>{
+            sharedstrings_obj.sst.si = this._clean_shared_strings();
+            sharedstrings_obj.sst['$'].count = sharedstrings_obj.sst['$'].uniqueCount = this.sharedstrings.length;
+            this.excel.file('xl/sharedStrings.xml', builder.buildObject(sharedstrings_obj));
+            //workbook.xml.rels
+            this.excel.file("xl/_rels/workbook.xml.rels",builder.buildObject(this.workbookxml_rels));
+            //workbook.xml
+            this.excel.file("xl/workbook.xml",builder.buildObject(this.workbookxml));
+            //sheet_xmls
+            _.each(this.sheet_xmls, (sheet)=>{
+                if(sheet.name){
+                    var sheet_obj = {};
+                    sheet_obj.worksheet = {};
+                    _.extend(sheet_obj.worksheet, sheet.worksheet);
+                    this.excel.file('xl/worksheets/'+sheet.name, builder.buildObject(sheet_obj));
+                }
+            });
+            //sheet_xmls_rels
+            let str_template_sheet_rels = builder.buildObject(this.template_sheet_rels_data);
+            _.each(this.sheet_xmls, (sheet)=>{
+                if(sheet.name){
+                    this.excel.file('xl/worksheets/_rels/'+sheet.name+'.rels', str_template_sheet_rels);
+                }
+            });
+            //call JSZip#generate()
+            return this.excel.generate(option);
+        })
+
     }
 
 
@@ -271,9 +279,9 @@ class SpreadSheet{
      * * @returns {Object} rendered MS-Excel data. data-format is determined by jszip_option
      * * @private
      **/
-    _simple_render(bind_data, option){
+    _simple_render(bind_data, option=output_buffer){
         return this.excel
-            .file('xl/sharedStrings.xml', Mustache.render(this.sharedstrings_str, bind_data))
+            .file('xl/sharedStrings.xml', Mustache.render(this.excel.file('xl/sharedStrings.xml').asText(), bind_data))
             .generate(option);
     }
 
@@ -285,9 +293,8 @@ class SpreadSheet{
     _parse_common_string_with_variable(){
 
         let common_strings_with_variable = [];
-
         _.each(this.sharedstrings,(string_obj, index)=>{
-            if(_(_(string_obj.t).string_value()).has_variable()){
+            if(_(string_obj.t).string_value() && _(_(string_obj.t).string_value()).has_variable()){
                 string_obj.shared_index = index;
                 common_strings_with_variable.push(string_obj);
             }
@@ -375,7 +382,11 @@ class SpreadSheet{
      * * @private
      **/
     _sheet_by_name(sheetname){
-        let sheetid = _.find(this.workbookxml.workbook.sheets[0].sheet, (e)=> (e['$'].name === sheetname))['$']['r:id'];
+        let target_sheet = _.find(this.workbookxml.workbook.sheets[0].sheet, (e)=> (e['$'].name === sheetname));
+        if(!target_sheet){
+            return null;
+        }
+        let sheetid = target_sheet['$']['r:id'];
         let target_file_path = _.max(this.workbookxml_rels.Relationships.Relationship, (e)=>(e['$'].Id === sheetid))['$'].Target;
         let target_file_name = target_file_path.split('/')[target_file_path.split('/').length-1];
         let sheet_xml = _.find(this.sheet_xmls, (e)=>(e.name === target_file_name));
@@ -414,6 +425,17 @@ class SpreadSheet{
      **/
     _sheet_names(){
         return _.map(this.sheet_xmls, (e)=>e.name);
+    }
+
+    /**
+     * * _clean_shared_strings
+     * * @return {Array} shared strings
+     * * @private
+     **/
+    _clean_shared_strings(){
+        return _.map(this.sharedstrings, (e)=>{
+            return {t:e.t, phoneticPr:e.phoneticPr}
+        });
     }
 
 

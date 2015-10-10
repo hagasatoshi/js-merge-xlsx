@@ -7,21 +7,18 @@
 
 'use strict';
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+var test_spreadsheet = require('./test_cases/test_spreadsheet');
 
-var _assert = require('assert');
+/** test for spreadsheet */
+describe('Test for spreadsheet : ', function () {
 
-var _assert2 = _interopRequireDefault(_assert);
+    it('load() with no parameter should return error', test_spreadsheet.check_load_with_no_parameter_should_return_error);
 
-var _excelmerge = require('../excelmerge');
+    it('load each member from valid template', test_spreadsheet.check_load_each_member_from_valid_template);
 
-var _excelmerge2 = _interopRequireDefault(_excelmerge);
+    it('load() should return this instance', test_spreadsheet.check_load_should_return_this_instance);
 
-describe('sampleTest', function () {
-    describe('sample', function () {
-        it('this is sample src_test', function () {
-            var merge = new _excelmerge2['default']('1');
-            _assert2['default'].equal(merge.excel, '1');
-        });
-    });
+    it('load() with invalid sheetname should return error', test_spreadsheet.check_load_with_invalid_sheetname_should_return_error);
+
+    it('check if simple_render() renders correctly', test_spreadsheet.check_if_simple_render_renders_correctly);
 });
