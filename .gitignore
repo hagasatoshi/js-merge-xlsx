@@ -6,3 +6,4 @@ build
 .env
 wrk
 wrk2
+test/output

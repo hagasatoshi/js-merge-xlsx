@@ -87,6 +87,9 @@ class SpreadSheet{
      * * @returns {Promise|Object} rendered MS-Excel data. data-format is determined by jszip_option
      **/
     simple_render(bind_data){
+        if(!bind_data){
+            return Promise.reject('simple_render() must has parameter');
+        }
         return Promise.resolve().then(()=>this._simple_render(bind_data, output_buffer));
     }
 
@@ -97,6 +100,12 @@ class SpreadSheet{
      **/
     bulk_render_multi_file(bind_data_array){
 
+        if(!_.isArray(bind_data_array)){
+            return Promise.reject('bulk_render_multi_file() has only array object');
+        }
+        if(_.find(bind_data_array,(e)=>!(e.name && e.data))){
+            return Promise.reject('bulk_render_multi_file() is called with invalid parameter');
+        }
         var all_excels = new JSZip();
         _.each(bind_data_array, (bind_data)=>{
             all_excels.file(bind_data.name, this._simple_render(bind_data.data, jszip_buffer));
@@ -111,6 +120,10 @@ class SpreadSheet{
      * * @return {Object} this instance for chaining
      **/
     add_sheet_binding_data(dest_sheet_name, data){
+        if((!dest_sheet_name) || !(data)){
+            return Promise.reject('add_sheet_binding_data() needs to have 2 paramter.');
+        }
+
         //1.add relation of next sheet
         let next_id = this._available_sheetid();
         this.workbookxml_rels.Relationships.Relationship.push(
@@ -156,7 +169,13 @@ class SpreadSheet{
      * * @return {Object} this instance for chaining
      **/
     activate_sheet(sheetname){
+        if(!sheetname){
+            return Promise.reject('activate_sheet() needs to have 1 paramter.');
+        }
         let target_sheet_name = this._sheet_by_name(sheetname);
+        if(!target_sheet_name){
+            return Promise.reject("Invalid sheet name '" + sheetname + "'.");
+        }
         _.each(this.sheet_xmls, (sheet)=>{
             if(sheet.worksheet && (sheet.name === target_sheet_name.value.worksheet.name)){
                 sheet.worksheet.sheetViews[0].sheetView[0]['$'].tabSelected = '1';
@@ -205,7 +224,13 @@ class SpreadSheet{
      * * @return {Object} this instance for chaining
      **/
     delete_sheet(sheetname){
+        if(!sheetname){
+            return Promise.reject('delete_sheet() needs to have 1 paramter.');
+        }
         let target_sheet = this._sheet_by_name(sheetname);
+        if(!target_sheet){
+            return Promise.reject("Invalid sheet name '" + sheetname + "'.");
+        }
         _.each(this.workbookxml_rels.Relationships.Relationship, (sheet,index)=>{
             if(sheet && (sheet['$'].Target === target_sheet.path)) {
                 this.workbookxml_rels.Relationships.Relationship.splice(index,1);
@@ -438,7 +463,14 @@ class SpreadSheet{
         });
     }
 
-
+    /**
+     * * has_as_shared_string
+     * * @return {boolean}
+     * * @private
+     **/
+    has_as_shared_string(){
+        return (this.excel.file('xl/sharedStrings.xml').asText().indexOf('hoge account') !== -1)
+    }
 }
 
 //Exports
