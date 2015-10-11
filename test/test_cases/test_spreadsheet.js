@@ -26,6 +26,7 @@ module.exports = {
             assert.equal(err, 'First parameter must be JSZip instance including MS-Excel data');
         });
     },
+
     check_load_should_return_this_instance: function check_load_should_return_this_instance() {
         var spreadsheet = new SpreadSheet();
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (valid_template) {
@@ -34,6 +35,7 @@ module.exports = {
             assert(spreadsheet instanceof SpreadSheet, 'SpreadSheet#load() should return this instance');
         });
     },
+
     check_load_each_member_from_valid_template: function check_load_each_member_from_valid_template() {
         var spreadsheet = new SpreadSheet();
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (valid_template) {
@@ -56,6 +58,7 @@ module.exports = {
             });
         });
     },
+
     simple_render_with_no_parameter_should_return_error: function simple_render_with_no_parameter_should_return_error() {
         var spreadsheet = new SpreadSheet();
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (valid_template) {
@@ -68,6 +71,7 @@ module.exports = {
             assert.equal(err, 'simple_render() must has parameter');
         });
     },
+
     check_if_simple_render_renders_correctly: function check_if_simple_render_renders_correctly() {
         var spreadsheet = new SpreadSheet();
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (valid_template) {
@@ -83,6 +87,7 @@ module.exports = {
             assert(test_spreadsheet.has_as_shared_string('hoge street'), "'hoge street' is not rendered by SpreadSheet#simple_render()");
         });
     },
+
     bulk_render_multi_file_no_parameter_should_return_error: function bulk_render_multi_file_no_parameter_should_return_error() {
         var spreadsheet = new SpreadSheet();
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (valid_template) {
@@ -95,6 +100,7 @@ module.exports = {
             assert.equal(err, 'bulk_render_multi_file() has only array object');
         });
     },
+
     bulk_render_multi_file_must_have_array_as_parameter: function bulk_render_multi_file_must_have_array_as_parameter() {
         var spreadsheet = new SpreadSheet();
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (valid_template) {
@@ -107,6 +113,7 @@ module.exports = {
             assert.equal(err, 'bulk_render_multi_file() has only array object');
         });
     },
+
     bulk_render_multi_file_must_have_name_and_data: function bulk_render_multi_file_must_have_name_and_data() {
         var spreadsheet = new SpreadSheet();
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (valid_template) {
@@ -119,6 +126,7 @@ module.exports = {
             assert.equal(err, 'bulk_render_multi_file() is called with invalid parameter');
         });
     },
+
     check_if_bulk_render_multi_file_renders_correctly: function check_if_bulk_render_multi_file_renders_correctly() {
         var spreadsheet = new SpreadSheet();
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (valid_template) {
@@ -150,6 +158,7 @@ module.exports = {
             });
         });
     },
+
     add_sheet_binding_data_with_no_parameter_should_return_error: function add_sheet_binding_data_with_no_parameter_should_return_error() {
         var spreadsheet = new SpreadSheet();
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (valid_template) {
@@ -162,6 +171,7 @@ module.exports = {
             assert.equal(err, 'add_sheet_binding_data() needs to have 2 paramter.');
         });
     },
+
     add_sheet_binding_data_with_1_parameter_should_return_error: function add_sheet_binding_data_with_1_parameter_should_return_error() {
         var spreadsheet = new SpreadSheet();
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (valid_template) {
@@ -174,6 +184,7 @@ module.exports = {
             assert.equal(err, 'add_sheet_binding_data() needs to have 2 paramter.');
         });
     },
+
     activate_sheet_with_no_parameter_should_return_error: function activate_sheet_with_no_parameter_should_return_error() {
         var spreadsheet = new SpreadSheet();
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (valid_template) {
@@ -186,6 +197,7 @@ module.exports = {
             assert.equal(err, 'activate_sheet() needs to have 1 paramter.');
         });
     },
+
     activate_sheet_with_invalid_sheetname_should_return_error: function activate_sheet_with_invalid_sheetname_should_return_error() {
         var spreadsheet = new SpreadSheet();
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (valid_template) {
@@ -198,6 +210,7 @@ module.exports = {
             assert.equal(err, "Invalid sheet name 'hoge'.");
         });
     },
+
     delete_sheet_with_no_parameter_should_return_error: function delete_sheet_with_no_parameter_should_return_error() {
         var spreadsheet = new SpreadSheet();
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (valid_template) {
@@ -210,6 +223,7 @@ module.exports = {
             assert.equal(err, 'delete_sheet() needs to have 1 paramter.');
         });
     },
+
     delete_sheet_with_invalid_sheetname_should_return_error: function delete_sheet_with_invalid_sheetname_should_return_error() {
         var spreadsheet = new SpreadSheet();
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (valid_template) {

@@ -232,9 +232,9 @@ class SpreadSheet{
             sharedstrings_obj.sst.si = this._clean_shared_strings();
             sharedstrings_obj.sst['$'].count = sharedstrings_obj.sst['$'].uniqueCount = this.sharedstrings.length;
             this.excel
-            .file('xl/sharedStrings.xml', builder.buildObject(sharedstrings_obj))
-            .file("xl/_rels/workbook.xml.rels",builder.buildObject(this.workbookxml_rels))
-            .file("xl/workbook.xml",builder.buildObject(this.workbookxml));
+                .file('xl/sharedStrings.xml', builder.buildObject(sharedstrings_obj))
+                .file("xl/_rels/workbook.xml.rels",builder.buildObject(this.workbookxml_rels))
+                .file("xl/workbook.xml",builder.buildObject(this.workbookxml));
 
             //sheet_xmls
             _.each(this.sheet_xmls, (sheet)=>{
@@ -292,7 +292,7 @@ class SpreadSheet{
             _.each(this.template_sheet_data,(row)=>{
                 _.each(row.c,(cell)=>{
                     if(cell['$'].t === 's'){
-                        if(common_string_with_variable.shared_index === parseInt(cell.v[0])){
+                        if(common_string_with_variable.shared_index === (cell.v[0] >> 0)){
                             common_string_with_variable.using_cells.push(cell['$'].r);
                         }
                     }
@@ -359,7 +359,7 @@ class SpreadSheet{
      **/
     _available_sheetid(){
         let max_rel = _.max(this.workbookxml_rels.Relationships.Relationship, (e)=> Number(e['$'].Id.replace('rId','')));
-        let next_id = 'rId' + ('00' + (parseInt((max_rel['$'].Id.replace('rId','')))+parseInt(1))).slice(-3);
+        let next_id = 'rId' + ('00' + (((max_rel['$'].Id.replace('rId','') >> 0))+1)).slice(-3);
         return next_id;
     }
 
