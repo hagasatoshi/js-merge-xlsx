@@ -37,17 +37,6 @@ test_cases.check_load_should_return_this_instance = function () {
     });
 };
 
-test_cases.check_load_with_invalid_sheetname_should_return_error = function () {
-    var spreadsheet = new SpreadSheet();
-    return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (valid_template) {
-        return spreadsheet.load(new JSZip(valid_template), { sheetname: 'hogehoge' });
-    }).then(function (spreadsheet) {
-        throw new Error('check_load_with_invalid_sheetname_should_throw_error failed ');
-    })['catch'](function (err) {
-        assert(err === "sheetname is invalid. Please check if sheet'hogehoge' exists in tempalte file");
-    });
-};
-
 test_cases.check_load_each_member_from_valid_template = function () {
     var spreadsheet = new SpreadSheet();
     return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (valid_template) {
