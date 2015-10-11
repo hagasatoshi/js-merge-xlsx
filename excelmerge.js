@@ -1,5 +1,6 @@
 /**
  * * ExcelMerge
+ * * top level api class for js-merge-xlsx
  * * @author Satoshi Haga
  * * @date 2015/09/30
  **/
