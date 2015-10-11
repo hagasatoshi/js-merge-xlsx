@@ -16,6 +16,7 @@ import xml2js from 'xml2js'
 var parseString = Promise.promisify(xml2js.parseString);
 var builder = new xml2js.Builder();
 
+var OPEN_XML_SCHEMA_DEFINITION = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet';
 
 class SpreadSheet{
 
@@ -38,7 +39,7 @@ class SpreadSheet{
      * * @param {Object} option option parameter
      * * @return {Promise|Object} Promise instance including this
      **/
-    load(excel, option){
+    load(excel){
 
         if(!(excel instanceof JSZip)){
             return Promise.reject('First parameter must be JSZip instance including MS-Excel data');
@@ -61,18 +62,8 @@ class SpreadSheet{
             this.workbookxml = templates.workbookxml;
             this.sheet_xmls = templates.sheet_xmls;
             this.sheet_xmls_rels = templates.sheet_xmls_rels;
-
-            if(option && option.sheetname){
-                let target_sheet = this._sheet_by_name(option.sheetname);
-                if(!target_sheet){
-                    return Promise.reject("sheetname is invalid. Please check if sheet'" + option.sheetname + "' exists in tempalte file");
-                }
-                this.template_sheet_name = option.sheetname;
-                this.template_sheet_data = target_sheet.worksheet.sheetData[0].row;
-            }else{
-                this.template_sheet_name = this.workbookxml.workbook.sheets[0].sheet[0]['$'].name;
-                this.template_sheet_data = _.find(templates.sheet_xmls,(e)=>(e.name.indexOf('.rels') === -1)).worksheet.sheetData[0].row;
-            }
+            this.template_sheet_name = this.workbookxml.workbook.sheets[0].sheet[0]['$'].name;
+            this.template_sheet_data = _.find(templates.sheet_xmls,(e)=>(e.name.indexOf('.rels') === -1)).worksheet.sheetData[0].row;
             this.template_sheet_rels_data = _(this._template_sheet_rels()).deep_copy();
             this.common_strings_with_variable = this._parse_common_string_with_variable();
 
@@ -126,22 +117,13 @@ class SpreadSheet{
 
         //1.add relation of next sheet
         let next_id = this._available_sheetid();
-        this.workbookxml_rels.Relationships.Relationship.push(
-            { '$':
-            { Id: next_id,
-                Type: 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet',
-                Target: 'worksheets/sheet'+next_id+'.xml'
-            }
-            }
-        );
+        this.workbookxml_rels.Relationships.Relationship.push({ '$': { Id: next_id, Type: OPEN_XML_SCHEMA_DEFINITION, Target: 'worksheets/sheet'+next_id+'.xml'}});
         this.workbookxml.workbook.sheets[0].sheet.push({ '$': { name: dest_sheet_name, sheetId: next_id.replace('rId',''), 'r:id': next_id } });
 
         //2.add sheet file.
         //2-1.prepare rendered-strings
         let rendered_strings = _(this.common_strings_with_variable).deep_copy();
-        _.each(rendered_strings,(e)=>{
-            e.t[0] = Mustache.render(_(e.t).string_value(), data);
-        });
+        _.each(rendered_strings,(e)=>e.t[0] = Mustache.render(_(e.t).string_value(), data));
 
         //2-2.add rendered-string into sharedstrings
         let current_count = this.sharedstrings.length;
@@ -177,21 +159,10 @@ class SpreadSheet{
             return Promise.reject("Invalid sheet name '" + sheetname + "'.");
         }
         _.each(this.sheet_xmls, (sheet)=>{
-            if(sheet.worksheet && (sheet.name === target_sheet_name.value.worksheet.name)){
-                sheet.worksheet.sheetViews[0].sheetView[0]['$'].tabSelected = '1';
-            }else if(sheet.worksheet){
-                sheet.worksheet.sheetViews[0].sheetView[0]['$'].tabSelected = '0';
-            }
+            if(!sheet.worksheet) return;
+            sheet.worksheet.sheetViews[0].sheetView[0]['$'].tabSelected = (sheet.name === target_sheet_name.value.worksheet.name) ? '1' : '0';
         });
         return this;
-    }
-
-    /**
-     * * _first_sheet_name
-     * * @return {String} name of first-sheet of MS-Excel file
-     **/
-    _first_sheet_name(){
-        return this.workbookxml.workbook.sheets[0].sheet[0]['$'].name;
     }
 
     /**
@@ -200,22 +171,6 @@ class SpreadSheet{
      **/
     forcus_on_first_sheet(){
         return this.activate_sheet(this._first_sheet_name());
-    }
-
-    /**
-     * * active_sheets
-     * * @return {Array} array including only active sheets.
-     **/
-    _active_sheets(){
-        return _.filter(this.sheet_xmls, (sheet)=>(sheet.worksheet.sheetViews[0].sheetView[0]['$'].tabSelected === '1'));
-    }
-
-    /**
-     * * deactive_sheets
-     * * @return {Array} array including only deactive sheets.
-     **/
-    _deactive_sheets(){
-        return _.filter(this.sheet_xmls, (sheet)=>(sheet.worksheet.sheetViews[0].sheetView[0]['$'].tabSelected === '0'));
     }
 
     /**
@@ -258,6 +213,15 @@ class SpreadSheet{
     }
 
     /**
+     * * has_as_shared_string
+     * * @param {String} target_str
+     * * @return {boolean}
+     **/
+    has_as_shared_string(target_str){
+        return (this.excel.file('xl/sharedStrings.xml').asText().indexOf(target_str) !== -1)
+    }
+
+    /**
      * * generate
      * * call JSZip#generate() binding current data
      * * @param {Object} option option for JsZip#genereate()
@@ -269,11 +233,10 @@ class SpreadSheet{
         .then((sharedstrings_obj)=>{
             sharedstrings_obj.sst.si = this._clean_shared_strings();
             sharedstrings_obj.sst['$'].count = sharedstrings_obj.sst['$'].uniqueCount = this.sharedstrings.length;
-            this.excel.file('xl/sharedStrings.xml', builder.buildObject(sharedstrings_obj));
-            //workbook.xml.rels
-            this.excel.file("xl/_rels/workbook.xml.rels",builder.buildObject(this.workbookxml_rels));
-            //workbook.xml
-            this.excel.file("xl/workbook.xml",builder.buildObject(this.workbookxml));
+            this.excel
+            .file('xl/sharedStrings.xml', builder.buildObject(sharedstrings_obj))
+            .file("xl/_rels/workbook.xml.rels",builder.buildObject(this.workbookxml_rels))
+            .file("xl/workbook.xml",builder.buildObject(this.workbookxml));
             //sheet_xmls
             _.each(this.sheet_xmls, (sheet)=>{
                 if(sheet.name){
@@ -464,12 +427,30 @@ class SpreadSheet{
     }
 
     /**
-     * * has_as_shared_string
-     * * @return {boolean}
+     * * _first_sheet_name
+     * * @return {String} name of first-sheet of MS-Excel file
      * * @private
      **/
-    has_as_shared_string(){
-        return (this.excel.file('xl/sharedStrings.xml').asText().indexOf('hoge account') !== -1)
+    _first_sheet_name(){
+        return this.workbookxml.workbook.sheets[0].sheet[0]['$'].name;
+    }
+
+    /**
+     * * active_sheets
+     * * @return {Array} array including only active sheets.
+     * * @private
+     **/
+    _active_sheets(){
+        return _.filter(this.sheet_xmls, (sheet)=>(sheet.worksheet.sheetViews[0].sheetView[0]['$'].tabSelected === '1'));
+    }
+
+    /**
+     * * deactive_sheets
+     * * @return {Array} array including only deactive sheets.
+     * * @private
+     **/
+    _deactive_sheets(){
+        return _.filter(this.sheet_xmls, (sheet)=>(sheet.worksheet.sheetViews[0].sheetView[0]['$'].tabSelected === '0'));
     }
 }
 

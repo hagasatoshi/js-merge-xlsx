@@ -19,7 +19,7 @@ var EXCEL_OUTPUT_TYPE = {
 describe('Test for spreadsheet.js : ',  ()=>{
     /* test for validation */
     it('validation / load() / no parameter / error', test_spreadsheet.check_load_with_no_parameter_should_return_error);
-    it('validation / load() / invalid sheetname / error', test_spreadsheet.check_load_with_invalid_sheetname_should_return_error);
+    //it('validation / load() / invalid sheetname / error', test_spreadsheet.check_load_with_invalid_sheetname_should_return_error);
     it('validation / simple_render() / no parameter / error', test_spreadsheet.simple_render_with_no_parameter_should_return_error);
     it('validation / bulk_render_multi_file() / no parameter / error', test_spreadsheet.bulk_render_multi_file_no_parameter_should_return_error);
     it('validation / bulk_render_multi_file() / object / error', test_spreadsheet.bulk_render_multi_file_must_have_array_as_parameter);

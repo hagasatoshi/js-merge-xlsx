@@ -155,8 +155,8 @@ test_cases.check_if_bulk_render_multi_file_renders_correctly = function () {
         var spreadsheet_excel3 = new SpreadSheet();
         return Promise.props({
             spreadsheet_excel1: spreadsheet_excel1.load(new JSZip(excel1)),
-            spreadsheet_excel2: spreadsheet_excel1.load(new JSZip(excel2)),
-            spreadsheet_excel3: spreadsheet_excel1.load(new JSZip(excel3))
+            spreadsheet_excel2: spreadsheet_excel2.load(new JSZip(excel2)),
+            spreadsheet_excel3: spreadsheet_excel3.load(new JSZip(excel3))
         }).then(function (result) {
             var spreadsheet_excel1 = result.spreadsheet_excel1;
             var spreadsheet_excel2 = result.spreadsheet_excel2;

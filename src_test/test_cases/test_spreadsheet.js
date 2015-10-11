@@ -171,8 +171,8 @@ test_cases.check_if_bulk_render_multi_file_renders_correctly = ()=>{
             let spreadsheet_excel3 = new SpreadSheet();
             return Promise.props({
                 spreadsheet_excel1: spreadsheet_excel1.load(new JSZip(excel1)),
-                spreadsheet_excel2: spreadsheet_excel1.load(new JSZip(excel2)),
-                spreadsheet_excel3: spreadsheet_excel1.load(new JSZip(excel3))
+                spreadsheet_excel2: spreadsheet_excel2.load(new JSZip(excel2)),
+                spreadsheet_excel3: spreadsheet_excel3.load(new JSZip(excel3))
             }).then((result)=>{
                 let spreadsheet_excel1 = result.spreadsheet_excel1;
                 let spreadsheet_excel2 = result.spreadsheet_excel2;
