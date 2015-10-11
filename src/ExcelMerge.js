@@ -5,18 +5,15 @@
  * * @date 2015/09/30
  **/
 
-import Mustache from 'mustache'
-import Promise from 'bluebird'
-import _ from 'underscore'
-import JSZip from 'jszip'
-import SpreadSheet from './lib/spreadsheet'
-import isNode from 'detect-node'
+var Mustache = require('mustache');
+var Promise = require('bluebird');
+var _ = require('underscore');
+var JSZip = require('jszip');
+var SpreadSheet = require('./lib/spreadsheet');
+var isNode = require('detect-node');
 const output_buffer = {type: (isNode?'nodebuffer':'blob'), compression:"DEFLATE"};
 
 class ExcelMerge{
-
-    /** member variables */
-    //spreadsheet : {Object} SpreadSheet instance
 
     /**
      * * constructor
@@ -62,12 +59,11 @@ class ExcelMerge{
      **/
     bulk_render_multi_sheet(bind_data_array){
         return bind_data_array.reduce(
-            (promise, bind_data)=>
+            (promise, {name, data})=>
                 promise.then((prior)=>{
-                    return this.spreadsheet.add_sheet_binding_data(bind_data.name,bind_data.data);
+                    return this.spreadsheet.add_sheet_binding_data(name,data);
                 })
-            ,
-            Promise.resolve()
+            , Promise.resolve()
         ).then(()=>{
             return this.spreadsheet.delete_template_sheet()
                 .forcus_on_first_sheet()

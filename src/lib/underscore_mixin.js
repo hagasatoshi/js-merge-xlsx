@@ -5,8 +5,8 @@
  * * @date 2015/10/03
  **/
 
-import _ from 'underscore'
-import Mustache from 'mustache'
+var _ = require('underscore');
+var Mustache = require('mustache');
 
 _.mixin({
     /**

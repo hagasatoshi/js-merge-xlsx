@@ -9,40 +9,17 @@
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
-var _mustache = require('mustache');
-
-var _mustache2 = _interopRequireDefault(_mustache);
-
-var _bluebird = require('bluebird');
-
-var _bluebird2 = _interopRequireDefault(_bluebird);
-
-var _underscore = require('underscore');
-
-var _underscore2 = _interopRequireDefault(_underscore);
-
-var _jszip = require('jszip');
-
-var _jszip2 = _interopRequireDefault(_jszip);
-
-var _libSpreadsheet = require('./lib/spreadsheet');
-
-var _libSpreadsheet2 = _interopRequireDefault(_libSpreadsheet);
-
-var _detectNode = require('detect-node');
-
-var _detectNode2 = _interopRequireDefault(_detectNode);
-
-var output_buffer = { type: _detectNode2['default'] ? 'nodebuffer' : 'blob', compression: "DEFLATE" };
+var Mustache = require('mustache');
+var Promise = require('bluebird');
+var _ = require('underscore');
+var JSZip = require('jszip');
+var SpreadSheet = require('./lib/spreadsheet');
+var isNode = require('detect-node');
+var output_buffer = { type: isNode ? 'nodebuffer' : 'blob', compression: "DEFLATE" };
 
 var ExcelMerge = (function () {
-
-    /** member variables */
-    //spreadsheet : {Object} SpreadSheet instance
 
     /**
      * * constructor
@@ -52,7 +29,7 @@ var ExcelMerge = (function () {
     function ExcelMerge() {
         _classCallCheck(this, ExcelMerge);
 
-        this.spreadsheet = new _libSpreadsheet2['default']();
+        this.spreadsheet = new SpreadSheet();
     }
 
     //Exports
@@ -107,15 +84,17 @@ var ExcelMerge = (function () {
         value: function bulk_render_multi_sheet(bind_data_array) {
             var _this2 = this;
 
-            return bind_data_array.reduce(function (promise, bind_data) {
+            return bind_data_array.reduce(function (promise, _ref) {
+                var name = _ref.name;
+                var data = _ref.data;
                 return promise.then(function (prior) {
-                    return _this2.spreadsheet.add_sheet_binding_data(bind_data.name, bind_data.data);
+                    return _this2.spreadsheet.add_sheet_binding_data(name, data);
                 });
-            }, _bluebird2['default'].resolve()).then(function () {
+            }, Promise.resolve()).then(function () {
                 return _this2.spreadsheet.delete_template_sheet().forcus_on_first_sheet().generate(output_buffer);
             })['catch'](function (err) {
                 console.error(new Error(err).stack);
-                _bluebird2['default'].reject();
+                Promise.reject();
             });
         }
     }]);
