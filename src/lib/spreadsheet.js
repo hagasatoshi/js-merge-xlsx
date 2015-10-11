@@ -156,7 +156,7 @@ class SpreadSheet{
         }
         let target_sheet_name = this._sheet_by_name(sheetname);
         if(!target_sheet_name){
-            return Promise.reject("Invalid sheet name '" + sheetname + "'.");
+            return Promise.reject(`Invalid sheet name '${sheetname}'.`);
         }
         _.each(this.sheet_xmls, (sheet)=>{
             if(!sheet.worksheet) return;
@@ -184,7 +184,7 @@ class SpreadSheet{
         }
         let target_sheet = this._sheet_by_name(sheetname);
         if(!target_sheet){
-            return Promise.reject("Invalid sheet name '" + sheetname + "'.");
+            return Promise.reject(`Invalid sheet name '${sheetname}'.`);
         }
         _.each(this.workbookxml_rels.Relationships.Relationship, (sheet,index)=>{
             if(sheet && (sheet['$'].Target === target_sheet.path)) {
@@ -243,14 +243,14 @@ class SpreadSheet{
                     var sheet_obj = {};
                     sheet_obj.worksheet = {};
                     _.extend(sheet_obj.worksheet, sheet.worksheet);
-                    this.excel.file('xl/worksheets/'+sheet.name, builder.buildObject(sheet_obj));
+                    this.excel.file(`xl/worksheets/${sheet.name}`, builder.buildObject(sheet_obj));
                 }
             });
             //sheet_xmls_rels
             let str_template_sheet_rels = builder.buildObject(this.template_sheet_rels_data);
             _.each(this.sheet_xmls, (sheet)=>{
                 if(sheet.name){
-                    this.excel.file('xl/worksheets/_rels/'+sheet.name+'.rels', str_template_sheet_rels);
+                    this.excel.file(`xl/worksheets/_rels/${sheet.name}.rels`, str_template_sheet_rels);
                 }
             });
             //call JSZip#generate()
@@ -371,9 +371,8 @@ class SpreadSheet{
      **/
     _sheet_by_name(sheetname){
         let target_sheet = _.find(this.workbookxml.workbook.sheets[0].sheet, (e)=> (e['$'].name === sheetname));
-        if(!target_sheet){
-            return null;
-        }
+        if(!target_sheet) return null;  //invalid sheet name
+
         let sheetid = target_sheet['$']['r:id'];
         let target_file_path = _.max(this.workbookxml_rels.Relationships.Relationship, (e)=>(e['$'].Id === sheetid))['$'].Target;
         let target_file_name = target_file_path.split('/')[target_file_path.split('/').length-1];

@@ -8,8 +8,8 @@ var path = require('path');
 var cwd = path.resolve('');
 var assert = require('assert');
 var JSZip = require('jszip');
-var ExcelMerge = require(cwd+'/excelmerge');
-var SpreadSheet = require(cwd+'/lib/spreadsheet');
+var ExcelMerge = require(`${cwd}/excelmerge`);
+var SpreadSheet = require(`${cwd}/lib/spreadsheet`);
 require(cwd+'/lib/underscore_mixin');
 var Promise = require('bluebird');
 var readYamlAsync = Promise.promisify(require('read-yaml'));
@@ -25,10 +25,10 @@ var EXCEL_OUTPUT_TYPE = {
 class Utility{
 
     output(template_name, input_file_name, output_type, output_file_name){
-        return fs.readFileAsync(__dirname + '/../templates/'+template_name)
+        return fs.readFileAsync(`${__dirname}/../templates/${template_name}`)
         .then((excel_template)=>{
             return Promise.props({
-                rendering_data: readYamlAsync(__dirname + '/../input/'+input_file_name),     //Load single data
+                rendering_data: readYamlAsync(`${__dirname}/../input/${input_file_name}`),     //Load single data
                 merge: new ExcelMerge().load(new JSZip(excel_template)) //Initialize ExcelMerge object
             });
         }).then((result)=>{
@@ -43,18 +43,18 @@ class Utility{
             }else if(output_type === EXCEL_OUTPUT_TYPE.BULK_MULTIPLE_FILE){
                 rendering_data = [];
                 _.each(result.rendering_data, (data,index)=>{
-                    rendering_data.push({name:'file'+(index+1)+'.xlsx', data:data});
+                    rendering_data.push({name:`file${index+1}.xlsx`, data:data});
                 });
                 return merge.bulk_render_multi_file(rendering_data);
             }else if(output_type === EXCEL_OUTPUT_TYPE.BULK_MULTIPLE_SHEET){
                 rendering_data = [];
                 _.each(result.rendering_data, (data,index)=>{
-                    rendering_data.push({name:'example'+(index+1), data:data});
+                    rendering_data.push({name:`example${index+1}`, data:data});
                 });
                 return merge.bulk_render_multi_sheet(rendering_data);
             }
         }).then((output_data)=>{
-            return fs.writeFileAsync(__dirname + '/../output/'+output_file_name, output_data);
+            return fs.writeFileAsync(`${__dirname}/../output/${output_file_name}`, output_data);
         }).then(()=>{
             assert(true);
         }).catch((err)=>{
