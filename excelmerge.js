@@ -53,37 +53,37 @@ var ExcelMerge = (function () {
 
         /**
          * * render
-         * * @param {Object} bind_data binding data
+         * * @param {Object} bindData binding data
          * * @returns {Object} rendered MS-Excel data. data-format is determined by jszip_option
          **/
     }, {
         key: 'render',
-        value: function render(bind_data) {
-            return this.spreadsheet.simpleRender(bind_data);
+        value: function render(bindData) {
+            return this.spreadsheet.simpleRender(bindData);
         }
 
         /**
          * * bulkRenderMultiFile
-         * * @param {Array} bind_data_array including data{name: file's name, data: binding-data}
+         * * @param {Array} bindDataArray including data{name: file's name, data: binding-data}
          * * @returns {Object} rendered MS-Excel data.
          **/
     }, {
         key: 'bulkRenderMultiFile',
-        value: function bulkRenderMultiFile(bind_data_array) {
-            return this.spreadsheet.bulkRenderMultiFile(bind_data_array);
+        value: function bulkRenderMultiFile(bindDataArray) {
+            return this.spreadsheet.bulkRenderMultiFile(bindDataArray);
         }
 
         /**
          * * bulkRenderMultiSheet
-         * * @param {Array} bind_data_array including data{name: file's name, data: binding-data}
+         * * @param {Array} bindDataArray including data{name: file's name, data: binding-data}
          * * @returns {Object} rendered MS-Excel data. data-format is determined by jszip_option
          **/
     }, {
         key: 'bulkRenderMultiSheet',
-        value: function bulkRenderMultiSheet(bind_data_array) {
+        value: function bulkRenderMultiSheet(bindDataArray) {
             var _this2 = this;
 
-            return bind_data_array.reduce(function (promise, _ref) {
+            return bindDataArray.reduce(function (promise, _ref) {
                 var name = _ref.name;
                 var data = _ref.data;
                 return promise.then(function (prior) {

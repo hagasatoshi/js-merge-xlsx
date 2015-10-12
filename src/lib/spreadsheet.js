@@ -27,10 +27,10 @@ class SpreadSheet{
      * * sharedstrings {Array} includings common strings defined in sharedstrings.xml
      * * sharedstrings_obj {Object} whole sharedstrings object
      * * commonStringsWithVariable {Array} including common strings only having mustache variables
-     * * sheet_xmls {Array} including objects parsed from  'xl/worksheets/*.xml'
-     * * sheet_xmls_rels {Array} including objects pared from 'xl/worksheets/_rels/*.xml.rels'
-     * * template_sheet_data {Object} object parsed from 'xl/worksheets/*.xml'. this is used as template-file
-     * * template_sheet_name {String} sheet-name of template-file
+     * * sheetXmls {Array} including objects parsed from  'xl/worksheets/*.xml'
+     * * sheetXmlsRels {Array} including objects pared from 'xl/worksheets/_rels/*.xml.rels'
+     * * templateSheetData {Object} object parsed from 'xl/worksheets/*.xml'. this is used as template-file
+     * * templateSheetName {String} sheet-name of template-file
      * * workbookxmlRels {Object} parsed from 'xl/_rels/workbook.xml.rels'
      * * workbookxml {Object} parsed from 'xl/workbook.xml'
      * */
@@ -56,14 +56,14 @@ class SpreadSheet{
             workbookxml: parseString(this.excel.file('xl/workbook.xml').asText()),
             sheetXmls: this._parseDirInExcel('xl/worksheets'),
             sheetXmlsRels: this._parseDirInExcel('xl/worksheets/_rels')
-        }).then((templates)=>{
-            this.sharedstrings = templates.sharedstringsObj.sst.si;
-            this.workbookxmlRels = templates.workbookxmlRels;
-            this.workbookxml = templates.workbookxml;
-            this.sheetXmls = templates.sheetXmls;
-            this.sheetXmlsRels = templates.sheetXmlsRels;
+        }).then(({sharedstringsObj, workbookxmlRels,workbookxml,sheetXmls,sheetXmlsRels})=>{
+            this.sharedstrings = sharedstringsObj.sst.si;
+            this.workbookxmlRels = workbookxmlRels;
+            this.workbookxml = workbookxml;
+            this.sheetXmls = sheetXmls;
+            this.sheetXmlsRels = sheetXmlsRels;
             this.templateSheetName = this.workbookxml.workbook.sheets[0].sheet[0]['$'].name;
-            this.templateSheetData = _.find(templates.sheetXmls,(e)=>(e.name.indexOf('.rels') === -1)).worksheet.sheetData[0].row;
+            this.templateSheetData = _.find(sheetXmls,(e)=>(e.name.indexOf('.rels') === -1)).worksheet.sheetData[0].row;
             this.templateSheetRelsData = _(this._templateSheetRels()).deepCopy();
             this.commonStringsWithVariable = this._parseCommonStringWithVariable();
             //return this for chaining
@@ -177,19 +177,13 @@ class SpreadSheet{
         let targetSheet = this._sheetByName(sheetname);
         if(!targetSheet) return Promise.reject(`Invalid sheet name '${sheetname}'.`);
         _.each(this.workbookxmlRels.Relationships.Relationship, (sheet,index)=>{
-            if(sheet && (sheet['$'].Target === targetSheet.path)) {
-                this.workbookxmlRels.Relationships.Relationship.splice(index,1);
-            }
+            if(sheet && (sheet['$'].Target === targetSheet.path)) this.workbookxmlRels.Relationships.Relationship.splice(index,1);
         });
         _.each(this.workbookxml.workbook.sheets[0].sheet, (sheet,index)=>{
-            if(sheet && (sheet['$'].name === sheetname)){
-                this.workbookxml.workbook.sheets[0].sheet.splice(index,1);
-            }
+            if(sheet && (sheet['$'].name === sheetname))this.workbookxml.workbook.sheets[0].sheet.splice(index,1);
         });
         _.each(this.sheetXmls, (sheetXml,index)=>{
-            if(sheetXml && (sheetXml.name === targetSheet.value.name)){
-                this.sheetXmls.splice(index,1);
-            }
+            if(sheetXml && (sheetXml.name === targetSheet.value.name)) this.sheetXmls.splice(index,1);
         });
         return this;
     }
@@ -242,9 +236,7 @@ class SpreadSheet{
             //sheetXmlsRels
             let strTemplateSheetRels = builder.buildObject(this.templateSheetRelsData);
             _.each(this.sheetXmls, (sheet)=>{
-                if(sheet.name){
-                    this.excel.file(`xl/worksheets/_rels/${sheet.name}.rels`, strTemplateSheetRels);
-                }
+                if(sheet.name) this.excel.file(`xl/worksheets/_rels/${sheet.name}.rels`, strTemplateSheetRels);
             });
 
             //call JSZip#generate()
@@ -311,7 +303,7 @@ class SpreadSheet{
                     Promise.resolve()
                         .then(()=>parseString(this.excel.file(file.name).asText()))
                         .then((file_xml)=>{
-                            file_xml.name = file.name.split('/')[file.name.split('/').length-1];
+                            file_xml.name = _.last(file.name.split('/'));
                             fileXmls.push(file_xml);
                             return fileXmls;
                         })
@@ -368,10 +360,8 @@ class SpreadSheet{
 
         let sheetid = targetSheet['$']['r:id'];
         let targetFilePath = _.max(this.workbookxmlRels.Relationships.Relationship, (e)=>(e['$'].Id === sheetid))['$'].Target;
-        let targetFileName = targetFilePath.split('/')[targetFilePath.split('/').length-1];
-        let sheetXml = _.find(this.sheetXmls, (e)=>(e.name === targetFileName));
-        let sheet = {path: targetFilePath, value: sheetXml};
-        return sheet;
+        let targetFileName = _.last(targetFilePath.split('/'));
+        return {path: targetFilePath, value: _.find(this.sheetXmls, (e)=>(e.name === targetFileName))};
     }
 
     /**
@@ -382,10 +372,8 @@ class SpreadSheet{
      **/
     _sheetRelsByName(sheetname){
         let targetFilePath = this._sheetByName(sheetname).path;
-        let targetName = targetFilePath.split('/')[targetFilePath.split('/').length-1] + '.rels';
-        let sheetXmlRels = _.find(this.sheetXmlsRels, (e)=>(e.name === targetName));
-        let sheet = {name: targetName, value: sheetXmlRels};
-        return sheet;
+        let targetName = `${_.last(targetFilePath.split('/'))}.rels`;
+        return {name: targetName, value: _.find(this.sheetXmlsRels, e=>(e.name === targetName))};
     }
 
     /**
@@ -413,9 +401,7 @@ class SpreadSheet{
      * * @private
      **/
     _cleanSharedStrings(){
-        return _.map(this.sharedstrings, (e)=>{
-            return {t:e.t, phoneticPr:e.phoneticPr}
-        });
+        return _.map(this.sharedstrings, e => ({t:e.t, phoneticPr:e.phoneticPr}));
     }
 
     /**

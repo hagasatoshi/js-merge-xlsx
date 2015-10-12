@@ -23,11 +23,11 @@ describe('Test for spreadsheet.js : ', function () {
     /* test for validation */
     it('validation / load() / no parameter / error', test_spreadsheet.checkLoadWithNoParameterShouldReturnError);
     it('validation / simpleRender() / no parameter / error', test_spreadsheet.simpleRenderWithNoParameterShouldReturnError);
-    it('validation / bulkRender_multi_file() / no parameter / error', test_spreadsheet.bulkRenderMultiFileNoParameterShouldReturnError);
-    it('validation / bulkRender_multi_file() / object / error', test_spreadsheet.bulkRenderMultiFileMustHaveArrayAsParameter);
-    it('validation / bulkRender_multi_file() / object / error', test_spreadsheet.bulkRenderMultiFileMustHaveNameAndData);
-    it('validation / addSheet_binding_data() / no parameter / error', test_spreadsheet.addSheetBindingDataWithNoParameterShouldReturnError);
-    it('validation / addSheet_binding_data() / 1 parameter / error', test_spreadsheet.addSheetBindingDataWith1ParameterShouldReturnError);
+    it('validation / bulkRenderMultiFile() / no parameter / error', test_spreadsheet.bulkRenderMultiFileNoParameterShouldReturnError);
+    it('validation / bulkRenderMultiFile() / object / error', test_spreadsheet.bulkRenderMultiFileMustHaveArrayAsParameter);
+    it('validation / bulkRenderMultiFile() / object / error', test_spreadsheet.bulkRenderMultiFileMustHaveNameAndData);
+    it('validation / addSheetBindingData() / no parameter / error', test_spreadsheet.addSheetBindingDataWithNoParameterShouldReturnError);
+    it('validation / addSheetBindingData() / 1 parameter / error', test_spreadsheet.addSheetBindingDataWith1ParameterShouldReturnError);
     it('validation / activateSheet() / no parameter / error', test_spreadsheet.activateSheetWithNoParameterShouldReturnError);
     it('validation / activateSheet() / invalid sheetname / error', test_spreadsheet.activateSheetWithInvalidSheetnameShouldReturnError);
     it('validation / deleteSheet() / no parameter / error', test_spreadsheet.deleteSheetWithNoParameterShouldReturnError);

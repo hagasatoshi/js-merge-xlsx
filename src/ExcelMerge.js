@@ -35,29 +35,29 @@ class ExcelMerge{
 
     /**
      * * render
-     * * @param {Object} bind_data binding data
+     * * @param {Object} bindData binding data
      * * @returns {Object} rendered MS-Excel data. data-format is determined by jszip_option
      **/
-    render(bind_data){
-        return this.spreadsheet.simpleRender(bind_data);
+    render(bindData){
+        return this.spreadsheet.simpleRender(bindData);
     }
 
     /**
      * * bulkRenderMultiFile
-     * * @param {Array} bind_data_array including data{name: file's name, data: binding-data}
+     * * @param {Array} bindDataArray including data{name: file's name, data: binding-data}
      * * @returns {Object} rendered MS-Excel data.
      **/
-    bulkRenderMultiFile(bind_data_array){
-        return this.spreadsheet.bulkRenderMultiFile(bind_data_array);
+    bulkRenderMultiFile(bindDataArray){
+        return this.spreadsheet.bulkRenderMultiFile(bindDataArray);
     }
 
     /**
      * * bulkRenderMultiSheet
-     * * @param {Array} bind_data_array including data{name: file's name, data: binding-data}
+     * * @param {Array} bindDataArray including data{name: file's name, data: binding-data}
      * * @returns {Object} rendered MS-Excel data. data-format is determined by jszip_option
      **/
-    bulkRenderMultiSheet(bind_data_array){
-        return bind_data_array.reduce(
+    bulkRenderMultiSheet(bindDataArray){
+        return bindDataArray.reduce(
             (promise, {name, data})=>
                 promise.then((prior)=>{
                     return this.spreadsheet.addSheetBindingData(name,data);
