@@ -4,6 +4,9 @@
  * * @author Satoshi Haga
  * * @date 2015/10/03
  **/
+//FIXME xl/worksheets/sheet1.xml and xl/worksheets/_rels/sheet1.xml.rels are remaining. remove these files
+//FIXME count in sharedstring.xml is not correct. fix count.
+//FIXME change logic of SpreadSheet#addSheetBindingData(). this spec should be similar with specforce.
 var Mustache = require('mustache');
 var Promise = require('bluebird');
 var _ = require('underscore');
@@ -304,6 +307,10 @@ class SpreadSheet{
                         .then(()=>parseString(this.excel.file(file.name).asText()))
                         .then((file_xml)=>{
                             file_xml.name = _.last(file.name.split('/'));
+                            //TODO following if expression is temporary.
+                            if(file_xml.name.indexOf('rels') !== -1){
+                                return;
+                            }
                             fileXmls.push(file_xml);
                             return fileXmls;
                         })
@@ -401,7 +408,11 @@ class SpreadSheet{
      * * @private
      **/
     _cleanSharedStrings(){
-        return _.map(this.sharedstrings, e => ({t:e.t, phoneticPr:e.phoneticPr}));
+        _.each(this.sharedstrings, (e) =>{
+            delete e.sharedIndex;
+            delete e.usingCells;
+        });
+        return this.sharedstrings;
     }
 
     /**
