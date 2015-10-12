@@ -17,6 +17,7 @@ var EXCEL_OUTPUT_TYPE = {
 
 /** test for spreadsheet.js */
 describe('Test for spreadsheet.js : ',  ()=>{
+
     /* test for validation */
     it('validation / load() / no parameter / error', test_spreadsheet.checkLoadWithNoParameterShouldReturnError);
     it('validation / simpleRender() / no parameter / error', test_spreadsheet.simpleRenderWithNoParameterShouldReturnError);
@@ -29,6 +30,7 @@ describe('Test for spreadsheet.js : ',  ()=>{
     it('validation / activateSheet() / invalid sheetname / error', test_spreadsheet.activateSheetWithInvalidSheetnameShouldReturnError);
     it('validation / deleteSheet() / no parameter / error', test_spreadsheet.deleteSheetWithNoParameterShouldReturnError);
     it('validation / deleteSheet() / invalid sheetname / error', test_spreadsheet.deleteSheetWithInvalidSheetnameShouldReturnError);
+
     /* test for logic */
     it('logic / load() / load each member from valid template', test_spreadsheet.checkLoadEachMemberFromValidTemplate);
     it('logic / load() / should return this instance', test_spreadsheet.checkLoadShouldReturnThisInstance);
@@ -47,4 +49,3 @@ describe('output test : ',  ()=>{
     it('bulk / normaldata / Template.xlsx', ()=>util.output('Template.xlsx','bulk_normal_data.yml',EXCEL_OUTPUT_TYPE.BULK_MULTIPLE_FILE,'bulk_normaldata_temlate.zip'));
     it('bulk / normaldata / Template.xlsx', ()=>util.output('Template.xlsx','bulk_normal_data.yml',EXCEL_OUTPUT_TYPE.BULK_MULTIPLE_SHEET,'bulk_normaldata_temlate.xlsx'));
 });
-

@@ -19,8 +19,7 @@ var _ = require('underscore');
 
 module.exports = {
     checkLoadWithNoParameterShouldReturnError: function checkLoadWithNoParameterShouldReturnError() {
-        var spreadsheet = new SpreadSheet();
-        return spreadsheet.load().then(function () {
+        return new SpreadSheet().load().then(function () {
             throw new Error('test_load_with_no_parameter_should_return_error failed ');
         })['catch'](function (err) {
             assert.equal(err, 'First parameter must be JSZip instance including MS-Excel data');
@@ -28,31 +27,30 @@ module.exports = {
     },
 
     checkLoadShouldReturnThisInstance: function checkLoadShouldReturnThisInstance() {
-        var spreadsheet = new SpreadSheet();
-        return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (valid_template) {
-            return spreadsheet.load(new JSZip(valid_template));
+        return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (validTemplate) {
+            return new SpreadSheet().load(new JSZip(validTemplate));
         }).then(function (spreadsheet) {
             assert(spreadsheet instanceof SpreadSheet, 'SpreadSheet#load() should return this instance');
         });
     },
 
     checkLoadEachMemberFromValidTemplate: function checkLoadEachMemberFromValidTemplate() {
-        var spreadsheet = new SpreadSheet();
-        return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (valid_template) {
-            return spreadsheet.load(new JSZip(valid_template));
+        return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (validTemplate) {
+            return new SpreadSheet().load(new JSZip(validTemplate));
         }).then(function (spreadsheet) {
 
             //excel
             assert(spreadsheet.excel instanceof JSZip, 'SpreadSheet#excel is not assigned correctly');
+
             //check if each variables is parsed or not.
             var variables = ['AccountName__c', 'StartDateFormat__c', 'EndDateFormat__c', 'JobDescription__c', 'StartTime__c', 'EndTime__c', 'hasOverTime__c', 'HoliDayType__c', 'Salary__c', 'DueDate__c', 'SalaryDate__c', 'AccountName__c', 'AccountAddress__c'];
-            var chk_common_strings_with_variable = _.map(spreadsheet.common_strings_with_variable, function (e) {
-                return _(e.t).string_value();
+            var chkCommonStringsWithVariable = _.map(spreadsheet.commonStringsWithVariable, function (e) {
+                return _(e.t).stringValue();
             });
             _.each(variables, function (e) {
                 //variables
                 assert(_.contains(spreadsheet.variables, e), 'SpreadSheet#load() doesn\'t set up ' + e + ' as variable correctly');
-                assert(_.find(chk_common_strings_with_variable, function (v) {
+                assert(_.find(chkCommonStringsWithVariable, function (v) {
                     return v.indexOf('{{' + e + '}}') !== -1;
                 }), 'SpreadSheet#load() doesn\'t set up ' + e + ' as variable correctly');
             });
@@ -60,9 +58,8 @@ module.exports = {
     },
 
     simpleRenderWithNoParameterShouldReturnError: function simpleRenderWithNoParameterShouldReturnError() {
-        var spreadsheet = new SpreadSheet();
-        return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (valid_template) {
-            return spreadsheet.load(new JSZip(valid_template));
+        return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (validTemplate) {
+            return new SpreadSheet().load(new JSZip(validTemplate));
         }).then(function (spreadsheet) {
             return spreadsheet.simpleRender();
         }).then(function () {
@@ -73,25 +70,22 @@ module.exports = {
     },
 
     checkIfSimpleRenderRendersCorrectly: function checkIfSimpleRenderRendersCorrectly() {
-        var spreadsheet = new SpreadSheet();
-        return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (valid_template) {
-            return spreadsheet.load(new JSZip(valid_template));
+        return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (validTemplate) {
+            return new SpreadSheet().load(new JSZip(validTemplate));
         }).then(function (spreadsheet) {
             return spreadsheet.simpleRender({ AccountName__c: 'hoge account', AccountAddress__c: 'hoge street' });
-        }).then(function (excel_data) {
-            var test_spreadsheet = new SpreadSheet();
-            return test_spreadsheet.load(new JSZip(excel_data));
-        }).then(function (test_spreadsheet) {
-            assert(test_spreadsheet.variables.length === 0, "SpreadSheet#simpleRender() doesn't work correctly");
-            assert(test_spreadsheet.hasAsSharedString('hoge account'), "'hoge account' is not rendered by SpreadSheet#simpleRender()");
-            assert(test_spreadsheet.hasAsSharedString('hoge street'), "'hoge street' is not rendered by SpreadSheet#simpleRender()");
+        }).then(function (excelData) {
+            return new SpreadSheet().load(new JSZip(excelData));
+        }).then(function (spreadsheet) {
+            assert(spreadsheet.variables.length === 0, "SpreadSheet#simpleRender() doesn't work correctly");
+            assert(spreadsheet.hasAsSharedString('hoge account'), "'hoge account' is not rendered by SpreadSheet#simpleRender()");
+            assert(spreadsheet.hasAsSharedString('hoge street'), "'hoge street' is not rendered by SpreadSheet#simpleRender()");
         });
     },
 
     bulkRenderMultiFileNoParameterShouldReturnError: function bulkRenderMultiFileNoParameterShouldReturnError() {
-        var spreadsheet = new SpreadSheet();
-        return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (valid_template) {
-            return spreadsheet.load(new JSZip(valid_template));
+        return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (validTemplate) {
+            return new SpreadSheet().load(new JSZip(validTemplate));
         }).then(function (spreadsheet) {
             return spreadsheet.bulkRenderMultiFile();
         }).then(function () {
@@ -102,9 +96,8 @@ module.exports = {
     },
 
     bulkRenderMultiFileMustHaveArrayAsParameter: function bulkRenderMultiFileMustHaveArrayAsParameter() {
-        var spreadsheet = new SpreadSheet();
-        return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (valid_template) {
-            return spreadsheet.load(new JSZip(valid_template));
+        return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (validTemplate) {
+            return new SpreadSheet().load(new JSZip(validTemplate));
         }).then(function (spreadsheet) {
             return spreadsheet.bulkRenderMultiFile({ name: 'hogehoge' });
         }).then(function () {
@@ -115,9 +108,8 @@ module.exports = {
     },
 
     bulkRenderMultiFileMustHaveNameAndData: function bulkRenderMultiFileMustHaveNameAndData() {
-        var spreadsheet = new SpreadSheet();
-        return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (valid_template) {
-            return spreadsheet.load(new JSZip(valid_template));
+        return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (validTemplate) {
+            return new SpreadSheet().load(new JSZip(validTemplate));
         }).then(function (spreadsheet) {
             return spreadsheet.bulkRenderMultiFile([{ name: 'hogehoge' }]);
         }).then(function () {
@@ -128,45 +120,41 @@ module.exports = {
     },
 
     checkIfBulkRenderMultiFileRendersCorrectly: function checkIfBulkRenderMultiFileRendersCorrectly() {
-        var spreadsheet = new SpreadSheet();
-        return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (valid_template) {
-            return spreadsheet.load(new JSZip(valid_template));
+        return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (validTemplate) {
+            return new SpreadSheet().load(new JSZip(validTemplate));
         }).then(function (spreadsheet) {
             return spreadsheet.bulkRenderMultiFile([{ name: 'file1.xlsx', data: { AccountName__c: 'hoge account1', AccountAddress__c: 'hoge street1' } }, { name: 'file2.xlsx', data: { AccountName__c: 'hoge account2', AccountAddress__c: 'hoge street2' } }, { name: 'file3.xlsx', data: { AccountName__c: 'hoge account3', AccountAddress__c: 'hoge street3' } }]);
-        }).then(function (zip_data) {
-            var zip = new JSZip(zip_data);
+        }).then(function (zipData) {
+            var zip = new JSZip(zipData);
             var excel1 = zip.file('file1.xlsx').asArrayBuffer();
             var excel2 = zip.file('file2.xlsx').asArrayBuffer();
             var excel3 = zip.file('file3.xlsx').asArrayBuffer();
-            var spreadsheet_excel1 = new SpreadSheet();
-            var spreadsheet_excel2 = new SpreadSheet();
-            var spreadsheet_excel3 = new SpreadSheet();
             return Promise.props({
-                spreadsheet_excel1: spreadsheet_excel1.load(new JSZip(excel1)),
-                spreadsheet_excel2: spreadsheet_excel2.load(new JSZip(excel2)),
-                spreadsheet_excel3: spreadsheet_excel3.load(new JSZip(excel3))
-            }).then(function (result) {
-                var spreadsheet_excel1 = result.spreadsheet_excel1;
-                var spreadsheet_excel2 = result.spreadsheet_excel2;
-                var spreadsheet_excel3 = result.spreadsheet_excel3;
-                assert(spreadsheet_excel1.hasAsSharedString('hoge account1'), "'hoge account1' is missing in excel file");
-                assert(spreadsheet_excel1.hasAsSharedString('hoge street1'), "'hoge street1' is missing in excel file");
+                sp1: new SpreadSheet().load(new JSZip(excel1)),
+                sp2: new SpreadSheet().load(new JSZip(excel2)),
+                sp3: new SpreadSheet().load(new JSZip(excel3))
+            }).then(function (_ref) {
+                var sp1 = _ref.sp1;
+                var sp2 = _ref.sp2;
+                var sp3 = _ref.sp3;
+
+                assert(sp1.hasAsSharedString('hoge account1'), "'hoge account1' is missing in excel file");
+                assert(sp1.hasAsSharedString('hoge street1'), "'hoge street1' is missing in excel file");
 
                 //FIXME clarify the following test end with error
                 /*
-                assert(spreadsheet_excel2.hasAsSharedString('hoge account2'),"'hoge account2' is missing in excel file");
-                assert(spreadsheet_excel2.hasAsSharedString('hoge street2'),"'hoge street2' is missing in excel file");
-                assert(spreadsheet_excel3.hasAsSharedString('hoge account3'),"'hoge account3' is missing in excel file");
-                assert(spreadsheet_excel3.hasAsSharedString('hoge street3'),"'hoge street3' is missing in excel file");
+                assert(sp2.hasAsSharedString('hoge account2'),"'hoge account2' is missing in excel file");
+                assert(sp2.hasAsSharedString('hoge street2'),"'hoge street2' is missing in excel file");
+                assert(sp3.hasAsSharedString('hoge account3'),"'hoge account3' is missing in excel file");
+                assert(sp3.hasAsSharedString('hoge street3'),"'hoge street3' is missing in excel file");
                 */
             });
         });
     },
 
     addSheetBindingDataWithNoParameterShouldReturnError: function addSheetBindingDataWithNoParameterShouldReturnError() {
-        var spreadsheet = new SpreadSheet();
-        return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (valid_template) {
-            return spreadsheet.load(new JSZip(valid_template));
+        return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (validTemplate) {
+            return new SpreadSheet().load(new JSZip(validTemplate));
         }).then(function (spreadsheet) {
             return spreadsheet.addSheetBindingData();
         }).then(function () {
@@ -177,9 +165,8 @@ module.exports = {
     },
 
     addSheetBindingDataWith1ParameterShouldReturnError: function addSheetBindingDataWith1ParameterShouldReturnError() {
-        var spreadsheet = new SpreadSheet();
-        return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (valid_template) {
-            return spreadsheet.load(new JSZip(valid_template));
+        return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (validTemplate) {
+            return new SpreadSheet().load(new JSZip(validTemplate));
         }).then(function (spreadsheet) {
             return spreadsheet.addSheetBindingData('hoge');
         }).then(function () {
@@ -190,9 +177,8 @@ module.exports = {
     },
 
     activateSheetWithNoParameterShouldReturnError: function activateSheetWithNoParameterShouldReturnError() {
-        var spreadsheet = new SpreadSheet();
-        return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (valid_template) {
-            return spreadsheet.load(new JSZip(valid_template));
+        return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (validTemplate) {
+            return new SpreadSheet().load(new JSZip(validTemplate));
         }).then(function (spreadsheet) {
             return spreadsheet.activateSheet();
         }).then(function () {
@@ -203,9 +189,8 @@ module.exports = {
     },
 
     activateSheetWithInvalidSheetnameShouldReturnError: function activateSheetWithInvalidSheetnameShouldReturnError() {
-        var spreadsheet = new SpreadSheet();
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (valid_template) {
-            return spreadsheet.load(new JSZip(valid_template));
+            return new SpreadSheet().load(new JSZip(valid_template));
         }).then(function (spreadsheet) {
             return spreadsheet.activateSheet('hoge');
         }).then(function () {
@@ -216,9 +201,8 @@ module.exports = {
     },
 
     deleteSheetWithNoParameterShouldReturnError: function deleteSheetWithNoParameterShouldReturnError() {
-        var spreadsheet = new SpreadSheet();
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (valid_template) {
-            return spreadsheet.load(new JSZip(valid_template));
+            return new SpreadSheet().load(new JSZip(valid_template));
         }).then(function (spreadsheet) {
             return spreadsheet.deleteSheet();
         }).then(function () {
@@ -229,9 +213,8 @@ module.exports = {
     },
 
     deleteSheetWithInvalidSheetnameShouldReturnError: function deleteSheetWithInvalidSheetnameShouldReturnError() {
-        var spreadsheet = new SpreadSheet();
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (valid_template) {
-            return spreadsheet.load(new JSZip(valid_template));
+            return new SpreadSheet().load(new JSZip(valid_template));
         }).then(function (spreadsheet) {
             return spreadsheet.deleteSheet('hoge');
         }).then(function () {

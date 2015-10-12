@@ -10,8 +10,8 @@ var _ = require('underscore');
 require('./underscore_mixin');
 var JSZip = require('jszip');
 var isNode = require('detect-node');
-const output_buffer = {type: (isNode?'nodebuffer':'blob'), compression:"DEFLATE"};
-const jszip_buffer = {type: (isNode?'nodebuffer':'arraybuffer'), compression:"DEFLATE"};
+const outputBuffer = {type: (isNode?'nodebuffer':'blob'), compression:"DEFLATE"};
+const jszipBuffer = {type: (isNode?'nodebuffer':'arraybuffer'), compression:"DEFLATE"};
 var xml2js = require('xml2js');
 var parseString = Promise.promisify(xml2js.parseString);
 var builder = new xml2js.Builder();
@@ -26,12 +26,12 @@ class SpreadSheet{
      * * variables {Array} including mustache-variables defined in sharedstrings.xml
      * * sharedstrings {Array} includings common strings defined in sharedstrings.xml
      * * sharedstrings_obj {Object} whole sharedstrings object
-     * * common_strings_with_variable {Array} including common strings only having mustache variables
+     * * commonStringsWithVariable {Array} including common strings only having mustache variables
      * * sheet_xmls {Array} including objects parsed from  'xl/worksheets/*.xml'
      * * sheet_xmls_rels {Array} including objects pared from 'xl/worksheets/_rels/*.xml.rels'
      * * template_sheet_data {Object} object parsed from 'xl/worksheets/*.xml'. this is used as template-file
      * * template_sheet_name {String} sheet-name of template-file
-     * * workbookxml_rels {Object} parsed from 'xl/_rels/workbook.xml.rels'
+     * * workbookxmlRels {Object} parsed from 'xl/_rels/workbook.xml.rels'
      * * workbookxml {Object} parsed from 'xl/workbook.xml'
      * */
 
@@ -42,33 +42,30 @@ class SpreadSheet{
      * * @return {Promise|Object} Promise instance including this
      **/
     load(excel){
-
         //validation
         if(!(excel instanceof JSZip)) return Promise.reject('First parameter must be JSZip instance including MS-Excel data');
-
         //set member variable
         this.excel = excel;
         this.variables = _(excel.file('xl/sharedStrings.xml').asText()).variables();
-        this.common_strings_with_variable = [];
+        this.commonStringsWithVariable = [];
 
         //some members are parsed in promise-chain because xml2js parses asynchronously
         return Promise.props({
-            sharedstrings_obj: parseString(excel.file('xl/sharedStrings.xml').asText()),
-            workbookxml_rels: parseString(this.excel.file('xl/_rels/workbook.xml.rels').asText()),
+            sharedstringsObj: parseString(excel.file('xl/sharedStrings.xml').asText()),
+            workbookxmlRels: parseString(this.excel.file('xl/_rels/workbook.xml.rels').asText()),
             workbookxml: parseString(this.excel.file('xl/workbook.xml').asText()),
-            sheet_xmls: this._parseDirInExcel('xl/worksheets'),
-            sheet_xmls_rels: this._parseDirInExcel('xl/worksheets/_rels')
+            sheetXmls: this._parseDirInExcel('xl/worksheets'),
+            sheetXmlsRels: this._parseDirInExcel('xl/worksheets/_rels')
         }).then((templates)=>{
-            this.sharedstrings = templates.sharedstrings_obj.sst.si;
-            this.workbookxml_rels = templates.workbookxml_rels;
+            this.sharedstrings = templates.sharedstringsObj.sst.si;
+            this.workbookxmlRels = templates.workbookxmlRels;
             this.workbookxml = templates.workbookxml;
-            this.sheet_xmls = templates.sheet_xmls;
-            this.sheet_xmls_rels = templates.sheet_xmls_rels;
-            this.template_sheet_name = this.workbookxml.workbook.sheets[0].sheet[0]['$'].name;
-            this.template_sheet_data = _.find(templates.sheet_xmls,(e)=>(e.name.indexOf('.rels') === -1)).worksheet.sheetData[0].row;
-            this.template_sheet_rels_data = _(this._templateSheetRels()).deep_copy();
-            this.common_strings_with_variable = this._parseCommonStringWithVariable();
-
+            this.sheetXmls = templates.sheetXmls;
+            this.sheetXmlsRels = templates.sheetXmlsRels;
+            this.templateSheetName = this.workbookxml.workbook.sheets[0].sheet[0]['$'].name;
+            this.templateSheetData = _.find(templates.sheetXmls,(e)=>(e.name.indexOf('.rels') === -1)).worksheet.sheetData[0].row;
+            this.templateSheetRelsData = _(this._templateSheetRels()).deepCopy();
+            this.commonStringsWithVariable = this._parseCommonStringWithVariable();
             //return this for chaining
             return this;
         });
@@ -79,28 +76,28 @@ class SpreadSheet{
      * * @param {Object} bind_data binding data
      * * @returns {Promise|Object} rendered MS-Excel data. data-format is determined by jszip_option
      **/
-    simpleRender(bind_data){
+    simpleRender(bindData){
 
         //validation
-        if(!bind_data) return Promise.reject('simpleRender() must has parameter');
+        if(!bindData) return Promise.reject('simpleRender() must has parameter');
 
-        return Promise.resolve().then(()=>this._simpleRender(bind_data, output_buffer));
+        return Promise.resolve().then(()=>this._simpleRender(bindData, outputBuffer));
     }
 
     /**
      * * bulkRenderMultiFile
-     * * @param {Array} bind_data_array including data{name: file's name, data: binding-data}
+     * * @param {Array} bindDataArray including data{name: file's name, data: binding-data}
      * * @returns {Promise|Object} rendered MS-Excel data.
      **/
-    bulkRenderMultiFile(bind_data_array){
+    bulkRenderMultiFile(bindDataArray){
 
         //validation
-        if(!_.isArray(bind_data_array)) return Promise.reject('bulkRenderMultiFile() has only array object');
-        if(_.find(bind_data_array,(e)=>!(e.name && e.data))) return Promise.reject('bulkRenderMultiFile() is called with invalid parameter');
+        if(!_.isArray(bindDataArray)) return Promise.reject('bulkRenderMultiFile() has only array object');
+        if(_.find(bindDataArray,(e)=>!(e.name && e.data))) return Promise.reject('bulkRenderMultiFile() is called with invalid parameter');
 
-        var all_excels = new JSZip();
-        _.each(bind_data_array, ({name,data})=>all_excels.file(name, this._simpleRender(data, jszip_buffer)));
-        return Promise.resolve().then(()=> all_excels.generate(output_buffer));
+        var allExcels = new JSZip();
+        _.each(bindDataArray, ({name,data})=>allExcels.file(name, this._simpleRender(data, jszipBuffer)));
+        return Promise.resolve().then(()=> allExcels.generate(outputBuffer));
     }
 
     /**
@@ -109,37 +106,35 @@ class SpreadSheet{
      * * @param {Object} data binding data
      * * @return {Object} this instance for chaining
      **/
-    addSheetBindingData(dest_sheet_name, data){
-
+    addSheetBindingData(destSheetName, data){
         //validation
-        if((!dest_sheet_name) || !(data)) return Promise.reject('addSheetBindingData() needs to have 2 paramter.');
-
+        if((!destSheetName) || !(data)) return Promise.reject('addSheetBindingData() needs to have 2 paramter.');
         //1.add relation of next sheet
-        let next_id = this._availableSheetid();
-        this.workbookxml_rels.Relationships.Relationship.push({ '$': { Id: next_id, Type: OPEN_XML_SCHEMA_DEFINITION, Target: 'worksheets/sheet'+next_id+'.xml'}});
-        this.workbookxml.workbook.sheets[0].sheet.push({ '$': { name: dest_sheet_name, sheetId: next_id.replace('rId',''), 'r:id': next_id } });
+        let nextId = this._availableSheetid();
+        this.workbookxmlRels.Relationships.Relationship.push({ '$': { Id: nextId, Type: OPEN_XML_SCHEMA_DEFINITION, Target: `worksheets/sheet${nextId}.xml`}});
+        this.workbookxml.workbook.sheets[0].sheet.push({ '$': { name: destSheetName, sheetId: nextId.replace('rId',''), 'r:id': nextId } });
 
         //2.add sheet file.
         //2-1.prepare rendered-strings
-        let rendered_strings = _(this.common_strings_with_variable).deep_copy();
-        _.each(rendered_strings,(e)=>e.t[0] = Mustache.render(_(e.t).string_value(), data));
+        let renderedStrings = _(this.commonStringsWithVariable).deepCopy();
+        _.each(renderedStrings,(e)=>e.t[0] = Mustache.render(_(e.t).stringValue(), data));
 
         //2-2.add rendered-string into sharedstrings
-        let current_count = this.sharedstrings.length;
-        _.each(rendered_strings,(e,index)=>{
-            e.shared_index = current_count + index;
+        let currentCount = this.sharedstrings.length;
+        _.each(renderedStrings,(e,index)=>{
+            e.sharedIndex = currentCount + index;
             this.sharedstrings.push(e);
         });
 
         //2-4.build new sheet oject
-        let source_sheet = this._sheetByName(this.template_sheet_name).value;
-        let added_sheet = this._buildNewSheet(source_sheet, rendered_strings);
+        let sourceSheet = this._sheetByName(this.templateSheetName).value;
+        let addedSheet = this._buildNewSheet(sourceSheet, renderedStrings);
 
         //2-5.update sheet name.
-        added_sheet.name = 'sheet'+next_id+'.xml';
+        addedSheet.name = `sheet${nextId}.xml`;
 
         //2-6.add this sheet into sheet_xmls
-        this.sheet_xmls.push(added_sheet);
+        this.sheetXmls.push(addedSheet);
 
         return this;
     }
@@ -154,12 +149,12 @@ class SpreadSheet{
         //validation
         if(!sheetname) return Promise.reject('activateSheet() needs to have 1 paramter.');
 
-        let target_sheet_name = this._sheetByName(sheetname);
-        if(!target_sheet_name) return Promise.reject(`Invalid sheet name '${sheetname}'.`);
+        let targetSheetName = this._sheetByName(sheetname);
+        if(!targetSheetName) return Promise.reject(`Invalid sheet name '${sheetname}'.`);
 
         _.each(this.sheet_xmls, (sheet)=>{
             if(!sheet.worksheet) return;
-            sheet.worksheet.sheetViews[0].sheetView[0]['$'].tabSelected = (sheet.name === target_sheet_name.value.worksheet.name) ? '1' : '0';
+            sheet.worksheet.sheetViews[0].sheetView[0]['$'].tabSelected = (sheet.name === targetSheetName.value.worksheet.name) ? '1' : '0';
         });
         return this;
     }
@@ -179,13 +174,11 @@ class SpreadSheet{
      **/
     deleteSheet(sheetname){
         if(!sheetname) return Promise.reject('deleteSheet() needs to have 1 paramter.');
-
-        let target_sheet = this._sheetByName(sheetname);
-        if(!target_sheet) return Promise.reject(`Invalid sheet name '${sheetname}'.`);
-
-        _.each(this.workbookxml_rels.Relationships.Relationship, (sheet,index)=>{
-            if(sheet && (sheet['$'].Target === target_sheet.path)) {
-                this.workbookxml_rels.Relationships.Relationship.splice(index,1);
+        let targetSheet = this._sheetByName(sheetname);
+        if(!targetSheet) return Promise.reject(`Invalid sheet name '${sheetname}'.`);
+        _.each(this.workbookxmlRels.Relationships.Relationship, (sheet,index)=>{
+            if(sheet && (sheet['$'].Target === targetSheet.path)) {
+                this.workbookxmlRels.Relationships.Relationship.splice(index,1);
             }
         });
         _.each(this.workbookxml.workbook.sheets[0].sheet, (sheet,index)=>{
@@ -193,9 +186,9 @@ class SpreadSheet{
                 this.workbookxml.workbook.sheets[0].sheet.splice(index,1);
             }
         });
-        _.each(this.sheet_xmls, (sheet_xml,index)=>{
-            if(sheet_xml && (sheet_xml.name === target_sheet.value.name)){
-                this.sheet_xmls.splice(index,1);
+        _.each(this.sheetXmls, (sheetXml,index)=>{
+            if(sheetXml && (sheetXml.name === targetSheet.value.name)){
+                this.sheetXmls.splice(index,1);
             }
         });
         return this;
@@ -206,16 +199,16 @@ class SpreadSheet{
      * * @return {Object} this instance for chaining
      **/
     deleteTemplateSheet(){
-        return this.deleteSheet(this.template_sheet_name);
+        return this.deleteSheet(this.templateSheetName);
     }
 
     /**
      * * hasAsSharedString
-     * * @param {String} target_str
+     * * @param {String} targetStr
      * * @return {boolean}
      **/
-    hasAsSharedString(target_str){
-        return (this.excel.file('xl/sharedStrings.xml').asText().indexOf(target_str) !== -1)
+    hasAsSharedString(targetStr){
+        return (this.excel.file('xl/sharedStrings.xml').asText().indexOf(targetStr) !== -1)
     }
 
     /**
@@ -226,31 +219,31 @@ class SpreadSheet{
      **/
     generate(option){
         parseString(this.excel.file('xl/sharedStrings.xml').asText())
-        .then((sharedstrings_obj)=>{
+        .then((sharedstringsObj)=>{
 
             //sharedstring
-            sharedstrings_obj.sst.si = this._cleanSharedStrings();
-            sharedstrings_obj.sst['$'].count = sharedstrings_obj.sst['$'].uniqueCount = this.sharedstrings.length;
+            sharedstringsObj.sst.si = this._cleanSharedStrings();
+            sharedstringsObj.sst['$'].count = sharedstringsObj.sst['$'].uniqueCount = this.sharedstrings.length;
             this.excel
-                .file('xl/sharedStrings.xml', builder.buildObject(sharedstrings_obj))
-                .file("xl/_rels/workbook.xml.rels",builder.buildObject(this.workbookxml_rels))
+                .file('xl/sharedStrings.xml', builder.buildObject(sharedstringsObj))
+                .file("xl/_rels/workbook.xml.rels",builder.buildObject(this.workbookxmlRels))
                 .file("xl/workbook.xml",builder.buildObject(this.workbookxml));
 
-            //sheet_xmls
-            _.each(this.sheet_xmls, (sheet)=>{
+            //sheetXmls
+            _.each(this.sheetXmls, (sheet)=>{
                 if(sheet.name){
-                    var sheet_obj = {};
-                    sheet_obj.worksheet = {};
-                    _.extend(sheet_obj.worksheet, sheet.worksheet);
-                    this.excel.file(`xl/worksheets/${sheet.name}`, builder.buildObject(sheet_obj));
+                    var sheetObj = {};
+                    sheetObj.worksheet = {};
+                    _.extend(sheetObj.worksheet, sheet.worksheet);
+                    this.excel.file(`xl/worksheets/${sheet.name}`, builder.buildObject(sheetObj));
                 }
             });
 
-            //sheet_xmls_rels
-            let str_templateSheetRels = builder.buildObject(this.template_sheet_rels_data);
-            _.each(this.sheet_xmls, (sheet)=>{
+            //sheetXmlsRels
+            let strTemplateSheetRels = builder.buildObject(this.templateSheetRelsData);
+            _.each(this.sheetXmls, (sheet)=>{
                 if(sheet.name){
-                    this.excel.file(`xl/worksheets/_rels/${sheet.name}.rels`, str_templateSheetRels);
+                    this.excel.file(`xl/worksheets/_rels/${sheet.name}.rels`, strTemplateSheetRels);
                 }
             });
 
@@ -263,14 +256,14 @@ class SpreadSheet{
 
     /**
      * * _simpleRender
-     * * @param {Object} bind_data binding data
+     * * @param {Object} bindData binding data
      * * @param {Object} option JsZip#generate() option.
      * * @returns {Object} rendered MS-Excel data. data-format is determined by jszip_option
      * * @private
      **/
-    _simpleRender(bind_data, option=output_buffer){
+    _simpleRender(bindData, option=outputBuffer){
         return this.excel
-            .file('xl/sharedStrings.xml', Mustache.render(this.excel.file('xl/sharedStrings.xml').asText(), bind_data))
+            .file('xl/sharedStrings.xml', Mustache.render(this.excel.file('xl/sharedStrings.xml').asText(), bindData))
             .generate(option);
     }
 
@@ -280,27 +273,27 @@ class SpreadSheet{
      * * @private
      **/
     _parseCommonStringWithVariable(){
-        let common_strings_with_variable = [];
-        _.each(this.sharedstrings,(string_obj, index)=>{
-            if(_(string_obj.t).string_value() && _(_(string_obj.t).string_value()).has_variable()){
-                string_obj.shared_index = index;
-                common_strings_with_variable.push(string_obj);
+        let commonStringsWithVariable = [];
+        _.each(this.sharedstrings,(stringObj, index)=>{
+            if(_(stringObj.t).stringValue() && _(_(stringObj.t).stringValue()).hasVariable()){
+                stringObj.sharedIndex = index;
+                commonStringsWithVariable.push(stringObj);
             }
         });
-        _.each(common_strings_with_variable, (common_string_with_variable)=>{
-            common_string_with_variable.using_cells = [];
-            _.each(this.template_sheet_data,(row)=>{
+        _.each(commonStringsWithVariable, (commonStringWithVariable)=>{
+            commonStringWithVariable.usingCells = [];
+            _.each(this.templateSheetData,(row)=>{
                 _.each(row.c,(cell)=>{
                     if(cell['$'].t === 's'){
-                        if(common_string_with_variable.shared_index === (cell.v[0] >> 0)){
-                            common_string_with_variable.using_cells.push(cell['$'].r);
+                        if(commonStringWithVariable.sharedIndex === (cell.v[0] >> 0)){
+                            commonStringWithVariable.usingCells.push(cell['$'].r);
                         }
                     }
                 });
             });
         });
 
-        return common_strings_with_variable;
+        return commonStringsWithVariable;
     }
 
     /**
@@ -311,7 +304,7 @@ class SpreadSheet{
      **/
     _parseDirInExcel(dir){
         let files = this.excel.folder(dir).file(/.xml/);
-        let file_xmls = [];
+        let fileXmls = [];
         return files.reduce(
             (promise, file)=>
                 promise.then((prior_file)=>
@@ -319,8 +312,8 @@ class SpreadSheet{
                         .then(()=>parseString(this.excel.file(file.name).asText()))
                         .then((file_xml)=>{
                             file_xml.name = file.name.split('/')[file.name.split('/').length-1];
-                            file_xmls.push(file_xml);
-                            return file_xmls;
+                            fileXmls.push(file_xml);
+                            return fileXmls;
                         })
                 )
             ,
@@ -330,26 +323,26 @@ class SpreadSheet{
 
     /**
      * * _buildNewSheet
-     * * @param {Object} source_sheet
-     * * @param {Array} common_strings_with_variable
+     * * @param {Object} sourceSheet
+     * * @param {Array} commonStringsWithVariable
      * * @return {Object}
      * * @private
      **/
-    _buildNewSheet(source_sheet, common_strings_with_variable){
-        let added_sheet = _(source_sheet).deep_copy();
-        _.each(common_strings_with_variable,(e,index)=>{
-            _.each(e.using_cells, (cell_address)=>{
-                _.each(added_sheet.worksheet.sheetData[0].row,(row)=>{
+    _buildNewSheet(sourceSheet, commonStringsWithVariable){
+        let addedSheet = _(sourceSheet).deepCopy();
+        _.each(commonStringsWithVariable,(e,index)=>{
+            _.each(e.usingCells, (cellAddress)=>{
+                _.each(addedSheet.worksheet.sheetData[0].row,(row)=>{
                     _.each(row.c,(cell)=>{
-                        if(cell['$'].r === cell_address){
-                            cell.v[0] = e.shared_index;
+                        if(cell['$'].r === cellAddress){
+                            cell.v[0] = e.sharedIndex;
                         }
                     });
                 });
             });
         });
-        added_sheet.worksheet.sheetViews[0].sheetView[0]['$'].tabSelected = '0';
-        return added_sheet;
+        addedSheet.worksheet.sheetViews[0].sheetView[0]['$'].tabSelected = '0';
+        return addedSheet;
     }
 
     /**
@@ -358,9 +351,9 @@ class SpreadSheet{
      * * @private
      **/
     _availableSheetid(){
-        let max_rel = _.max(this.workbookxml_rels.Relationships.Relationship, (e)=> Number(e['$'].Id.replace('rId','')));
-        let next_id = 'rId' + ('00' + (((max_rel['$'].Id.replace('rId','') >> 0))+1)).slice(-3);
-        return next_id;
+        let maxRel = _.max(this.workbookxmlRels.Relationships.Relationship, (e)=> Number(e['$'].Id.replace('rId','')));
+        let nextId = 'rId' + ('00' + (((maxRel['$'].Id.replace('rId','') >> 0))+1)).slice(-3);
+        return nextId;
     }
 
     /**
@@ -370,14 +363,14 @@ class SpreadSheet{
      * * @private
      **/
     _sheetByName(sheetname){
-        let target_sheet = _.find(this.workbookxml.workbook.sheets[0].sheet, (e)=> (e['$'].name === sheetname));
-        if(!target_sheet) return null;  //invalid sheet name
+        let targetSheet = _.find(this.workbookxml.workbook.sheets[0].sheet, (e)=> (e['$'].name === sheetname));
+        if(!targetSheet) return null;  //invalid sheet name
 
-        let sheetid = target_sheet['$']['r:id'];
-        let target_file_path = _.max(this.workbookxml_rels.Relationships.Relationship, (e)=>(e['$'].Id === sheetid))['$'].Target;
-        let target_file_name = target_file_path.split('/')[target_file_path.split('/').length-1];
-        let sheet_xml = _.find(this.sheet_xmls, (e)=>(e.name === target_file_name));
-        let sheet = {path: target_file_path, value: sheet_xml};
+        let sheetid = targetSheet['$']['r:id'];
+        let targetFilePath = _.max(this.workbookxmlRels.Relationships.Relationship, (e)=>(e['$'].Id === sheetid))['$'].Target;
+        let targetFileName = targetFilePath.split('/')[targetFilePath.split('/').length-1];
+        let sheetXml = _.find(this.sheetXmls, (e)=>(e.name === targetFileName));
+        let sheet = {path: targetFilePath, value: sheetXml};
         return sheet;
     }
 
@@ -388,10 +381,10 @@ class SpreadSheet{
      * * @private
      **/
     _sheetRelsByName(sheetname){
-        let target_file_path = this._sheetByName(sheetname).path;
-        let target_name = target_file_path.split('/')[target_file_path.split('/').length-1] + '.rels';
-        let sheet_xml_rels = _.find(this.sheet_xmls_rels, (e)=>(e.name === target_name));
-        let sheet = {name: target_name, value: sheet_xml_rels};
+        let targetFilePath = this._sheetByName(sheetname).path;
+        let targetName = targetFilePath.split('/')[targetFilePath.split('/').length-1] + '.rels';
+        let sheetXmlRels = _.find(this.sheetXmlsRels, (e)=>(e.name === targetName));
+        let sheet = {name: targetName, value: sheetXmlRels};
         return sheet;
     }
 
@@ -401,7 +394,7 @@ class SpreadSheet{
      * * @private
      **/
     _templateSheetRels(){
-        return this._sheetRelsByName(this.template_sheet_name);
+        return this._sheetRelsByName(this.templateSheetName);
     }
 
 
@@ -411,7 +404,7 @@ class SpreadSheet{
      * * @private
      **/
     _sheetNames(){
-        return _.map(this.sheet_xmls, (e)=>e.name);
+        return _.map(this.sheetXmls, (e)=>e.name);
     }
 
     /**
@@ -440,7 +433,7 @@ class SpreadSheet{
      * * @private
      **/
     _activeSheets(){
-        return _.filter(this.sheet_xmls, (sheet)=>(sheet.worksheet.sheetViews[0].sheetView[0]['$'].tabSelected === '1'));
+        return _.filter(this.sheetXmls, (sheet)=>(sheet.worksheet.sheetViews[0].sheetView[0]['$'].tabSelected === '1'));
     }
 
     /**
@@ -449,7 +442,7 @@ class SpreadSheet{
      * * @private
      **/
     _deactiveSheets(){
-        return _.filter(this.sheet_xmls, (sheet)=>(sheet.worksheet.sheetViews[0].sheetView[0]['$'].tabSelected === '0'));
+        return _.filter(this.sheetXmls, (sheet)=>(sheet.worksheet.sheetViews[0].sheetView[0]['$'].tabSelected === '0'));
     }
 }
 

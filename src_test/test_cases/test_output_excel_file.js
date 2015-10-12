@@ -24,40 +24,35 @@ var EXCEL_OUTPUT_TYPE = {
 
 class Utility{
 
-    output(template_name, input_file_name, output_type, output_file_name){
-        return fs.readFileAsync(`${__dirname}/../templates/${template_name}`)
-        .then((excel_template)=>{
+    output(templateName, inputFileName, outputType, outputFileName){
+        return fs.readFileAsync(`${__dirname}/../templates/${templateName}`)
+        .then((excelTemplate)=>{
             return Promise.props({
-                rendering_data: readYamlAsync(`${__dirname}/../input/${input_file_name}`),     //Load single data
-                merge: new ExcelMerge().load(new JSZip(excel_template)) //Initialize ExcelMerge object
+                renderingData: readYamlAsync(`${__dirname}/../input/${inputFileName}`),     //Load single data
+                merge: new ExcelMerge().load(new JSZip(excelTemplate)) //Initialize ExcelMerge object
             });
-        }).then((result)=>{
-            //ExcelMerge object
-            let merge =  result.merge;
+        }).then(({renderingData,merge})=>{
+            let dataArray = [];
+            switch(outputType){
+                case EXCEL_OUTPUT_TYPE.SINGLE:
+                    return merge.render(renderingData);
+                    break;
 
-            //rendering data
-            let rendering_data;
-            if(output_type === EXCEL_OUTPUT_TYPE.SINGLE){
-                rendering_data = result.rendering_data;
-                return merge.render(rendering_data);
-            }else if(output_type === EXCEL_OUTPUT_TYPE.BULK_MULTIPLE_FILE){
-                rendering_data = [];
-                _.each(result.rendering_data, (data,index)=>{
-                    rendering_data.push({name:`file${index+1}.xlsx`, data:data});
-                });
-                return merge.bulkRenderMultiFile(rendering_data);
-            }else if(output_type === EXCEL_OUTPUT_TYPE.BULK_MULTIPLE_SHEET){
-                rendering_data = [];
-                _.each(result.rendering_data, (data,index)=>{
-                    rendering_data.push({name:`example${index+1}`, data:data});
-                });
-                return merge.bulkRenderMultiSheet(rendering_data);
+                case EXCEL_OUTPUT_TYPE.BULK_MULTIPLE_FILE:
+                    _.each(renderingData, (data,index)=> dataArray.push({name:`file${index+1}.xlsx`, data:data}));
+                    return merge.bulkRenderMultiFile(dataArray);
+                    break;
+
+                case EXCEL_OUTPUT_TYPE.BULK_MULTIPLE_SHEET:
+                    _.each(renderingData, (data,index)=> dataArray.push({name:`example${index+1}`, data:data}));
+                    return merge.bulkRenderMultiSheet(dataArray);
+                    break;
             }
-        }).then((output_data)=>{
-            return fs.writeFileAsync(`${__dirname}/../output/${output_file_name}`, output_data);
-        }).then(()=>{
-            assert(true);
-        }).catch((err)=>{
+        }).then(
+            outputData=>fs.writeFileAsync(`${__dirname}/../output/${outputFileName}`, outputData)
+        ).then(
+            ()=>assert(true)
+        ).catch((err)=>{
             console.error(new Error(err).stack);
             assert(false);
         });

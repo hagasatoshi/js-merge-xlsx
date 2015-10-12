@@ -35,38 +35,40 @@ var Utility = (function () {
 
     _createClass(Utility, [{
         key: 'output',
-        value: function output(template_name, input_file_name, output_type, output_file_name) {
-            return fs.readFileAsync(__dirname + '/../templates/' + template_name).then(function (excel_template) {
+        value: function output(templateName, inputFileName, outputType, outputFileName) {
+            return fs.readFileAsync(__dirname + '/../templates/' + templateName).then(function (excelTemplate) {
                 return Promise.props({
-                    rendering_data: readYamlAsync(__dirname + '/../input/' + input_file_name), //Load single data
-                    merge: new ExcelMerge().load(new JSZip(excel_template)) //Initialize ExcelMerge object
+                    renderingData: readYamlAsync(__dirname + '/../input/' + inputFileName), //Load single data
+                    merge: new ExcelMerge().load(new JSZip(excelTemplate)) //Initialize ExcelMerge object
                 });
-            }).then(function (result) {
-                //ExcelMerge object
-                var merge = result.merge;
+            }).then(function (_ref) {
+                var renderingData = _ref.renderingData;
+                var merge = _ref.merge;
 
-                //rendering data
-                var rendering_data = undefined;
-                if (output_type === EXCEL_OUTPUT_TYPE.SINGLE) {
-                    rendering_data = result.rendering_data;
-                    return merge.render(rendering_data);
-                } else if (output_type === EXCEL_OUTPUT_TYPE.BULK_MULTIPLE_FILE) {
-                    rendering_data = [];
-                    _.each(result.rendering_data, function (data, index) {
-                        rendering_data.push({ name: 'file' + (index + 1) + '.xlsx', data: data });
-                    });
-                    return merge.bulkRenderMultiFile(rendering_data);
-                } else if (output_type === EXCEL_OUTPUT_TYPE.BULK_MULTIPLE_SHEET) {
-                    rendering_data = [];
-                    _.each(result.rendering_data, function (data, index) {
-                        rendering_data.push({ name: 'example' + (index + 1), data: data });
-                    });
-                    return merge.bulkRenderMultiSheet(rendering_data);
+                var dataArray = [];
+                switch (outputType) {
+                    case EXCEL_OUTPUT_TYPE.SINGLE:
+                        return merge.render(renderingData);
+                        break;
+
+                    case EXCEL_OUTPUT_TYPE.BULK_MULTIPLE_FILE:
+                        _.each(renderingData, function (data, index) {
+                            return dataArray.push({ name: 'file' + (index + 1) + '.xlsx', data: data });
+                        });
+                        return merge.bulkRenderMultiFile(dataArray);
+                        break;
+
+                    case EXCEL_OUTPUT_TYPE.BULK_MULTIPLE_SHEET:
+                        _.each(renderingData, function (data, index) {
+                            return dataArray.push({ name: 'example' + (index + 1), data: data });
+                        });
+                        return merge.bulkRenderMultiSheet(dataArray);
+                        break;
                 }
-            }).then(function (output_data) {
-                return fs.writeFileAsync(__dirname + '/../output/' + output_file_name, output_data);
+            }).then(function (outputData) {
+                return fs.writeFileAsync(__dirname + '/../output/' + outputFileName, outputData);
             }).then(function () {
-                assert(true);
+                return assert(true);
             })['catch'](function (err) {
                 console.error(new Error(err).stack);
                 assert(false);

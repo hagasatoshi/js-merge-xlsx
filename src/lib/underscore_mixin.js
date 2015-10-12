@@ -10,28 +10,28 @@ var Mustache = require('mustache');
 
 _.mixin({
     /**
-     * * is_string
+     * * isString
      * * @param {Object} arg
      * * @returns {boolean}
      */
-    is_string: (arg)=>{
+    isString: (arg)=>{
         return (typeof arg === 'string');
     },
 
     /**
-     * * string_value
+     * * stringValue
      * * return string value.
      * * @param arg
      * * @returns {String}
      */
-    string_value: (xml2js_element)=>{
-        if(!_.isArray(xml2js_element)){
-            return xml2js_element;
+    stringValue: (xml2jsElement)=>{
+        if(!_.isArray(xml2jsElement)){
+            return xml2jsElement;
         }
-        if(xml2js_element[0]._){
-            return xml2js_element[0]._;
+        if(xml2jsElement[0]._){
+            return xml2jsElement[0]._;
         }
-        return xml2js_element[0];
+        return xml2jsElement[0];
     },
 
     /**
@@ -41,28 +41,28 @@ _.mixin({
      * * @returns {Array}
      */
     variables: (template)=>{
-        if(!_(template).is_string()){
+        if(!_(template).isString()){
             return null;
         }
         return _.map( _.filter(Mustache.parse(template),(e)=>(e[0] === 'name')), (e)=> e[1]);
     },
 
     /**
-     * * has_variable
+     * * hasVariable
      * * check if parameter-string has mustache-variables or not
      * * @param {String} template
      * * @returns {boolean}
      */
-    has_variable: (template)=> {
-        return _(template).is_string() && (_(template).variables().length !== 0)
+    hasVariable: (template)=> {
+        return _(template).isString() && (_(template).variables().length !== 0)
     },
 
     //TODO this is temporary solution for lodash#deepCoy(). clarify why lodash#deepCoy() is so slow.
     /**
-     * * deep_copy
+     * * deepCopy
      * * workaround for lodash#deepCoy(). clone object.
      * * @param {Object} obj
      * * @returns {Object}
      */
-    deep_copy: (obj)=>JSON.parse(JSON.stringify(obj))
+    deepCopy: (obj)=>JSON.parse(JSON.stringify(obj))
 });

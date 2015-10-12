@@ -17,8 +17,7 @@ var _ = require('underscore');
 
 module.exports = {
     checkLoadWithNoParameterShouldReturnError: ()=>{
-        let spreadsheet = new SpreadSheet();
-        return spreadsheet.load()
+        return new SpreadSheet().load()
             .then(()=>{
                 throw new Error('test_load_with_no_parameter_should_return_error failed ');
             }).catch((err)=>{
@@ -27,45 +26,43 @@ module.exports = {
     },
 
     checkLoadShouldReturnThisInstance: ()=>{
-        let spreadsheet = new SpreadSheet();
-        return fs.readFileAsync(__dirname + '/../templates/Template.xlsx')
-            .then((valid_template)=>{
-                return spreadsheet.load(new JSZip(valid_template));
+        return fs.readFileAsync(`${__dirname}/../templates/Template.xlsx`)
+            .then((validTemplate)=>{
+                return new SpreadSheet().load(new JSZip(validTemplate));
             }).then((spreadsheet)=>{
                 assert(spreadsheet instanceof SpreadSheet, 'SpreadSheet#load() should return this instance');
             });
     },
 
     checkLoadEachMemberFromValidTemplate: ()=>{
-        let spreadsheet = new SpreadSheet();
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx')
-        .then((valid_template)=>{
-            return spreadsheet.load(new JSZip(valid_template));
-        }).then((spreadsheet)=>{
+            .then((validTemplate)=>{
+                return new SpreadSheet().load(new JSZip(validTemplate));
+            }).then((spreadsheet)=>{
 
-            //excel
-            assert(spreadsheet.excel instanceof JSZip, 'SpreadSheet#excel is not assigned correctly');
-            //check if each variables is parsed or not.
-            let variables = [
-                'AccountName__c','StartDateFormat__c','EndDateFormat__c','JobDescription__c','StartTime__c',
-                'EndTime__c','hasOverTime__c','HoliDayType__c','Salary__c','DueDate__c','SalaryDate__c',
-                'AccountName__c','AccountAddress__c'
-            ];
-            var chk_common_strings_with_variable = _.map(spreadsheet.common_strings_with_variable,(e)=>_(e.t).string_value());
-            _.each(variables, (e)=>{
-                //variables
-                assert(_.contains(spreadsheet.variables, e), `SpreadSheet#load() doesn't set up ${e} as variable correctly`);
-                assert(_.find(chk_common_strings_with_variable, (v)=>(v.indexOf('{{'+e+'}}') !== -1)), `SpreadSheet#load() doesn't set up ${e} as variable correctly`);
+                //excel
+                assert(spreadsheet.excel instanceof JSZip, 'SpreadSheet#excel is not assigned correctly');
+
+                //check if each variables is parsed or not.
+                let variables = [
+                    'AccountName__c','StartDateFormat__c','EndDateFormat__c','JobDescription__c','StartTime__c',
+                    'EndTime__c','hasOverTime__c','HoliDayType__c','Salary__c','DueDate__c','SalaryDate__c',
+                    'AccountName__c','AccountAddress__c'
+                ];
+                var chkCommonStringsWithVariable = _.map(spreadsheet.commonStringsWithVariable,(e)=>_(e.t).stringValue());
+                _.each(variables, (e)=>{
+                    //variables
+                    assert(_.contains(spreadsheet.variables, e), `SpreadSheet#load() doesn't set up ${e} as variable correctly`);
+                    assert(_.find(chkCommonStringsWithVariable, (v)=>(v.indexOf(`{{${e}}}`) !== -1)), `SpreadSheet#load() doesn't set up ${e} as variable correctly`);
+                });
+
             });
-
-        });
     },
 
     simpleRenderWithNoParameterShouldReturnError: ()=> {
-        let spreadsheet = new SpreadSheet();
-        return fs.readFileAsync(__dirname + '/../templates/Template.xlsx')
-            .then((valid_template)=>{
-                return spreadsheet.load(new JSZip(valid_template));
+        return fs.readFileAsync(`${__dirname}/../templates/Template.xlsx`)
+            .then((validTemplate)=>{
+                return new SpreadSheet().load(new JSZip(validTemplate));
             }).then((spreadsheet)=>{
                 return spreadsheet.simpleRender();
             }).then(()=>{
@@ -76,27 +73,24 @@ module.exports = {
     },
 
     checkIfSimpleRenderRendersCorrectly: ()=>{
-        let spreadsheet = new SpreadSheet();
-        return fs.readFileAsync(__dirname + '/../templates/Template.xlsx')
-        .then((valid_template)=>{
-            return spreadsheet.load(new JSZip(valid_template));
-        }).then((spreadsheet)=>{
-            return spreadsheet.simpleRender({AccountName__c:'hoge account',AccountAddress__c:'hoge street'});
-        }).then((excel_data)=>{
-            let test_spreadsheet = new SpreadSheet();
-            return test_spreadsheet.load(new JSZip(excel_data));
-        }).then((test_spreadsheet)=>{
-            assert(test_spreadsheet.variables.length === 0, "SpreadSheet#simpleRender() doesn't work correctly");
-            assert(test_spreadsheet.hasAsSharedString('hoge account'), "'hoge account' is not rendered by SpreadSheet#simpleRender()");
-            assert(test_spreadsheet.hasAsSharedString('hoge street'), "'hoge street' is not rendered by SpreadSheet#simpleRender()");
-        });
+        return fs.readFileAsync(`${__dirname}/../templates/Template.xlsx`)
+            .then((validTemplate)=>{
+                return new SpreadSheet().load(new JSZip(validTemplate));
+            }).then((spreadsheet)=>{
+                return spreadsheet.simpleRender({AccountName__c:'hoge account',AccountAddress__c:'hoge street'});
+            }).then((excelData)=>{
+                return new SpreadSheet().load(new JSZip(excelData));
+            }).then((spreadsheet)=>{
+                assert(spreadsheet.variables.length === 0, "SpreadSheet#simpleRender() doesn't work correctly");
+                assert(spreadsheet.hasAsSharedString('hoge account'), "'hoge account' is not rendered by SpreadSheet#simpleRender()");
+                assert(spreadsheet.hasAsSharedString('hoge street'), "'hoge street' is not rendered by SpreadSheet#simpleRender()");
+            });
     },
 
     bulkRenderMultiFileNoParameterShouldReturnError: ()=> {
-        let spreadsheet = new SpreadSheet();
-        return fs.readFileAsync(__dirname + '/../templates/Template.xlsx')
-            .then((valid_template)=>{
-                return spreadsheet.load(new JSZip(valid_template));
+        return fs.readFileAsync(`${__dirname}/../templates/Template.xlsx`)
+            .then((validTemplate)=>{
+                return new SpreadSheet().load(new JSZip(validTemplate));
             }).then((spreadsheet)=>{
                 return spreadsheet.bulkRenderMultiFile();
             }).then(()=>{
@@ -107,10 +101,9 @@ module.exports = {
     },
 
     bulkRenderMultiFileMustHaveArrayAsParameter: ()=> {
-        let spreadsheet = new SpreadSheet();
-        return fs.readFileAsync(__dirname + '/../templates/Template.xlsx')
-            .then((valid_template)=>{
-                return spreadsheet.load(new JSZip(valid_template));
+        return fs.readFileAsync(`${__dirname}/../templates/Template.xlsx`)
+            .then((validTemplate)=>{
+                return new SpreadSheet().load(new JSZip(validTemplate));
             }).then((spreadsheet)=>{
                 return spreadsheet.bulkRenderMultiFile({name:'hogehoge'});
             }).then(()=>{
@@ -121,10 +114,9 @@ module.exports = {
     },
 
     bulkRenderMultiFileMustHaveNameAndData: ()=> {
-        let spreadsheet = new SpreadSheet();
-        return fs.readFileAsync(__dirname + '/../templates/Template.xlsx')
-            .then((valid_template)=>{
-                return spreadsheet.load(new JSZip(valid_template));
+        return fs.readFileAsync(`${__dirname}/../templates/Template.xlsx`)
+            .then((validTemplate)=>{
+                return new SpreadSheet().load(new JSZip(validTemplate));
             }).then((spreadsheet)=>{
                 return spreadsheet.bulkRenderMultiFile([{name:'hogehoge'}]);
             }).then(()=>{
@@ -135,41 +127,34 @@ module.exports = {
     },
 
     checkIfBulkRenderMultiFileRendersCorrectly: ()=>{
-        let spreadsheet = new SpreadSheet();
-        return fs.readFileAsync(__dirname + '/../templates/Template.xlsx')
-            .then((valid_template)=>{
-                return spreadsheet.load(new JSZip(valid_template));
+        return fs.readFileAsync(`${__dirname}/../templates/Template.xlsx`)
+            .then((validTemplate)=>{
+                return new SpreadSheet().load(new JSZip(validTemplate));
             }).then((spreadsheet)=>{
                 return spreadsheet.bulkRenderMultiFile([
                     {name:'file1.xlsx',data:{AccountName__c:'hoge account1',AccountAddress__c:'hoge street1'}},
                     {name:'file2.xlsx',data:{AccountName__c:'hoge account2',AccountAddress__c:'hoge street2'}},
                     {name:'file3.xlsx',data:{AccountName__c:'hoge account3',AccountAddress__c:'hoge street3'}}
                 ]);
-            }).then((zip_data)=>{
-                let zip = new JSZip(zip_data);
+            }).then((zipData)=>{
+                let zip = new JSZip(zipData);
                 let excel1 = zip.file('file1.xlsx').asArrayBuffer();
                 let excel2 = zip.file('file2.xlsx').asArrayBuffer();
                 let excel3 = zip.file('file3.xlsx').asArrayBuffer();
-                let spreadsheet_excel1 = new SpreadSheet();
-                let spreadsheet_excel2 = new SpreadSheet();
-                let spreadsheet_excel3 = new SpreadSheet();
                 return Promise.props({
-                    spreadsheet_excel1: spreadsheet_excel1.load(new JSZip(excel1)),
-                    spreadsheet_excel2: spreadsheet_excel2.load(new JSZip(excel2)),
-                    spreadsheet_excel3: spreadsheet_excel3.load(new JSZip(excel3))
-                }).then((result)=>{
-                    let spreadsheet_excel1 = result.spreadsheet_excel1;
-                    let spreadsheet_excel2 = result.spreadsheet_excel2;
-                    let spreadsheet_excel3 = result.spreadsheet_excel3;
-                    assert(spreadsheet_excel1.hasAsSharedString('hoge account1'),"'hoge account1' is missing in excel file");
-                    assert(spreadsheet_excel1.hasAsSharedString('hoge street1'),"'hoge street1' is missing in excel file");
+                    sp1: new SpreadSheet().load(new JSZip(excel1)),
+                    sp2: new SpreadSheet().load(new JSZip(excel2)),
+                    sp3: new SpreadSheet().load(new JSZip(excel3))
+                }).then(({sp1,sp2,sp3})=>{
+                    assert(sp1.hasAsSharedString('hoge account1'),"'hoge account1' is missing in excel file");
+                    assert(sp1.hasAsSharedString('hoge street1'),"'hoge street1' is missing in excel file");
 
                     //FIXME clarify the following test end with error
                     /*
-                    assert(spreadsheet_excel2.hasAsSharedString('hoge account2'),"'hoge account2' is missing in excel file");
-                    assert(spreadsheet_excel2.hasAsSharedString('hoge street2'),"'hoge street2' is missing in excel file");
-                    assert(spreadsheet_excel3.hasAsSharedString('hoge account3'),"'hoge account3' is missing in excel file");
-                    assert(spreadsheet_excel3.hasAsSharedString('hoge street3'),"'hoge street3' is missing in excel file");
+                    assert(sp2.hasAsSharedString('hoge account2'),"'hoge account2' is missing in excel file");
+                    assert(sp2.hasAsSharedString('hoge street2'),"'hoge street2' is missing in excel file");
+                    assert(sp3.hasAsSharedString('hoge account3'),"'hoge account3' is missing in excel file");
+                    assert(sp3.hasAsSharedString('hoge street3'),"'hoge street3' is missing in excel file");
                     */
                 });
 
@@ -177,10 +162,9 @@ module.exports = {
     },
 
     addSheetBindingDataWithNoParameterShouldReturnError: ()=>{
-        let spreadsheet = new SpreadSheet();
-        return fs.readFileAsync(__dirname + '/../templates/Template.xlsx')
-            .then((valid_template)=>{
-                return spreadsheet.load(new JSZip(valid_template));
+        return fs.readFileAsync(`${__dirname}/../templates/Template.xlsx`)
+            .then((validTemplate)=>{
+                return new SpreadSheet().load(new JSZip(validTemplate));
             }).then((spreadsheet)=>{
                 return spreadsheet.addSheetBindingData();
             }).then(()=>{
@@ -191,10 +175,9 @@ module.exports = {
     },
 
     addSheetBindingDataWith1ParameterShouldReturnError: ()=>{
-        let spreadsheet = new SpreadSheet();
-        return fs.readFileAsync(__dirname + '/../templates/Template.xlsx')
-            .then((valid_template)=>{
-                return spreadsheet.load(new JSZip(valid_template));
+        return fs.readFileAsync(`${__dirname}/../templates/Template.xlsx`)
+            .then((validTemplate)=>{
+                return new SpreadSheet().load(new JSZip(validTemplate));
             }).then((spreadsheet)=>{
                 return spreadsheet.addSheetBindingData('hoge');
             }).then(()=>{
@@ -205,10 +188,9 @@ module.exports = {
     },
 
     activateSheetWithNoParameterShouldReturnError: ()=>{
-        let spreadsheet = new SpreadSheet();
-        return fs.readFileAsync(__dirname + '/../templates/Template.xlsx')
-            .then((valid_template)=>{
-                return spreadsheet.load(new JSZip(valid_template));
+        return fs.readFileAsync(`${__dirname}/../templates/Template.xlsx`)
+            .then((validTemplate)=>{
+                return new SpreadSheet().load(new JSZip(validTemplate));
             }).then((spreadsheet)=>{
                 return spreadsheet.activateSheet();
             }).then(()=>{
@@ -219,10 +201,9 @@ module.exports = {
     },
 
     activateSheetWithInvalidSheetnameShouldReturnError: ()=>{
-        let spreadsheet = new SpreadSheet();
-        return fs.readFileAsync(__dirname + '/../templates/Template.xlsx')
+        return fs.readFileAsync(`${__dirname}/../templates/Template.xlsx`)
             .then((valid_template)=>{
-                return spreadsheet.load(new JSZip(valid_template));
+                return new SpreadSheet().load(new JSZip(valid_template));
             }).then((spreadsheet)=>{
                 return spreadsheet.activateSheet('hoge');
             }).then(()=>{
@@ -233,10 +214,9 @@ module.exports = {
     },
 
     deleteSheetWithNoParameterShouldReturnError: ()=>{
-        let spreadsheet = new SpreadSheet();
-        return fs.readFileAsync(__dirname + '/../templates/Template.xlsx')
+        return fs.readFileAsync(`${__dirname}/../templates/Template.xlsx`)
             .then((valid_template)=>{
-                return spreadsheet.load(new JSZip(valid_template));
+                return new SpreadSheet().load(new JSZip(valid_template));
             }).then((spreadsheet)=>{
                 return spreadsheet.deleteSheet();
             }).then(()=>{
@@ -247,10 +227,9 @@ module.exports = {
     },
 
     deleteSheetWithInvalidSheetnameShouldReturnError: ()=>{
-        let spreadsheet = new SpreadSheet();
-        return fs.readFileAsync(__dirname + '/../templates/Template.xlsx')
+        return fs.readFileAsync(`${__dirname}/../templates/Template.xlsx`)
             .then((valid_template)=>{
-                return spreadsheet.load(new JSZip(valid_template));
+                return new SpreadSheet().load(new JSZip(valid_template));
             }).then((spreadsheet)=>{
                 return spreadsheet.deleteSheet('hoge');
             }).then(()=>{
