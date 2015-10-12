@@ -29,7 +29,6 @@ describe('Test for spreadsheet.js : ',  ()=>{
     it('validation / activateSheet() / invalid sheetname / error', test_spreadsheet.activateSheetWithInvalidSheetnameShouldReturnError);
     it('validation / deleteSheet() / no parameter / error', test_spreadsheet.deleteSheetWithNoParameterShouldReturnError);
     it('validation / deleteSheet() / invalid sheetname / error', test_spreadsheet.deleteSheetWithInvalidSheetnameShouldReturnError);
-
     /* test for logic */
     it('logic / load() / load each member from valid template', test_spreadsheet.checkLoadEachMemberFromValidTemplate);
     it('logic / load() / should return this instance', test_spreadsheet.checkLoadShouldReturnThisInstance);

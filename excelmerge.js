@@ -59,39 +59,38 @@ var ExcelMerge = (function () {
     }, {
         key: 'render',
         value: function render(bind_data) {
-            return this.spreadsheet.simple_render(bind_data);
+            return this.spreadsheet.simpleRender(bind_data);
         }
 
         /**
-         * * bulk_render_multi_file
+         * * bulkRenderMultiFile
          * * @param {Array} bind_data_array including data{name: file's name, data: binding-data}
          * * @returns {Object} rendered MS-Excel data.
          **/
     }, {
-        key: 'bulk_render_multi_file',
-        value: function bulk_render_multi_file(bind_data_array) {
-            return this.spreadsheet.bulk_render_multi_file(bind_data_array);
+        key: 'bulkRenderMultiFile',
+        value: function bulkRenderMultiFile(bind_data_array) {
+            return this.spreadsheet.bulkRenderMultiFile(bind_data_array);
         }
 
         /**
-         * * 3_bulk_render_multi_sheet
+         * * bulkRenderMultiSheet
          * * @param {Array} bind_data_array including data{name: file's name, data: binding-data}
-         * * @param {Object} output_option JsZip#generate() option.
          * * @returns {Object} rendered MS-Excel data. data-format is determined by jszip_option
          **/
     }, {
-        key: 'bulk_render_multi_sheet',
-        value: function bulk_render_multi_sheet(bind_data_array) {
+        key: 'bulkRenderMultiSheet',
+        value: function bulkRenderMultiSheet(bind_data_array) {
             var _this2 = this;
 
             return bind_data_array.reduce(function (promise, _ref) {
                 var name = _ref.name;
                 var data = _ref.data;
                 return promise.then(function (prior) {
-                    return _this2.spreadsheet.add_sheet_binding_data(name, data);
+                    return _this2.spreadsheet.addSheetBindingData(name, data);
                 });
             }, Promise.resolve()).then(function () {
-                return _this2.spreadsheet.delete_template_sheet().forcus_on_first_sheet().generate(output_buffer);
+                return _this2.spreadsheet.deleteTemplateSheet().forcusOnFirstSheet().generate(output_buffer);
             })['catch'](function (err) {
                 console.error(new Error(err).stack);
                 Promise.reject();

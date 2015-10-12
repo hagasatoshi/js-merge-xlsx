@@ -39,34 +39,33 @@ class ExcelMerge{
      * * @returns {Object} rendered MS-Excel data. data-format is determined by jszip_option
      **/
     render(bind_data){
-        return this.spreadsheet.simple_render(bind_data);
+        return this.spreadsheet.simpleRender(bind_data);
     }
 
     /**
-     * * bulk_render_multi_file
+     * * bulkRenderMultiFile
      * * @param {Array} bind_data_array including data{name: file's name, data: binding-data}
      * * @returns {Object} rendered MS-Excel data.
      **/
-    bulk_render_multi_file(bind_data_array){
-        return this.spreadsheet.bulk_render_multi_file(bind_data_array);
+    bulkRenderMultiFile(bind_data_array){
+        return this.spreadsheet.bulkRenderMultiFile(bind_data_array);
     }
 
     /**
-     * * 3_bulk_render_multi_sheet
+     * * bulkRenderMultiSheet
      * * @param {Array} bind_data_array including data{name: file's name, data: binding-data}
-     * * @param {Object} output_option JsZip#generate() option.
      * * @returns {Object} rendered MS-Excel data. data-format is determined by jszip_option
      **/
-    bulk_render_multi_sheet(bind_data_array){
+    bulkRenderMultiSheet(bind_data_array){
         return bind_data_array.reduce(
             (promise, {name, data})=>
                 promise.then((prior)=>{
-                    return this.spreadsheet.add_sheet_binding_data(name,data);
+                    return this.spreadsheet.addSheetBindingData(name,data);
                 })
             , Promise.resolve()
         ).then(()=>{
-            return this.spreadsheet.delete_template_sheet()
-                .forcus_on_first_sheet()
+            return this.spreadsheet.deleteTemplateSheet()
+                .forcusOnFirstSheet()
                 .generate(output_buffer);
         }).catch((err)=>{
             console.error(new Error(err).stack);

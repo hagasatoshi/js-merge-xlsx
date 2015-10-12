@@ -51969,7 +51969,7 @@
 	                sharedstrings_obj: parseString(this.sharedstrings_str),
 	                workbookxml_rels: parseString(this.excel.file('xl/_rels/workbook.xml.rels').asText()),
 	                workbookxml: parseString(this.excel.file('xl/workbook.xml').asText()),
-	                sheet_xmls: this._parse_dir_in_excel('xl/worksheets')
+	                sheet_xmls: this._parseDirInExcel('xl/worksheets')
 	            }).then(function (templates) {
 	                _this.sharedstrings_obj = templates.sharedstrings_obj;
 	                _this.sharedstrings = templates.sharedstrings_obj.sst.si;
@@ -51980,7 +51980,7 @@
 	                    return e.name.indexOf('.rels') === -1;
 	                }).worksheet.sheetData[0].row;
 	                _this.template_sheet_name = _this.workbookxml.workbook.sheets[0].sheet[0]['$'].name;
-	                _this.common_strings_with_variable = _this._parse_common_string_with_variable();
+	                _this.common_strings_with_variable = _this._parseCommonStringWithVariable();
 
 	                //return this for chaining
 	                return _this;
@@ -52033,7 +52033,7 @@
 	            var _this4 = this;
 
 	            //1.add relation of next sheet
-	            var next_id = this._available_sheetid();
+	            var next_id = this._availableSheetid();
 	            this.workbookxml_rels.Relationships.Relationship.push({ '$': { Id: next_id,
 	                    Type: 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet',
 	                    Target: 'worksheets/sheet' + next_id + '.xml'
@@ -52056,8 +52056,8 @@
 	            });
 
 	            //2-4.build new sheet oject
-	            var source_sheet = this._sheet_by_name(this.template_sheet_name).value;
-	            var added_sheet = this._build_new_sheet(source_sheet, rendered_strings);
+	            var source_sheet = this._sheetByName(this.template_sheet_name).value;
+	            var added_sheet = this._buildNewSheet(source_sheet, rendered_strings);
 
 	            //2-5.update sheet name.
 	            added_sheet.name = 'sheet' + next_id + '.xml';
@@ -52112,13 +52112,13 @@
 	        }
 
 	        /**
-	         * * _parse_common_string_with_variable
+	         * * _parseCommonStringWithVariable
 	         * * @return {Array} including common strings only having mustache-variable
 	         * * @private
 	         **/
 	    }, {
-	        key: '_parse_common_string_with_variable',
-	        value: function _parse_common_string_with_variable() {
+	        key: '_parseCommonStringWithVariable',
+	        value: function _parseCommonStringWithVariable() {
 	            var _this6 = this;
 
 	            var common_strings_with_variable = [];
@@ -52146,14 +52146,14 @@
 	        }
 
 	        /**
-	         * * _parse_dir_in_excel
+	         * * _parseDirInExcel
 	         * * @param {String} dir directory name in Zip file.
 	         * * @return {Promise|Array} array including files parsed by xml2js
 	         * * @private
 	         **/
 	    }, {
-	        key: '_parse_dir_in_excel',
-	        value: function _parse_dir_in_excel(dir) {
+	        key: '_parseDirInExcel',
+	        value: function _parseDirInExcel(dir) {
 	            var _this7 = this;
 
 	            var files = this.excel.folder(dir).file(/.xml/);
@@ -52172,15 +52172,15 @@
 	        }
 
 	        /**
-	         * * _build_new_sheet
+	         * * _buildNewSheet
 	         * * @param {Object} source_sheet
 	         * * @param {Array} common_strings_with_variable
 	         * * @return {Object}
 	         * * @private
 	         **/
 	    }, {
-	        key: '_build_new_sheet',
-	        value: function _build_new_sheet(source_sheet, common_strings_with_variable) {
+	        key: '_buildNewSheet',
+	        value: function _buildNewSheet(source_sheet, common_strings_with_variable) {
 	            var added_sheet = JSON.parse(JSON.stringify(source_sheet));
 	            _underscore2['default'].each(common_strings_with_variable, function (e, index) {
 	                _underscore2['default'].each(e.using_cells, function (cell_address) {
@@ -52197,13 +52197,13 @@
 	        }
 
 	        /**
-	         * * _available_sheetid
+	         * * _availableSheetid
 	         * * @return {String} id of next sheet
 	         * * @private
 	         **/
 	    }, {
-	        key: '_available_sheetid',
-	        value: function _available_sheetid() {
+	        key: '_availableSheetid',
+	        value: function _availableSheetid() {
 	            var max_rel = _underscore2['default'].max(this.workbookxml_rels.Relationships.Relationship, function (e) {
 	                return Number(e['$'].Id.replace('rId', ''));
 	            });
@@ -52212,14 +52212,14 @@
 	        }
 
 	        /**
-	         * * _sheet_by_name
+	         * * _sheetByName
 	         * * @param {String} sheetname target sheet name
 	         * * @return {Object} sheet object
 	         * * @private
 	         **/
 	    }, {
-	        key: '_sheet_by_name',
-	        value: function _sheet_by_name(sheetname) {
+	        key: '_sheetByName',
+	        value: function _sheetByName(sheetname) {
 	            var sheetid = _underscore2['default'].find(this.workbookxml.workbook.sheets[0].sheet, function (e) {
 	                return e['$'].name === sheetname;
 	            })['$']['r:id'];

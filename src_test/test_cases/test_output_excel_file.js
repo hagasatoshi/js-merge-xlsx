@@ -45,13 +45,13 @@ class Utility{
                 _.each(result.rendering_data, (data,index)=>{
                     rendering_data.push({name:`file${index+1}.xlsx`, data:data});
                 });
-                return merge.bulk_render_multi_file(rendering_data);
+                return merge.bulkRenderMultiFile(rendering_data);
             }else if(output_type === EXCEL_OUTPUT_TYPE.BULK_MULTIPLE_SHEET){
                 rendering_data = [];
                 _.each(result.rendering_data, (data,index)=>{
                     rendering_data.push({name:`example${index+1}`, data:data});
                 });
-                return merge.bulk_render_multi_sheet(rendering_data);
+                return merge.bulkRenderMultiSheet(rendering_data);
             }
         }).then((output_data)=>{
             return fs.writeFileAsync(`${__dirname}/../output/${output_file_name}`, output_data);
