@@ -51,4 +51,13 @@ describe('output test : ',  ()=>{
         ()=>util.output('Template.xlsx','bulk_normal_data.yml',EXCEL_OUTPUT_TYPE.BULK_MULTIPLE_FILE,'01_normal_case/bulk_normaldata_temlate.zip'));
     it('bulk / normaldata / Template.xlsx',
         ()=>util.output('Template.xlsx','bulk_normal_data.yml',EXCEL_OUTPUT_TYPE.BULK_MULTIPLE_SHEET,'01_normal_case/bulk_normaldata_temlate.xlsx'));
+
+    /* 02.No Image */
+    it('single / normaldata / TemplateNoImage.xlsx',
+        ()=>util.output('TemplateNoImage.xlsx','single_normal_data.yml',EXCEL_OUTPUT_TYPE.SINGLE,'02_no_image/single_normaldata_noimage.xlsx'));
+    it('bulk / normaldata / TemplateNoImage.xlsx',
+        ()=>util.output('TemplateNoImage.xlsx','bulk_normal_data.yml',EXCEL_OUTPUT_TYPE.BULK_MULTIPLE_FILE,'02_no_image/bulk_normaldata_noimage.zip'));
+    it('bulk / normaldata / TemplateNoImage.xlsx',
+        ()=>util.output('TemplateNoImage.xlsx','bulk_normal_data.yml',EXCEL_OUTPUT_TYPE.BULK_MULTIPLE_SHEET,'02_no_image/bulk_normaldata_noimage.xlsx'));
+
 });

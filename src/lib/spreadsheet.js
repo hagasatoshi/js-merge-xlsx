@@ -212,7 +212,7 @@ class SpreadSheet{
      * * @return {Object} Excel data. format is determinated by parameter
      **/
     generate(option){
-        parseString(this.excel.file('xl/sharedStrings.xml').asText())
+        return parseString(this.excel.file('xl/sharedStrings.xml').asText())
         .then((sharedstringsObj)=>{
 
             //sharedstring
