@@ -148,14 +148,10 @@ module.exports = {
                 }).then(({sp1,sp2,sp3})=>{
                     assert(sp1.hasAsSharedString('hoge account1'),"'hoge account1' is missing in excel file");
                     assert(sp1.hasAsSharedString('hoge street1'),"'hoge street1' is missing in excel file");
-
-                    //FIXME clarify the following test end with error
-                    /*
                     assert(sp2.hasAsSharedString('hoge account2'),"'hoge account2' is missing in excel file");
                     assert(sp2.hasAsSharedString('hoge street2'),"'hoge street2' is missing in excel file");
                     assert(sp3.hasAsSharedString('hoge account3'),"'hoge account3' is missing in excel file");
                     assert(sp3.hasAsSharedString('hoge street3'),"'hoge street3' is missing in excel file");
-                    */
                 });
 
             });

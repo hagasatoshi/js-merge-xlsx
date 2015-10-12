@@ -44,8 +44,11 @@ describe('Test for spreadsheet.js : ',  ()=>{
 describe('output test : ',  ()=>{
     let util = new Utilitly();
 
-    /* output test */
-    it('single / normaldata / Template.xlsx', ()=>util.output('Template.xlsx','single_normal_data.yml',EXCEL_OUTPUT_TYPE.SINGLE,'single_normaldata_temlate.xlsx'));
-    it('bulk / normaldata / Template.xlsx', ()=>util.output('Template.xlsx','bulk_normal_data.yml',EXCEL_OUTPUT_TYPE.BULK_MULTIPLE_FILE,'bulk_normaldata_temlate.zip'));
-    it('bulk / normaldata / Template.xlsx', ()=>util.output('Template.xlsx','bulk_normal_data.yml',EXCEL_OUTPUT_TYPE.BULK_MULTIPLE_SHEET,'bulk_normaldata_temlate.xlsx'));
+    /* 01.Normal Case */
+    it('single / normaldata / Template.xlsx',
+        ()=>util.output('Template.xlsx','single_normal_data.yml',EXCEL_OUTPUT_TYPE.SINGLE,'01_normal_case/single_normaldata_temlate.xlsx'));
+    it('bulk / normaldata / Template.xlsx',
+        ()=>util.output('Template.xlsx','bulk_normal_data.yml',EXCEL_OUTPUT_TYPE.BULK_MULTIPLE_FILE,'01_normal_case/bulk_normaldata_temlate.zip'));
+    it('bulk / normaldata / Template.xlsx',
+        ()=>util.output('Template.xlsx','bulk_normal_data.yml',EXCEL_OUTPUT_TYPE.BULK_MULTIPLE_SHEET,'01_normal_case/bulk_normaldata_temlate.xlsx'));
 });

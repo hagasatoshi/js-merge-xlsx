@@ -254,7 +254,7 @@ class SpreadSheet{
      * * @private
      **/
     _simpleRender(bindData, option=outputBuffer){
-        return this.excel
+        return new JSZip(this.excel.generate(jszipBuffer))
             .file('xl/sharedStrings.xml', Mustache.render(this.excel.file('xl/sharedStrings.xml').asText(), bindData))
             .generate(option);
     }
