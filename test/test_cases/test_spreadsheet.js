@@ -18,7 +18,7 @@ var fs = Promise.promisifyAll(require('fs'));
 var _ = require('underscore');
 
 module.exports = {
-    check_load_with_no_parameter_should_return_error: function check_load_with_no_parameter_should_return_error() {
+    checkLoadWithNoParameterShouldReturnError: function checkLoadWithNoParameterShouldReturnError() {
         var spreadsheet = new SpreadSheet();
         return spreadsheet.load().then(function () {
             throw new Error('test_load_with_no_parameter_should_return_error failed ');
@@ -27,7 +27,7 @@ module.exports = {
         });
     },
 
-    check_load_should_return_this_instance: function check_load_should_return_this_instance() {
+    checkLoadShouldReturnThisInstance: function checkLoadShouldReturnThisInstance() {
         var spreadsheet = new SpreadSheet();
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (valid_template) {
             return spreadsheet.load(new JSZip(valid_template));
@@ -36,7 +36,7 @@ module.exports = {
         });
     },
 
-    check_load_each_member_from_valid_template: function check_load_each_member_from_valid_template() {
+    checkLoadEachMemberFromValidTemplate: function checkLoadEachMemberFromValidTemplate() {
         var spreadsheet = new SpreadSheet();
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (valid_template) {
             return spreadsheet.load(new JSZip(valid_template));
@@ -59,7 +59,7 @@ module.exports = {
         });
     },
 
-    simple_render_with_no_parameter_should_return_error: function simple_render_with_no_parameter_should_return_error() {
+    simpleRenderWithNoParameterShouldReturnError: function simpleRenderWithNoParameterShouldReturnError() {
         var spreadsheet = new SpreadSheet();
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (valid_template) {
             return spreadsheet.load(new JSZip(valid_template));
@@ -72,7 +72,7 @@ module.exports = {
         });
     },
 
-    check_if_simple_render_renders_correctly: function check_if_simple_render_renders_correctly() {
+    checkIfSimpleRenderRendersCorrectly: function checkIfSimpleRenderRendersCorrectly() {
         var spreadsheet = new SpreadSheet();
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (valid_template) {
             return spreadsheet.load(new JSZip(valid_template));
@@ -88,7 +88,7 @@ module.exports = {
         });
     },
 
-    bulk_render_multi_file_no_parameter_should_return_error: function bulk_render_multi_file_no_parameter_should_return_error() {
+    bulkRenderMultiFileNoParameterShouldReturnError: function bulkRenderMultiFileNoParameterShouldReturnError() {
         var spreadsheet = new SpreadSheet();
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (valid_template) {
             return spreadsheet.load(new JSZip(valid_template));
@@ -101,7 +101,7 @@ module.exports = {
         });
     },
 
-    bulk_render_multi_file_must_have_array_as_parameter: function bulk_render_multi_file_must_have_array_as_parameter() {
+    bulkRenderMultiFileMustHaveArrayAsParameter: function bulkRenderMultiFileMustHaveArrayAsParameter() {
         var spreadsheet = new SpreadSheet();
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (valid_template) {
             return spreadsheet.load(new JSZip(valid_template));
@@ -114,7 +114,7 @@ module.exports = {
         });
     },
 
-    bulk_render_multi_file_must_have_name_and_data: function bulk_render_multi_file_must_have_name_and_data() {
+    bulkRenderMultiFileMustHaveNameAndData: function bulkRenderMultiFileMustHaveNameAndData() {
         var spreadsheet = new SpreadSheet();
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (valid_template) {
             return spreadsheet.load(new JSZip(valid_template));
@@ -127,7 +127,7 @@ module.exports = {
         });
     },
 
-    check_if_bulk_render_multi_file_renders_correctly: function check_if_bulk_render_multi_file_renders_correctly() {
+    checkIfBulkRenderMultiFileRendersCorrectly: function checkIfBulkRenderMultiFileRendersCorrectly() {
         var spreadsheet = new SpreadSheet();
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (valid_template) {
             return spreadsheet.load(new JSZip(valid_template));
@@ -159,7 +159,7 @@ module.exports = {
         });
     },
 
-    add_sheet_binding_data_with_no_parameter_should_return_error: function add_sheet_binding_data_with_no_parameter_should_return_error() {
+    addSheetBindingDataWithNoParameterShouldReturnError: function addSheetBindingDataWithNoParameterShouldReturnError() {
         var spreadsheet = new SpreadSheet();
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (valid_template) {
             return spreadsheet.load(new JSZip(valid_template));
@@ -172,7 +172,7 @@ module.exports = {
         });
     },
 
-    add_sheet_binding_data_with_1_parameter_should_return_error: function add_sheet_binding_data_with_1_parameter_should_return_error() {
+    addSheetBindingDataWith1ParameterShouldReturnError: function addSheetBindingDataWith1ParameterShouldReturnError() {
         var spreadsheet = new SpreadSheet();
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (valid_template) {
             return spreadsheet.load(new JSZip(valid_template));
@@ -185,7 +185,7 @@ module.exports = {
         });
     },
 
-    activate_sheet_with_no_parameter_should_return_error: function activate_sheet_with_no_parameter_should_return_error() {
+    activateSheetWithNoParameterShouldReturnError: function activateSheetWithNoParameterShouldReturnError() {
         var spreadsheet = new SpreadSheet();
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (valid_template) {
             return spreadsheet.load(new JSZip(valid_template));
@@ -198,7 +198,7 @@ module.exports = {
         });
     },
 
-    activate_sheet_with_invalid_sheetname_should_return_error: function activate_sheet_with_invalid_sheetname_should_return_error() {
+    activateSheetWithInvalidSheetnameShouldReturnError: function activateSheetWithInvalidSheetnameShouldReturnError() {
         var spreadsheet = new SpreadSheet();
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (valid_template) {
             return spreadsheet.load(new JSZip(valid_template));
@@ -211,7 +211,7 @@ module.exports = {
         });
     },
 
-    delete_sheet_with_no_parameter_should_return_error: function delete_sheet_with_no_parameter_should_return_error() {
+    deleteSheetWithNoParameterShouldReturnError: function deleteSheetWithNoParameterShouldReturnError() {
         var spreadsheet = new SpreadSheet();
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (valid_template) {
             return spreadsheet.load(new JSZip(valid_template));
@@ -224,7 +224,7 @@ module.exports = {
         });
     },
 
-    delete_sheet_with_invalid_sheetname_should_return_error: function delete_sheet_with_invalid_sheetname_should_return_error() {
+    deleteSheetWithInvalidSheetnameShouldReturnError: function deleteSheetWithInvalidSheetnameShouldReturnError() {
         var spreadsheet = new SpreadSheet();
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (valid_template) {
             return spreadsheet.load(new JSZip(valid_template));

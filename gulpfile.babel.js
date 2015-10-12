@@ -8,39 +8,42 @@ import babel from 'gulp-babel'
 import mocha from 'gulp-mocha'
 import runSequence from 'run-sequence'
 
-/* babel compile task */
-gulp.task('babel', ()=>{
-    //source JavaScript files
-    gulp.src('src/**/*.js')
+/* compile source resources */
+gulp.task('babel-src', ()=>{
+    return gulp.src('src/**/*.js')
         .pipe(babel())
         .pipe(gulp.dest('./'));
-    //test JavaScript files
-    gulp.src('src_test/**/*.js')
+});
+
+/* compile test resources */
+gulp.task('babel-test', ()=>{
+    return gulp.src('src_test/**/*.js')
         .pipe(babel())
         .pipe(gulp.dest('test/'));
 });
 
-/* mocha testing task */
+/* mocha testing */
 gulp.task('mocha', ()=>{
-    gulp.src('test/test.js', {read: false})
+    return gulp.src('test/test.js')
         .pipe(mocha());
 });
 
-
-/* copy test resources */
-gulp.task('copy_resources', ()=>{
-    gulp.src('src_test/templates/*.xlsx')
+/* copy test resources(MS-Excel templates) */
+gulp.task('copy_templates', ()=>{
+    return gulp.src('src_test/templates/*.xlsx')
         .pipe(gulp.dest('test/templates/'));
-    gulp.src('src_test/input/*.*')
-        .pipe(gulp.dest('test/input/'));
+});
 
+/* copy test resources(yaml) */
+gulp.task('copy_yaml_files', ()=>{
+    return gulp.src('src_test/input/*.*')
+        .pipe(gulp.dest('test/input/'));
 });
 
 /* default task */
 gulp.task('default', (callback)=> {
     runSequence(
-        'babel',
-        'copy_resources',
+        ['babel-src','babel-test','copy_templates','copy_yaml_files'],
         'mocha',
         callback
     )

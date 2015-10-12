@@ -16,7 +16,7 @@ var fs = Promise.promisifyAll(require('fs'));
 var _ = require('underscore');
 
 module.exports = {
-    check_load_with_no_parameter_should_return_error: ()=>{
+    checkLoadWithNoParameterShouldReturnError: ()=>{
         let spreadsheet = new SpreadSheet();
         return spreadsheet.load()
             .then(()=>{
@@ -26,7 +26,7 @@ module.exports = {
             });
     },
 
-    check_load_should_return_this_instance: ()=>{
+    checkLoadShouldReturnThisInstance: ()=>{
         let spreadsheet = new SpreadSheet();
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx')
             .then((valid_template)=>{
@@ -36,7 +36,7 @@ module.exports = {
             });
     },
 
-    check_load_each_member_from_valid_template: ()=>{
+    checkLoadEachMemberFromValidTemplate: ()=>{
         let spreadsheet = new SpreadSheet();
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx')
         .then((valid_template)=>{
@@ -61,7 +61,7 @@ module.exports = {
         });
     },
 
-    simple_render_with_no_parameter_should_return_error: ()=> {
+    simpleRenderWithNoParameterShouldReturnError: ()=> {
         let spreadsheet = new SpreadSheet();
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx')
             .then((valid_template)=>{
@@ -75,7 +75,7 @@ module.exports = {
             });
     },
 
-    check_if_simple_render_renders_correctly: ()=>{
+    checkIfSimpleRenderRendersCorrectly: ()=>{
         let spreadsheet = new SpreadSheet();
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx')
         .then((valid_template)=>{
@@ -92,7 +92,7 @@ module.exports = {
         });
     },
 
-    bulk_render_multi_file_no_parameter_should_return_error: ()=> {
+    bulkRenderMultiFileNoParameterShouldReturnError: ()=> {
         let spreadsheet = new SpreadSheet();
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx')
             .then((valid_template)=>{
@@ -106,7 +106,7 @@ module.exports = {
             });
     },
 
-    bulk_render_multi_file_must_have_array_as_parameter: ()=> {
+    bulkRenderMultiFileMustHaveArrayAsParameter: ()=> {
         let spreadsheet = new SpreadSheet();
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx')
             .then((valid_template)=>{
@@ -120,7 +120,7 @@ module.exports = {
             });
     },
 
-    bulk_render_multi_file_must_have_name_and_data: ()=> {
+    bulkRenderMultiFileMustHaveNameAndData: ()=> {
         let spreadsheet = new SpreadSheet();
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx')
             .then((valid_template)=>{
@@ -134,7 +134,7 @@ module.exports = {
             });
     },
 
-    check_if_bulk_render_multi_file_renders_correctly: ()=>{
+    checkIfBulkRenderMultiFileRendersCorrectly: ()=>{
         let spreadsheet = new SpreadSheet();
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx')
             .then((valid_template)=>{
@@ -172,7 +172,7 @@ module.exports = {
             });
     },
 
-    add_sheet_binding_data_with_no_parameter_should_return_error: ()=>{
+    addSheetBindingDataWithNoParameterShouldReturnError: ()=>{
         let spreadsheet = new SpreadSheet();
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx')
             .then((valid_template)=>{
@@ -186,7 +186,7 @@ module.exports = {
             });
     },
 
-    add_sheet_binding_data_with_1_parameter_should_return_error: ()=>{
+    addSheetBindingDataWith1ParameterShouldReturnError: ()=>{
         let spreadsheet = new SpreadSheet();
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx')
             .then((valid_template)=>{
@@ -200,7 +200,7 @@ module.exports = {
             });
     },
 
-    activate_sheet_with_no_parameter_should_return_error: ()=>{
+    activateSheetWithNoParameterShouldReturnError: ()=>{
         let spreadsheet = new SpreadSheet();
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx')
             .then((valid_template)=>{
@@ -214,7 +214,7 @@ module.exports = {
             });
     },
 
-    activate_sheet_with_invalid_sheetname_should_return_error: ()=>{
+    activateSheetWithInvalidSheetnameShouldReturnError: ()=>{
         let spreadsheet = new SpreadSheet();
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx')
             .then((valid_template)=>{
@@ -228,7 +228,7 @@ module.exports = {
             });
     },
 
-    delete_sheet_with_no_parameter_should_return_error: ()=>{
+    deleteSheetWithNoParameterShouldReturnError: ()=>{
         let spreadsheet = new SpreadSheet();
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx')
             .then((valid_template)=>{
@@ -242,7 +242,7 @@ module.exports = {
             });
     },
 
-    delete_sheet_with_invalid_sheetname_should_return_error: ()=>{
+    deleteSheetWithInvalidSheetnameShouldReturnError: ()=>{
         let spreadsheet = new SpreadSheet();
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx')
             .then((valid_template)=>{
