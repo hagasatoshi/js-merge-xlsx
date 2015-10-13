@@ -4,7 +4,6 @@
  * * @author Satoshi Haga
  * * @date 2015/10/03
  **/
-//FIXME xl/worksheets/sheet1.xml and xl/worksheets/_rels/sheet1.xml.rels are remaining. remove these files
 //FIXME count in sharedstring.xml is not correct. fix count.
 //FIXME change logic of SpreadSheet#addSheetBindingData(). this spec should be similar with specforce.
 var Mustache = require('mustache');
@@ -186,7 +185,11 @@ class SpreadSheet{
             if(sheet && (sheet['$'].name === sheetname))this.workbookxml.workbook.sheets[0].sheet.splice(index,1);
         });
         _.each(this.sheetXmls, (sheetXml,index)=>{
-            if(sheetXml && (sheetXml.name === targetSheet.value.name)) this.sheetXmls.splice(index,1);
+            if(sheetXml && (sheetXml.name === targetSheet.value.name)) {
+                this.sheetXmls.splice(index,1);
+                this.excel.remove(`xl/worksheets/${targetSheet.value.name}`);
+                this.excel.remove(`xl/worksheets/_rels/${targetSheet.value.name}.rels`);
+            }
         });
         return this;
     }
