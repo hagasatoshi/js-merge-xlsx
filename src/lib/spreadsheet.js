@@ -274,8 +274,7 @@ class SpreadSheet{
     _parseCommonStringWithVariable(){
         let commonStringsWithVariable = [];
         _.each(this.sharedstrings,(stringObj, index)=>{
-            //if(_(stringObj.t).stringValue() && _(_(stringObj.t).stringValue()).hasVariable()){
-            if(true){
+            if(_(stringObj.t).stringValue() && _(_(stringObj.t).stringValue()).hasVariable()){
                 stringObj.sharedIndex = index;
                 commonStringsWithVariable.push(stringObj);
             }
