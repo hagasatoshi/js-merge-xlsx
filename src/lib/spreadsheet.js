@@ -5,7 +5,6 @@
  * * @date 2015/10/03
  **/
 //FIXME count in sharedstring.xml is not correct. fix count.
-//FIXME change logic of SpreadSheet#addSheetBindingData(). this spec should be similar with specforce.
 var Mustache = require('mustache');
 var Promise = require('bluebird');
 var _ = require('underscore');
@@ -240,10 +239,12 @@ class SpreadSheet{
             });
 
             //sheetXmlsRels
-            let strTemplateSheetRels = builder.buildObject(this.templateSheetRelsData);
-            _.each(this.sheetXmls, (sheet)=>{
-                if(sheet.name) this.excel.file(`xl/worksheets/_rels/${sheet.name}.rels`, strTemplateSheetRels);
-            });
+            if(this.templateSheetRelsData.value && this.templateSheetRelsData.value.Relationships){
+                let strTemplateSheetRels = builder.buildObject({Relationships:this.templateSheetRelsData.value.Relationships});
+                _.each(this.sheetXmls, (sheet)=>{
+                    if(sheet.name) this.excel.file(`xl/worksheets/_rels/${sheet.name}.rels`, strTemplateSheetRels);
+                });
+            }
 
             //call JSZip#generate()
             return this.excel.generate(option);
@@ -273,7 +274,8 @@ class SpreadSheet{
     _parseCommonStringWithVariable(){
         let commonStringsWithVariable = [];
         _.each(this.sharedstrings,(stringObj, index)=>{
-            if(_(stringObj.t).stringValue() && _(_(stringObj.t).stringValue()).hasVariable()){
+            //if(_(stringObj.t).stringValue() && _(_(stringObj.t).stringValue()).hasVariable()){
+            if(true){
                 stringObj.sharedIndex = index;
                 commonStringsWithVariable.push(stringObj);
             }
@@ -310,10 +312,6 @@ class SpreadSheet{
                         .then(()=>parseString(this.excel.file(file.name).asText()))
                         .then((file_xml)=>{
                             file_xml.name = _.last(file.name.split('/'));
-                            //TODO following if expression is temporary.
-                            if(file_xml.name.indexOf('rels') !== -1){
-                                return;
-                            }
                             fileXmls.push(file_xml);
                             return fileXmls;
                         })

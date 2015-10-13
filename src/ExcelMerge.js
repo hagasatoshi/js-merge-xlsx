@@ -67,6 +67,7 @@ class ExcelMerge{
             return this.spreadsheet.deleteTemplateSheet()
                 .forcusOnFirstSheet()
                 .generate(output_buffer);
+
         }).catch((err)=>{
             console.error(new Error(err).stack);
             Promise.reject();
