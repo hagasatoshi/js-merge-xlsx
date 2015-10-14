@@ -5,46 +5,40 @@
  * * @date 2015/09/30
  **/
 
-import ExcelMerge from 'js-merge-xlsx'
-import Promise from 'bluebird'
+var ExcelMerge = require('js-merge-xlsx');
+var Promise = require('bluebird');
 var readYamlAsync = Promise.promisify(require('read-yaml'));
 var fs = Promise.promisifyAll(require('fs'));
-import JSZip from 'jszip'
-import _ from 'underscore'
+var JSZip = require('jszip');
+var _ = require('underscore');
 
 //Load Template
 fs.readFileAsync('./template/Template.xlsx')
 .then((excelTemplate)=>{
     return Promise.props({
         data: readYamlAsync('./data/data1.yml'),                //Load single data
-        bulkData: readYamlAsync('./data/data2.yml'),           //Load array data
-        merge: new ExcelMerge().load(new JSZip(excelTemplate)) //Initialize ExcelMerge object
+        bulkData: readYamlAsync('./data/data2.yml'),            //Load array data
+        merge: new ExcelMerge().load(new JSZip(excelTemplate))  //Initialize ExcelMerge object
     });
 }).then(({data, bulkData, merge})=>{
 
-    //add name property for bulk-printing to ExcelMerge#bulkRenderMultiFile()
-    let bulkDataArray1 = [];
-    _.each(bulkData, (data,index)=>{
-        bulkDataArray1.push({name: `file${index+1}.xlsx`, data:data});
-    });
+    //add name property for ExcelMerge#bulkRenderMultiFile()
+    let bulkData1 = _.map(bulkData, (e,index)=> ({name:`file${index+1}.xlsx`, data:e}));
 
-    //add name property for bulk-printing to ExcelMerge#bulkRenderMultiSheet()
-    let bulkDataArray2 = [];
-    _.each(bulkData, (data,index)=>{
-        bulkDataArray2.push({name:`example${index+1}`, data:data});
-    });
+    //add name property for ExcelMerge#bulkRenderMultiSheet()
+    let bulkData2 = _.map(bulkData, (e,index)=> ({name:`example${index+1}`, data:e}));
 
     //Execute rendering
     return Promise.props({
         excel1: merge.render(data),
-        excel2: merge.bulkRenderMultiFile(bulkDataArray1),
-        excel3: merge.bulkRenderMultiSheet(bulkDataArray2)
+        excel2: merge.bulkRenderMultiFile(bulkData1),
+        excel3: merge.bulkRenderMultiSheet(bulkData2)
     });
 }).then(({excel1, excel2, excel3})=>{
     return Promise.all([
-        fs.writeFileAsync('Example1.xlsx',excel1),
-        fs.writeFileAsync('Example2.zip',excel2),
-        fs.writeFileAsync('Example3.xlsx',excel3)
+        fs.writeFileAsync('example1.xlsx',excel1),
+        fs.writeFileAsync('example2.zip',excel2),
+        fs.writeFileAsync('example3.xlsx',excel3)
     ]);
 }).catch((err)=>{
     console.error(new Error(err).stack);
