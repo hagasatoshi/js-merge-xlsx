@@ -61,7 +61,6 @@ describe('output test : ',  ()=>{
         ()=>util.output('TemplateNoImage.xlsx','bulk_normal_data.yml',EXCEL_OUTPUT_TYPE.BULK_MULTIPLE_SHEET,'02_no_image/bulk_normaldata_noimage.xlsx'));
 
     /* 03.No String */
-    /*
     it('single / normaldata / TemplateNoStrings.xlsx', function () {
         return util.output('TemplateNoStrings.xlsx', 'single_normal_data.yml', EXCEL_OUTPUT_TYPE.SINGLE, '03_no_strings/single_normaldata_nostrings.xlsx');
     });
@@ -71,6 +70,5 @@ describe('output test : ',  ()=>{
     it('bulk / normaldata / TemplateNoStrings.xlsx', function () {
         return util.output('TemplateNoStrings.xlsx', 'bulk_normal_data.yml', EXCEL_OUTPUT_TYPE.BULK_MULTIPLE_SHEET, '03_no_strings/bulk_normaldata_nostrings.xlsx');
     });
-    */
 
 });

@@ -5,6 +5,7 @@
  * * @date 2015/10/03
  **/
 //FIXME count in sharedstring.xml is not correct. fix count.
+//TODO remove old thumbnail file.
 var Mustache = require('mustache');
 var Promise = require('bluebird');
 var _ = require('underscore');
@@ -116,25 +117,28 @@ class SpreadSheet{
         this.workbookxml.workbook.sheets[0].sheet.push({ '$': { name: destSheetName, sheetId: nextId.replace('rId',''), 'r:id': nextId } });
 
         //2.add sheet file.
-        //2-1.prepare rendered-strings
-        let renderedStrings = _(this.commonStringsWithVariable).deepCopy();
-        _.each(renderedStrings,(e)=>e.t[0] = Mustache.render(_(e.t).stringValue(), data));
+        let renderedStrings;
+        if(this.sharedstrings){
+            //prepare rendered-strings
+            renderedStrings = _(this.commonStringsWithVariable).deepCopy();
+            _.each(renderedStrings,(e)=>e.t[0] = Mustache.render(_(e.t).stringValue(), data));
 
-        //2-2.add rendered-string into sharedstrings
-        let currentCount = this.sharedstrings.length;
-        _.each(renderedStrings,(e,index)=>{
-            e.sharedIndex = currentCount + index;
-            this.sharedstrings.push(e);
-        });
+            //add rendered-string into sharedstrings
+            let currentCount = this.sharedstrings.length;
+            _.each(renderedStrings,(e,index)=>{
+                e.sharedIndex = currentCount + index;
+                this.sharedstrings.push(e);
+            });
+        }
 
-        //2-4.build new sheet oject
+        //build new sheet oject
         let sourceSheet = this._sheetByName(this.templateSheetName).value;
         let addedSheet = this._buildNewSheet(sourceSheet, renderedStrings);
 
-        //2-5.update sheet name.
+        //update sheet name.
         addedSheet.name = `sheet${nextId}.xml`;
 
-        //2-6.add this sheet into sheet_xmls
+        //add this sheet into sheet_xmls
         this.sheetXmls.push(addedSheet);
 
         return this;
@@ -220,13 +224,18 @@ class SpreadSheet{
         return parseString(this.excel.file('xl/sharedStrings.xml').asText())
         .then((sharedstringsObj)=>{
 
-            //sharedstring
-            sharedstringsObj.sst.si = this._cleanSharedStrings();
-            sharedstringsObj.sst['$'].count = sharedstringsObj.sst['$'].uniqueCount = this.sharedstrings.length;
-            this.excel
-                .file('xl/sharedStrings.xml', builder.buildObject(sharedstringsObj))
-                .file("xl/_rels/workbook.xml.rels",builder.buildObject(this.workbookxmlRels))
-                .file("xl/workbook.xml",builder.buildObject(this.workbookxml));
+            //sharedstrings
+            if(this.sharedstrings){
+                sharedstringsObj.sst.si = this._cleanSharedStrings();
+                sharedstringsObj.sst['$'].count = sharedstringsObj.sst['$'].uniqueCount = this.sharedstrings.length;
+                this.excel.file('xl/sharedStrings.xml', builder.buildObject(sharedstringsObj))
+            }
+
+            //workbook.xml.rels
+            this.excel.file("xl/_rels/workbook.xml.rels",builder.buildObject(this.workbookxmlRels))
+
+            //workbook.xml
+            this.excel.file("xl/workbook.xml",builder.buildObject(this.workbookxml));
 
             //sheetXmls
             _.each(this.sheetXmls, (sheet)=>{
@@ -329,6 +338,9 @@ class SpreadSheet{
      **/
     _buildNewSheet(sourceSheet, commonStringsWithVariable){
         let addedSheet = _(sourceSheet).deepCopy();
+        addedSheet.worksheet.sheetViews[0].sheetView[0]['$'].tabSelected = '0';
+        if(!commonStringsWithVariable) return addedSheet;
+
         _.each(commonStringsWithVariable,(e,index)=>{
             _.each(e.usingCells, (cellAddress)=>{
                 _.each(addedSheet.worksheet.sheetData[0].row,(row)=>{
@@ -340,7 +352,6 @@ class SpreadSheet{
                 });
             });
         });
-        addedSheet.worksheet.sheetViews[0].sheetView[0]['$'].tabSelected = '0';
         return addedSheet;
     }
 
