@@ -7,10 +7,10 @@ var gulp = require('gulp');
 var babel = require('gulp-babel');
 
 /* babel compile task */
-gulp.task('babel', function () {
+gulp.task('babel', ()=>{
 
     //source JavaScript files
-    gulp.src('src/app.js')
+    return gulp.src('src/app.js')
         .pipe(babel())
         .pipe(gulp.dest('./'));
 
