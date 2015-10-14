@@ -71,4 +71,37 @@ describe('output test : ',  ()=>{
         return util.output('TemplateNoStrings.xlsx', 'bulk_normal_data.yml', EXCEL_OUTPUT_TYPE.BULK_MULTIPLE_SHEET, '03_no_strings/bulk_normaldata_nostrings.xlsx');
     });
 
+    /* 04.String with no variables */
+    it('single / normaldata / TemplateStringWithNoVariables.xlsx', function () {
+        return util.output('TemplateStringWithNoVariables.xlsx', 'single_normal_data.yml', EXCEL_OUTPUT_TYPE.SINGLE, '04_variables/single_normaldata_novariables.xlsx');
+    });
+    it('bulk / normaldata / TemplateStringWithNoVariables.xlsx', function () {
+        return util.output('TemplateStringWithNoVariables.xlsx', 'bulk_normal_data.yml', EXCEL_OUTPUT_TYPE.BULK_MULTIPLE_FILE, '04_variables/bulk_normaldata_novariables.zip');
+    });
+    it('bulk / normaldata / TemplateStringWithNoVariables.xlsx', function () {
+        return util.output('TemplateStringWithNoVariables.xlsx', 'bulk_normal_data.yml', EXCEL_OUTPUT_TYPE.BULK_MULTIPLE_SHEET, '04_variables/bulk_normaldata_novariables.xlsx');
+    });
+
+    /* 05.multiple images */
+    it('single / normaldata / TemplateMultiImages.xlsx', function () {
+        return util.output('TemplateMultiImages.xlsx', 'single_normal_data.yml', EXCEL_OUTPUT_TYPE.SINGLE, '05_multiple_images/single_normaldata_multiple_images.xlsx');
+    });
+    it('bulk / normaldata / TemplateMultiImages.xlsx', function () {
+        return util.output('TemplateMultiImages.xlsx', 'bulk_normal_data.yml', EXCEL_OUTPUT_TYPE.BULK_MULTIPLE_FILE, '05_multiple_images/bulk_normaldata_multiple_images.zip');
+    });
+    it('bulk / normaldata / TemplateMultiImages.xlsx', function () {
+        return util.output('TemplateMultiImages.xlsx', 'bulk_normal_data.yml', EXCEL_OUTPUT_TYPE.BULK_MULTIPLE_SHEET, '05_multiple_images/bulk_normaldata_multiple_images.xlsx');
+    });
+
+    /* 06.With objects */
+    it('single / normaldata / TemplateWithObject.xlsx', function () {
+        return util.output('TemplateWithObject.xlsx', 'single_normal_data.yml', EXCEL_OUTPUT_TYPE.SINGLE, '06_object/single_normaldata_with_object.xlsx');
+    });
+    it('bulk / normaldata / TemplateWithObject.xlsx', function () {
+        return util.output('TemplateWithObject.xlsx', 'bulk_normal_data.yml', EXCEL_OUTPUT_TYPE.BULK_MULTIPLE_FILE, '06_object/bulk_normaldata_with_object.zip');
+    });
+    it('bulk / normaldata / TemplateWithObject.xlsx', function () {
+        return util.output('TemplateWithObject.xlsx', 'bulk_normal_data.yml', EXCEL_OUTPUT_TYPE.BULK_MULTIPLE_SHEET, '06_object/bulk_normaldata_with_object.xlsx');
+    });
+
 });
