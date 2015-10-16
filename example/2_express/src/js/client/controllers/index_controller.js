@@ -13,10 +13,10 @@ var _ = require('underscore');
 var indexController = ($scope, $http)=>{
 
     /**
-     * * exampleRender
-     * * example of ExcelMerge#render()
+     * * exampleMerge
+     * * example of ExcelMerge#merge()
      */
-    $scope.exampleRender = ()=>{
+    $scope.exampleMerge = ()=>{
         Promise.resolve($http.get('/template/Template.xlsx', {responseType: "arraybuffer"}))
         .then((excelTemplate)=>{
             return Promise.props({
@@ -24,7 +24,7 @@ var indexController = ($scope, $http)=>{
                 excelMerge: new ExcelMerge().load(new JSZip(excelTemplate.data))
             });
         }).then(({data, excelMerge})=>{
-            return excelMerge.render(data.data);
+            return excelMerge.merge(data.data);
         }).then((excelData)=>{
             saveAs(excelData,'example.xlsx');   //FileSaver#saveAs()
         }).catch((err)=>{
@@ -33,10 +33,10 @@ var indexController = ($scope, $http)=>{
     };
 
     /**
-     * * exampleBulkRenderMultiFile
-     * * example of ExcelMerge#exampleBulkRenderMultiFile()
+     * * exampleBulkMergeMultiFile
+     * * example of ExcelMerge#bulkMergeMultiFile()
      */
-    $scope.exampleBulkRenderMultiFile = ()=>{
+    $scope.exampleBulkMergeMultiFile = ()=>{
         Promise.resolve($http.get('/template/Template.xlsx', {responseType: "arraybuffer"}))
         .then((excelTemplate)=>{
             return Promise.props({
@@ -45,7 +45,7 @@ var indexController = ($scope, $http)=>{
             });
         }).then(({data, excelMerge})=>{
             data = _.map(data.data, (e,index)=>({name:`file${(index+1)}.xlsx`, data:e}));
-            return excelMerge.bulkRenderMultiFile(data); //FileSaver#saveAs()
+            return excelMerge.bulkMergeMultiFile(data); //FileSaver#saveAs()
         }).then((zipData)=>{
             saveAs(zipData,'example.zip');
         }).catch((err)=>{
@@ -54,10 +54,10 @@ var indexController = ($scope, $http)=>{
     };
 
     /**
-     * * exampleBulkRenderMultiSheet
-     * * example of ExcelMerge#exampleBulkRenderMultiSheet()
+     * * exampleBulkMergeMultiSheet
+     * * example of ExcelMerge#bulkMergeMultiSheet()
      */
-    $scope.exampleBulkRenderMultiSheet = ()=>{
+    $scope.exampleBulkMergeMultiSheet = ()=>{
         Promise.resolve($http.get('/template/Template.xlsx', {responseType: "arraybuffer"}))
         .then((excelTemplate)=>{
             return Promise.props({
@@ -66,7 +66,7 @@ var indexController = ($scope, $http)=>{
             });
         }).then(({data, excelMerge})=>{
             data = _.map(data.data, (e,index)=>({name:`sample${(index+1)}`, data:e}));
-            return excelMerge.bulkRenderMultiSheet(data);
+            return excelMerge.bulkMergeMultiSheet(data);
         }).then((excelData)=>{
             saveAs(excelData,'example.xlsx');
         }).catch((err)=>{

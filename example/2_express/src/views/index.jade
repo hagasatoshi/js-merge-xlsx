@@ -9,7 +9,6 @@ html(ng-app="app")
         link(rel="stylesheet",href="/bower_components/bootstrap/dist/css/bootstrap.css")
         link(rel="stylesheet",href="/bower_components/bootstrap/dist/css/bootstrap-theme.css")
         link(rel="stylesheet",href="/bower_components/font-awesome/css/font-awesome.css")
-
         script(src='/bower_components/filesaver/FileSaver.js')
         script(src='/scripts/js_merge_xlsx.js')
         link(rel='stylesheet', href="/styles/app.css")
@@ -20,6 +19,6 @@ html(ng-app="app")
         #ContentArea
             .main-view
                 .button-area
-                    a.btn.btn-primary(ng-click="exampleRender()") ExcelMerge#render()
-                    a.btn.btn-primary(ng-click="exampleBulkRenderMultiFile()") ExcelMerge#bulkRenderMultiFile()
-                    a.btn.btn-primary(ng-click="exampleBulkRenderMultiSheet()") ExcelMerge#bulkRenderMultiSheet()
+                    a.btn.btn-primary(ng-click="exampleMerge()") ExcelMerge#merge()
+                    a.btn.btn-primary(ng-click="exampleBulkMergeMultiFile()") ExcelMerge#bulkMergeMultiFile()
+                    a.btn.btn-primary(ng-click="exampleBulkMergeMultiSheet()") ExcelMerge#bulkMergeMultiSheet()
