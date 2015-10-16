@@ -39,30 +39,30 @@ var Utility = (function () {
             return fs.readFileAsync(__dirname + '/../templates/' + templateName).then(function (excelTemplate) {
                 return Promise.props({
                     renderingData: readYamlAsync(__dirname + '/../input/' + inputFileName), //Load single data
-                    merge: new ExcelMerge().load(new JSZip(excelTemplate)) //Initialize ExcelMerge object
+                    excelMerge: new ExcelMerge().load(new JSZip(excelTemplate)) //Initialize ExcelMerge object
                 });
             }).then(function (_ref) {
                 var renderingData = _ref.renderingData;
-                var merge = _ref.merge;
+                var excelMerge = _ref.excelMerge;
 
                 var dataArray = [];
                 switch (outputType) {
                     case EXCEL_OUTPUT_TYPE.SINGLE:
-                        return merge.render(renderingData);
+                        return excelMerge.merge(renderingData);
                         break;
 
                     case EXCEL_OUTPUT_TYPE.BULK_MULTIPLE_FILE:
                         _.each(renderingData, function (data, index) {
                             return dataArray.push({ name: 'file' + (index + 1) + '.xlsx', data: data });
                         });
-                        return merge.bulkRenderMultiFile(dataArray);
+                        return excelMerge.bulkMergeMultiFile(dataArray);
                         break;
 
                     case EXCEL_OUTPUT_TYPE.BULK_MULTIPLE_SHEET:
                         _.each(renderingData, function (data, index) {
                             return dataArray.push({ name: 'example' + (index + 1), data: data });
                         });
-                        return merge.bulkRenderMultiSheet(dataArray);
+                        return excelMerge.bulkMergeMultiSheet(dataArray);
                         break;
                 }
             }).then(function (outputData) {

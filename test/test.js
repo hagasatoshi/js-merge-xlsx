@@ -99,7 +99,7 @@ describe('output test : ', function () {
         return util.output('TemplateMultiImages.xlsx', 'bulk_normal_data.yml', EXCEL_OUTPUT_TYPE.BULK_MULTIPLE_SHEET, '05_multiple_images/bulk_normaldata_multiple_images.xlsx');
     });
 
-    /* 06.with objects */
+    /* 06.With objects */
     it('single / normaldata / TemplateWithObject.xlsx', function () {
         return util.output('TemplateWithObject.xlsx', 'single_normal_data.yml', EXCEL_OUTPUT_TYPE.SINGLE, '06_object/single_normaldata_with_object.xlsx');
     });

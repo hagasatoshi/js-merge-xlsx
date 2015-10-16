@@ -34,29 +34,29 @@ class ExcelMerge{
     }
 
     /**
-     * * render
+     * * merge
      * * @param {Object} bindData binding data
-     * * @returns {Object} rendered MS-Excel data. data-format is determined by jszip_option
+     * * @return {Promise} Promise instance including MS-Excel data. data-format is determined by jszip_option
      **/
-    render(bindData){
+    merge(bindData){
         return this.spreadsheet.simpleRender(bindData);
     }
 
     /**
-     * * bulkRenderMultiFile
+     * * bulkMergeMultiFile
      * * @param {Array} bindDataArray including data{name: file's name, data: binding-data}
-     * * @returns {Object} rendered MS-Excel data.
+     * * @return {Promise} Promise instance including MS-Excel data.
      **/
-    bulkRenderMultiFile(bindDataArray){
+    bulkMergeMultiFile(bindDataArray){
         return this.spreadsheet.bulkRenderMultiFile(bindDataArray);
     }
 
     /**
-     * * bulkRenderMultiSheet
+     * * bulkMergeMultiSheet
      * * @param {Array} bindDataArray including data{name: file's name, data: binding-data}
-     * * @returns {Object} rendered MS-Excel data. data-format is determined by jszip_option
+     * * @return {Promise} Promise instance including MS-Excel data.
      **/
-    bulkRenderMultiSheet(bindDataArray){
+    bulkMergeMultiSheet(bindDataArray){
         return bindDataArray.reduce(
             (promise, {name, data})=>
                 promise.then((prior)=>{
@@ -67,13 +67,11 @@ class ExcelMerge{
             return this.spreadsheet.deleteTemplateSheet()
                 .forcusOnFirstSheet()
                 .generate(output_buffer);
-
         }).catch((err)=>{
             console.error(new Error(err).stack);
             Promise.reject();
         });
     }
-
 }
 
 //Exports
