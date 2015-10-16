@@ -25,18 +25,48 @@ Prepare the template with bind-variables as mustache format {{}}.
 js-merge-xlsx supports Promises/A+([bluebird](https://github.com/petkaantonov/bluebird)). So, it is called basically in Promise-chain.  
 Example(ES6 syntax)  
 ```JavaScript
+/**
+ * * app.js
+ * * Example on Node.js
+ * * @author Satoshi Haga
+ * * @date 2015/09/30
+ **/
+
+var ExcelMerge = require('js-merge-xlsx');
+var Promise = require('bluebird');
+var readYamlAsync = Promise.promisify(require('read-yaml'));
+var fs = Promise.promisifyAll(require('fs'));
+var JSZip = require('jszip');
+var _ = require('underscore');
+
+//Load Template
 fs.readFileAsync('./template/Template.xlsx')
-.then((excel_template)=>{
+.then((excelTemplate)=>{
     return Promise.props({
-        rendering_data: readYamlAsync('./data/data.yml'),
-        merge: new ExcelMerge().load(new JSZip(excel_template))
+    data: readYamlAsync('./data/data1.yml'),                        //Load single data
+        bulkData: readYamlAsync('./data/data2.yml'),                //Load array data
+        excelMerge: new ExcelMerge().load(new JSZip(excelTemplate)) //Initialize ExcelMerge object
     });
-}).then((result)=>{
-    let rendering_data = result.rendering_data;
-    let merge =  result.merge;
-    return merge.render(rendering_data);
-}).then((excel_data)=>{
-    fs.writeFileAsync('Example.xlsx',excel_data);
+}).then(({data, bulkData, excelMerge})=>{
+
+    //add name property for ExcelMerge#bulkMergeMultiFile()
+    let bulkData1 = _.map(bulkData, (e,index)=> ({name:`file${index+1}.xlsx`, data:e}));
+
+    //add name property for ExcelMerge#bulkMergeMultiSheet()
+    let bulkData2 = _.map(bulkData, (e,index)=> ({name:`example${index+1}`, data:e}));
+
+    //Execute merge
+    return Promise.props({
+        excel1: excelMerge.merge(data),
+        excel2: excelMerge.bulkMergeMultiFile(bulkData1),
+        excel3: excelMerge.bulkMergeMultiSheet(bulkData2)
+    });
+}).then(({excel1, excel2, excel3})=>{
+    return Promise.all([
+        fs.writeFileAsync('example1.xlsx',excel1),
+        fs.writeFileAsync('example2.zip',excel2),
+        fs.writeFileAsync('example3.xlsx',excel3)
+    ]);
 }).catch((err)=>{
     console.error(new Error(err).stack);
 });
@@ -50,21 +80,84 @@ Bluebird automatically casts thenable object, such as object returned by "$http.
 So, you can code in the same way as Node.js.    
 Example(ES6 syntax)  
 ```JavaScript
-Promise.resolve($http.get('/template/Template.xlsx', {responseType: "arraybuffer"}))
-.then((excel_template)=>{
-    return Promise.props({
-        rendering_data: $http.get('/data/data1.json'),
-        merge: new ExcelMerge().load(new JSZip(excel_template.data))
-    });
-}).then((result)=>{
-    let rendering_data = result.rendering_data.data;
-    let merge =  result.merge;
-    return merge.render(rendering_data);
-}).then((excel_data)=>{
-    saveAs(excel_data,'Example.xlsx');  //FileSaver
-}).catch((err)=>{
-    console.error(err);
-});
+/**
+ * * indexController.js
+ * * angular controller definition
+ * * @author Satoshi Haga
+ * * @date 2015/10/06
+ **/
+
+var Promise = require('bluebird');
+var ExcelMerge = require('js-merge-xlsx');
+var JSZip = require('jszip');
+var _ = require('underscore');
+
+var indexController = ($scope, $http)=>{
+
+    /**
+     * * exampleMerge
+     * * example of ExcelMerge#merge()
+     */
+    $scope.exampleMerge = ()=>{
+        Promise.resolve($http.get('/template/Template.xlsx', {responseType: "arraybuffer"}))
+        .then((excelTemplate)=>{
+            return Promise.props({
+                data: $http.get('/data/data1.json'),
+                excelMerge: new ExcelMerge().load(new JSZip(excelTemplate.data))
+            });
+        }).then(({data, excelMerge})=>{
+            return excelMerge.merge(data.data);
+        }).then((excelData)=>{
+            saveAs(excelData,'example.xlsx');   //FileSaver#saveAs()
+        }).catch((err)=>{
+            console.error(err);
+        });
+    };
+
+    /**
+     * * exampleBulkMergeMultiFile
+     * * example of ExcelMerge#bulkMergeMultiFile()
+     */
+    $scope.exampleBulkMergeMultiFile = ()=>{
+        Promise.resolve($http.get('/template/Template.xlsx', {responseType: "arraybuffer"}))
+        .then((excelTemplate)=>{
+            return Promise.props({
+                data: $http.get('/data/data2.json'),
+                excelMerge: new ExcelMerge().load(new JSZip(excelTemplate.data))
+            });
+        }).then(({data, excelMerge})=>{
+            data = _.map(data.data, (e,index)=>({name:`file${(index+1)}.xlsx`, data:e}));
+            return excelMerge.bulkMergeMultiFile(data); //FileSaver#saveAs()
+        }).then((zipData)=>{
+            saveAs(zipData,'example.zip');
+        }).catch((err)=>{
+            console.error(err);
+        });
+    };
+
+    /**
+     * * exampleBulkMergeMultiSheet
+     * * example of ExcelMerge#bulkMergeMultiSheet()
+     */
+    $scope.exampleBulkMergeMultiSheet = ()=>{
+        Promise.resolve($http.get('/template/Template.xlsx', {responseType: "arraybuffer"}))
+        .then((excelTemplate)=>{
+            return Promise.props({
+                data: $http.get('/data/data2.json'),
+                excelMerge: new ExcelMerge().load(new JSZip(excelTemplate.data))
+            });
+        }).then(({data, excelMerge})=>{
+            data = _.map(data.data, (e,index)=>({name:`sample${(index+1)}`, data:e}));
+            return excelMerge.bulkMergeMultiSheet(data);
+        }).then((excelData)=>{
+            saveAs(excelData,'example.xlsx');
+        }).catch((err)=>{
+            console.error(err);
+        });
+    };
+};
+
+module.exports = indexController;
 ```
 
 Please check [example codes](https://github.com/hagasatoshi/js-merge-xlsx/tree/master/example/2_express) and [API](https://github.com/hagasatoshi/js-merge-xlsx/blob/master/API.md) for detail.

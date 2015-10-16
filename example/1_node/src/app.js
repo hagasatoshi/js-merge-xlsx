@@ -16,23 +16,23 @@ var _ = require('underscore');
 fs.readFileAsync('./template/Template.xlsx')
 .then((excelTemplate)=>{
     return Promise.props({
-        data: readYamlAsync('./data/data1.yml'),                //Load single data
-        bulkData: readYamlAsync('./data/data2.yml'),            //Load array data
-        merge: new ExcelMerge().load(new JSZip(excelTemplate))  //Initialize ExcelMerge object
+    data: readYamlAsync('./data/data1.yml'),                        //Load single data
+        bulkData: readYamlAsync('./data/data2.yml'),                //Load array data
+        excelMerge: new ExcelMerge().load(new JSZip(excelTemplate)) //Initialize ExcelMerge object
     });
-}).then(({data, bulkData, merge})=>{
+}).then(({data, bulkData, excelMerge})=>{
 
-    //add name property for ExcelMerge#bulkRenderMultiFile()
+    //add name property for ExcelMerge#bulkMergeMultiFile()
     let bulkData1 = _.map(bulkData, (e,index)=> ({name:`file${index+1}.xlsx`, data:e}));
 
-    //add name property for ExcelMerge#bulkRenderMultiSheet()
+    //add name property for ExcelMerge#bulkMergeMultiSheet()
     let bulkData2 = _.map(bulkData, (e,index)=> ({name:`example${index+1}`, data:e}));
 
-    //Execute rendering
+    //Execute merge
     return Promise.props({
-        excel1: merge.render(data),
-        excel2: merge.bulkRenderMultiFile(bulkData1),
-        excel3: merge.bulkRenderMultiSheet(bulkData2)
+        excel1: excelMerge.merge(data),
+        excel2: excelMerge.bulkMergeMultiFile(bulkData1),
+        excel3: excelMerge.bulkMergeMultiSheet(bulkData2)
     });
 }).then(({excel1, excel2, excel3})=>{
     return Promise.all([
