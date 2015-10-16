@@ -16,6 +16,7 @@
     "underscore": "^1.8.3"
   },
   "devDependencies": {
+    "babel": "^5.8.23",
     "gulp": "^3.9.0",
     "gulp-babel": "^5.2.1",
     "gulp-sass": "^2.0.4",

@@ -9,32 +9,30 @@ var sass = require('gulp-sass');
 var webpack = require('webpack-stream');
 var runSequence = require('run-sequence');
 
-
-/* babel compile task */
-gulp.task('babel', function () {
-
-    //client resources
-    gulp.src('src/js/client/**/*.js')
+/* compile client resources */
+gulp.task('babel-client', ()=> {
+    return gulp.src('src/js/client/**/*.js')
         .pipe(babel())
         .pipe(gulp.dest('build'));
+});
 
-    //server resources
-    gulp.src('src/js/server/server.js')
+/* compile server resources */
+gulp.task('babel-server', ()=> {
+    return gulp.src('src/js/server/server.js')
         .pipe(babel())
         .pipe(gulp.dest('./'));
-
 });
 
 /* sass compile task */
-gulp.task('sass', function(){
-    gulp.src('./src/styles/*.scss')
+gulp.task('sass', ()=> {
+    return gulp.src('./src/styles/*.scss')
         .pipe(sass())
         .pipe(gulp.dest('public/styles'));
 });
 
 /* task building 'js_merge_xlsx.js' */
-gulp.task('webpack', function() {
-    gulp.src('./build/app.js')
+gulp.task('webpack', ()=> {
+    return gulp.src('./build/app.js')
         .pipe(webpack({
             output: {
                 filename: 'js_merge_xlsx.js'
@@ -44,10 +42,9 @@ gulp.task('webpack', function() {
 });
 
 /* default task */
-gulp.task('default', function(callback) {
+gulp.task('default', (callback)=> {
     runSequence(
-        'babel',
-        'sass',
+        ['babel-client','babel-server','sass'],
         'webpack',
         callback
     )
