@@ -57,73 +57,73 @@ module.exports = {
         });
     },
 
-    simpleRenderWithNoParameterShouldReturnError: function simpleRenderWithNoParameterShouldReturnError() {
+    simpleMergeWithNoParameterShouldReturnError: function simpleMergeWithNoParameterShouldReturnError() {
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (validTemplate) {
             return new SpreadSheet().load(new JSZip(validTemplate));
         }).then(function (spreadsheet) {
-            return spreadsheet.simpleRender();
+            return spreadsheet.simpleMerge();
         }).then(function () {
-            throw new Error('simpleRender_with_no_parameter_should_return_error failed ');
+            throw new Error('simpleMergeWithNoParameterShouldReturnError failed ');
         })['catch'](function (err) {
-            assert.equal(err, 'simpleRender() must has parameter');
+            assert.equal(err, 'simpleMerge() must has parameter');
         });
     },
 
-    checkIfSimpleRenderRendersCorrectly: function checkIfSimpleRenderRendersCorrectly() {
+    checkIfSimpleMergeRendersCorrectly: function checkIfSimpleMergeRendersCorrectly() {
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (validTemplate) {
             return new SpreadSheet().load(new JSZip(validTemplate));
         }).then(function (spreadsheet) {
-            return spreadsheet.simpleRender({ AccountName__c: 'hoge account', AccountAddress__c: 'hoge street' });
+            return spreadsheet.simpleMerge({ AccountName__c: 'hoge account', AccountAddress__c: 'hoge street' });
         }).then(function (excelData) {
             return new SpreadSheet().load(new JSZip(excelData));
         }).then(function (spreadsheet) {
-            assert(spreadsheet.variables.length === 0, "SpreadSheet#simpleRender() doesn't work correctly");
-            assert(spreadsheet.hasAsSharedString('hoge account'), "'hoge account' is not rendered by SpreadSheet#simpleRender()");
-            assert(spreadsheet.hasAsSharedString('hoge street'), "'hoge street' is not rendered by SpreadSheet#simpleRender()");
+            assert(spreadsheet.variables.length === 0, "SpreadSheet#simpleMerge() doesn't work correctly");
+            assert(spreadsheet.hasAsSharedString('hoge account'), "'hoge account' is not rendered by SpreadSheet#simpleMerge()");
+            assert(spreadsheet.hasAsSharedString('hoge street'), "'hoge street' is not rendered by SpreadSheet#simpleMerge()");
         });
     },
 
-    bulkRenderMultiFileNoParameterShouldReturnError: function bulkRenderMultiFileNoParameterShouldReturnError() {
+    bulkMergeMultiFileNoParameterShouldReturnError: function bulkMergeMultiFileNoParameterShouldReturnError() {
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (validTemplate) {
             return new SpreadSheet().load(new JSZip(validTemplate));
         }).then(function (spreadsheet) {
-            return spreadsheet.bulkRenderMultiFile();
+            return spreadsheet.bulkMergeMultiFile();
         }).then(function () {
-            throw new Error('bulkRenderMultiFile_no_parameter_should_return_error failed ');
+            throw new Error('bulkMergeMultiFile_no_parameter_should_return_error failed ');
         })['catch'](function (err) {
-            assert.equal(err, 'bulkRenderMultiFile() has only array object');
+            assert.equal(err, 'bulkMergeMultiFile() has only array object');
         });
     },
 
-    bulkRenderMultiFileMustHaveArrayAsParameter: function bulkRenderMultiFileMustHaveArrayAsParameter() {
+    bulkMergeMultiFileMustHaveArrayAsParameter: function bulkMergeMultiFileMustHaveArrayAsParameter() {
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (validTemplate) {
             return new SpreadSheet().load(new JSZip(validTemplate));
         }).then(function (spreadsheet) {
-            return spreadsheet.bulkRenderMultiFile({ name: 'hogehoge' });
+            return spreadsheet.bulkMergeMultiFile({ name: 'hogehoge' });
         }).then(function () {
-            throw new Error('bulkRenderMultiFile_must_have_array_as_parameter failed ');
+            throw new Error('bulkMergeMultiFile_must_have_array_as_parameter failed ');
         })['catch'](function (err) {
-            assert.equal(err, 'bulkRenderMultiFile() has only array object');
+            assert.equal(err, 'bulkMergeMultiFile() has only array object');
         });
     },
 
-    bulkRenderMultiFileMustHaveNameAndData: function bulkRenderMultiFileMustHaveNameAndData() {
+    bulkMergeMultiFileMustHaveNameAndData: function bulkMergeMultiFileMustHaveNameAndData() {
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (validTemplate) {
             return new SpreadSheet().load(new JSZip(validTemplate));
         }).then(function (spreadsheet) {
-            return spreadsheet.bulkRenderMultiFile([{ name: 'hogehoge' }]);
+            return spreadsheet.bulkMergeMultiFile([{ name: 'hogehoge' }]);
         }).then(function () {
-            throw new Error('bulkRenderMultiFile_must_have_name_and_data failed ');
+            throw new Error('bulkMergeMultiFile_must_have_name_and_data failed ');
         })['catch'](function (err) {
-            assert.equal(err, 'bulkRenderMultiFile() is called with invalid parameter');
+            assert.equal(err, 'bulkMergeMultiFile() is called with invalid parameter');
         });
     },
 
-    checkIfBulkRenderMultiFileRendersCorrectly: function checkIfBulkRenderMultiFileRendersCorrectly() {
+    checkIfBulkMergeMultiFileRendersCorrectly: function checkIfBulkMergeMultiFileRendersCorrectly() {
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (validTemplate) {
             return new SpreadSheet().load(new JSZip(validTemplate));
         }).then(function (spreadsheet) {
-            return spreadsheet.bulkRenderMultiFile([{ name: 'file1.xlsx', data: { AccountName__c: 'hoge account1', AccountAddress__c: 'hoge street1' } }, { name: 'file2.xlsx', data: { AccountName__c: 'hoge account2', AccountAddress__c: 'hoge street2' } }, { name: 'file3.xlsx', data: { AccountName__c: 'hoge account3', AccountAddress__c: 'hoge street3' } }]);
+            return spreadsheet.bulkMergeMultiFile([{ name: 'file1.xlsx', data: { AccountName__c: 'hoge account1', AccountAddress__c: 'hoge street1' } }, { name: 'file2.xlsx', data: { AccountName__c: 'hoge account2', AccountAddress__c: 'hoge street2' } }, { name: 'file3.xlsx', data: { AccountName__c: 'hoge account3', AccountAddress__c: 'hoge street3' } }]);
         }).then(function (zipData) {
             var zip = new JSZip(zipData);
             var excel1 = zip.file('file1.xlsx').asArrayBuffer();

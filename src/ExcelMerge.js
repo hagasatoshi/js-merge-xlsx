@@ -39,7 +39,7 @@ class ExcelMerge{
      * * @return {Promise} Promise instance including MS-Excel data. data-format is determined by jszip_option
      **/
     merge(bindData){
-        return this.spreadsheet.simpleRender(bindData);
+        return this.spreadsheet.simpleMerge(bindData);
     }
 
     /**
@@ -48,7 +48,7 @@ class ExcelMerge{
      * * @return {Promise} Promise instance including MS-Excel data.
      **/
     bulkMergeMultiFile(bindDataArray){
-        return this.spreadsheet.bulkRenderMultiFile(bindDataArray);
+        return this.spreadsheet.bulkMergeMultiFile(bindDataArray);
     }
 
     /**

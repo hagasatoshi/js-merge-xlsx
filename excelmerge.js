@@ -54,29 +54,29 @@ var ExcelMerge = (function () {
         /**
          * * merge
          * * @param {Object} bindData binding data
-         * * @returns {Object} rendered MS-Excel data. data-format is determined by jszip_option
+         * * @return {Promise} Promise instance including MS-Excel data. data-format is determined by jszip_option
          **/
     }, {
         key: 'merge',
         value: function merge(bindData) {
-            return this.spreadsheet.simpleRender(bindData);
+            return this.spreadsheet.simpleMerge(bindData);
         }
 
         /**
          * * bulkMergeMultiFile
          * * @param {Array} bindDataArray including data{name: file's name, data: binding-data}
-         * * @returns {Object} rendered MS-Excel data.
+         * * @return {Promise} Promise instance including MS-Excel data.
          **/
     }, {
         key: 'bulkMergeMultiFile',
         value: function bulkMergeMultiFile(bindDataArray) {
-            return this.spreadsheet.bulkRenderMultiFile(bindDataArray);
+            return this.spreadsheet.bulkMergeMultiFile(bindDataArray);
         }
 
         /**
          * * bulkMergeMultiSheet
          * * @param {Array} bindDataArray including data{name: file's name, data: binding-data}
-         * * @returns {Object} rendered MS-Excel data. data-format is determined by jszip_option
+         * * @return {Promise} Promise instance including MS-Excel data.
          **/
     }, {
         key: 'bulkMergeMultiSheet',

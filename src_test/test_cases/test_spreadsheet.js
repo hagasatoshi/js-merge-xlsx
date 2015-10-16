@@ -59,79 +59,79 @@ module.exports = {
             });
     },
 
-    simpleRenderWithNoParameterShouldReturnError: ()=> {
+    simpleMergeWithNoParameterShouldReturnError: ()=> {
         return fs.readFileAsync(`${__dirname}/../templates/Template.xlsx`)
             .then((validTemplate)=>{
                 return new SpreadSheet().load(new JSZip(validTemplate));
             }).then((spreadsheet)=>{
-                return spreadsheet.simpleRender();
+                return spreadsheet.simpleMerge();
             }).then(()=>{
-                throw new Error('simpleRender_with_no_parameter_should_return_error failed ');
+                throw new Error('simpleMergeWithNoParameterShouldReturnError failed ');
             }).catch((err)=>{
-                assert.equal(err,'simpleRender() must has parameter');
+                assert.equal(err,'simpleMerge() must has parameter');
             });
     },
 
-    checkIfSimpleRenderRendersCorrectly: ()=>{
+    checkIfSimpleMergeRendersCorrectly: ()=>{
         return fs.readFileAsync(`${__dirname}/../templates/Template.xlsx`)
             .then((validTemplate)=>{
                 return new SpreadSheet().load(new JSZip(validTemplate));
             }).then((spreadsheet)=>{
-                return spreadsheet.simpleRender({AccountName__c:'hoge account',AccountAddress__c:'hoge street'});
+                return spreadsheet.simpleMerge({AccountName__c:'hoge account',AccountAddress__c:'hoge street'});
             }).then((excelData)=>{
                 return new SpreadSheet().load(new JSZip(excelData));
             }).then((spreadsheet)=>{
-                assert(spreadsheet.variables.length === 0, "SpreadSheet#simpleRender() doesn't work correctly");
-                assert(spreadsheet.hasAsSharedString('hoge account'), "'hoge account' is not rendered by SpreadSheet#simpleRender()");
-                assert(spreadsheet.hasAsSharedString('hoge street'), "'hoge street' is not rendered by SpreadSheet#simpleRender()");
+                assert(spreadsheet.variables.length === 0, "SpreadSheet#simpleMerge() doesn't work correctly");
+                assert(spreadsheet.hasAsSharedString('hoge account'), "'hoge account' is not rendered by SpreadSheet#simpleMerge()");
+                assert(spreadsheet.hasAsSharedString('hoge street'), "'hoge street' is not rendered by SpreadSheet#simpleMerge()");
             });
     },
 
-    bulkRenderMultiFileNoParameterShouldReturnError: ()=> {
+    bulkMergeMultiFileNoParameterShouldReturnError: ()=> {
         return fs.readFileAsync(`${__dirname}/../templates/Template.xlsx`)
             .then((validTemplate)=>{
                 return new SpreadSheet().load(new JSZip(validTemplate));
             }).then((spreadsheet)=>{
-                return spreadsheet.bulkRenderMultiFile();
+                return spreadsheet.bulkMergeMultiFile();
             }).then(()=>{
-                throw new Error('bulkRenderMultiFile_no_parameter_should_return_error failed ');
+                throw new Error('bulkMergeMultiFile_no_parameter_should_return_error failed ');
             }).catch((err)=>{
-                assert.equal(err,'bulkRenderMultiFile() has only array object');
+                assert.equal(err,'bulkMergeMultiFile() has only array object');
             });
     },
 
-    bulkRenderMultiFileMustHaveArrayAsParameter: ()=> {
+    bulkMergeMultiFileMustHaveArrayAsParameter: ()=> {
         return fs.readFileAsync(`${__dirname}/../templates/Template.xlsx`)
             .then((validTemplate)=>{
                 return new SpreadSheet().load(new JSZip(validTemplate));
             }).then((spreadsheet)=>{
-                return spreadsheet.bulkRenderMultiFile({name:'hogehoge'});
+                return spreadsheet.bulkMergeMultiFile({name:'hogehoge'});
             }).then(()=>{
-                throw new Error('bulkRenderMultiFile_must_have_array_as_parameter failed ');
+                throw new Error('bulkMergeMultiFile_must_have_array_as_parameter failed ');
             }).catch((err)=>{
-                assert.equal(err,'bulkRenderMultiFile() has only array object');
+                assert.equal(err,'bulkMergeMultiFile() has only array object');
             });
     },
 
-    bulkRenderMultiFileMustHaveNameAndData: ()=> {
+    bulkMergeMultiFileMustHaveNameAndData: ()=> {
         return fs.readFileAsync(`${__dirname}/../templates/Template.xlsx`)
             .then((validTemplate)=>{
                 return new SpreadSheet().load(new JSZip(validTemplate));
             }).then((spreadsheet)=>{
-                return spreadsheet.bulkRenderMultiFile([{name:'hogehoge'}]);
+                return spreadsheet.bulkMergeMultiFile([{name:'hogehoge'}]);
             }).then(()=>{
-                throw new Error('bulkRenderMultiFile_must_have_name_and_data failed ');
+                throw new Error('bulkMergeMultiFile_must_have_name_and_data failed ');
             }).catch((err)=>{
-                assert.equal(err,'bulkRenderMultiFile() is called with invalid parameter');
+                assert.equal(err,'bulkMergeMultiFile() is called with invalid parameter');
             });
     },
 
-    checkIfBulkRenderMultiFileRendersCorrectly: ()=>{
+    checkIfBulkMergeMultiFileRendersCorrectly: ()=>{
         return fs.readFileAsync(`${__dirname}/../templates/Template.xlsx`)
             .then((validTemplate)=>{
                 return new SpreadSheet().load(new JSZip(validTemplate));
             }).then((spreadsheet)=>{
-                return spreadsheet.bulkRenderMultiFile([
+                return spreadsheet.bulkMergeMultiFile([
                     {name:'file1.xlsx',data:{AccountName__c:'hoge account1',AccountAddress__c:'hoge street1'}},
                     {name:'file2.xlsx',data:{AccountName__c:'hoge account2',AccountAddress__c:'hoge street2'}},
                     {name:'file3.xlsx',data:{AccountName__c:'hoge account3',AccountAddress__c:'hoge street3'}}

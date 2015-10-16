@@ -41,7 +41,7 @@ class SpreadSheet{
     /**
      * * load
      * * @param {Object} excel JsZip object including MS-Excel file
-     * * @return {Promise|Object} Promise instance including this
+     * * @return {Promise} Promise instance including this
      **/
     load(excel){
         //validation
@@ -74,31 +74,31 @@ class SpreadSheet{
     }
 
     /**
-     * * simpleRender
-     * * @param {Object} bind_data binding data
-     * * @returns {Promise|Object} rendered MS-Excel data. data-format is determined by jszip_option
+     * * simpleMerge
+     * * @param {Object} bindData binding data
+     * * @return {Promise} Promise instance including MS-Excel data.
      **/
-    simpleRender(bindData){
+    simpleMerge(bindData){
 
         //validation
-        if(!bindData) return Promise.reject('simpleRender() must has parameter');
+        if(!bindData) return Promise.reject('simpleMerge() must has parameter');
 
-        return Promise.resolve().then(()=>this._simpleRender(bindData, outputBuffer));
+        return Promise.resolve().then(()=>this._simpleMerge(bindData, outputBuffer));
     }
 
     /**
-     * * bulkRenderMultiFile
+     * * bulkMergeMultiFile
      * * @param {Array} bindDataArray including data{name: file's name, data: binding-data}
-     * * @returns {Promise|Object} rendered MS-Excel data.
+     * * @return {Promise} Promise instance including MS-Excel data.
      **/
-    bulkRenderMultiFile(bindDataArray){
+    bulkMergeMultiFile(bindDataArray){
 
         //validation
-        if(!_.isArray(bindDataArray)) return Promise.reject('bulkRenderMultiFile() has only array object');
-        if(_.find(bindDataArray,(e)=>!(e.name && e.data))) return Promise.reject('bulkRenderMultiFile() is called with invalid parameter');
+        if(!_.isArray(bindDataArray)) return Promise.reject('bulkMergeMultiFile() has only array object');
+        if(_.find(bindDataArray,(e)=>!(e.name && e.data))) return Promise.reject('bulkMergeMultiFile() is called with invalid parameter');
 
         var allExcels = new JSZip();
-        _.each(bindDataArray, ({name,data})=>allExcels.file(name, this._simpleRender(data, jszipBuffer)));
+        _.each(bindDataArray, ({name,data})=>allExcels.file(name, this._simpleMerge(data, jszipBuffer)));
         return Promise.resolve().then(()=> allExcels.generate(outputBuffer));
     }
 
@@ -263,13 +263,13 @@ class SpreadSheet{
 
 
     /**
-     * * _simpleRender
+     * * _simpleMerge
      * * @param {Object} bindData binding data
      * * @param {Object} option JsZip#generate() option.
      * * @returns {Object} rendered MS-Excel data. data-format is determined by jszip_option
      * * @private
      **/
-    _simpleRender(bindData, option=outputBuffer){
+    _simpleMerge(bindData, option=outputBuffer){
         return new JSZip(this.excel.generate(jszipBuffer))
             .file('xl/sharedStrings.xml', Mustache.render(this.excel.file('xl/sharedStrings.xml').asText(), bindData))
             .generate(option);

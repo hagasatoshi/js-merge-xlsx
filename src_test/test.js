@@ -20,10 +20,10 @@ describe('Test for spreadsheet.js : ',  ()=>{
 
     /* test for validation */
     it('validation / load() / no parameter / error', test_spreadsheet.checkLoadWithNoParameterShouldReturnError);
-    it('validation / simpleRender() / no parameter / error', test_spreadsheet.simpleRenderWithNoParameterShouldReturnError);
-    it('validation / bulkRenderMultiFile() / no parameter / error', test_spreadsheet.bulkRenderMultiFileNoParameterShouldReturnError);
-    it('validation / bulkRenderMultiFile() / object / error', test_spreadsheet.bulkRenderMultiFileMustHaveArrayAsParameter);
-    it('validation / bulkRenderMultiFile() / object / error', test_spreadsheet.bulkRenderMultiFileMustHaveNameAndData);
+    it('validation / simpleRender() / no parameter / error', test_spreadsheet.simpleMergeWithNoParameterShouldReturnError);
+    it('validation / bulkMergeMultiFile() / no parameter / error', test_spreadsheet.bulkMergeMultiFileNoParameterShouldReturnError);
+    it('validation / bulkMergeMultiFile() / object / error', test_spreadsheet.bulkMergeMultiFileMustHaveArrayAsParameter);
+    it('validation / bulkMergeMultiFile() / object / error', test_spreadsheet.bulkMergeMultiFileMustHaveNameAndData);
     it('validation / addSheetBindingData() / no parameter / error', test_spreadsheet.addSheetBindingDataWithNoParameterShouldReturnError);
     it('validation / addSheetBindingData() / 1 parameter / error', test_spreadsheet.addSheetBindingDataWith1ParameterShouldReturnError);
     it('validation / activateSheet() / no parameter / error', test_spreadsheet.activateSheetWithNoParameterShouldReturnError);
@@ -34,8 +34,8 @@ describe('Test for spreadsheet.js : ',  ()=>{
     /* test for logic */
     it('logic / load() / load each member from valid template', test_spreadsheet.checkLoadEachMemberFromValidTemplate);
     it('logic / load() / should return this instance', test_spreadsheet.checkLoadShouldReturnThisInstance);
-    it('logic / simpleRender() / renders correctly', test_spreadsheet.checkIfSimpleRenderRendersCorrectly);
-    it('logic / bulkRenderMultiFile() / renders correctly', test_spreadsheet.checkIfBulkRenderMultiFileRendersCorrectly);
+    it('logic / simpleRender() / renders correctly', test_spreadsheet.checkIfSimpleMergeRendersCorrectly);
+    it('logic / bulkMergeMultiFile() / renders correctly', test_spreadsheet.checkIfBulkMergeMultiFileRendersCorrectly);
 
 });
 
