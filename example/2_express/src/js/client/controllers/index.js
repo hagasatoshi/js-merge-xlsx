@@ -5,4 +5,4 @@
  **/
 
 module.exports = angular.module('app.controllers', [])
-.controller('index_controller', require('./index_controller'));
+.controller('indexController', require('./index_controller'));

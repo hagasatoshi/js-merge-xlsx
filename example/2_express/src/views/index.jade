@@ -13,13 +13,13 @@ html(ng-app="app")
         script(src='/bower_components/filesaver/FileSaver.js')
         script(src='/scripts/js_merge_xlsx.js')
         link(rel='stylesheet', href="/styles/app.css")
-    body(ng-controller="index_controller")
+    body(ng-controller="indexController")
         #HeaderArea
             .main-view
                 | js-merge-xlsx
         #ContentArea
             .main-view
                 .button-area
-                    a.btn.btn-primary(ng-click="example_render()") ExcelMerge#render()
-                    a.btn.btn-primary(ng-click="example_bulk_render_multi_file()") ExcelMerge#bulk_render_multi_file()
-                    a.btn.btn-primary(ng-click="example_bulk_render_multi_sheet()") ExcelMerge#bulk_render_multi_sheet()
+                    a.btn.btn-primary(ng-click="exampleRender()") ExcelMerge#render()
+                    a.btn.btn-primary(ng-click="exampleBulkRenderMultiFile()") ExcelMerge#bulkRenderMultiFile()
+                    a.btn.btn-primary(ng-click="exampleBulkRenderMultiSheet()") ExcelMerge#bulkRenderMultiSheet()

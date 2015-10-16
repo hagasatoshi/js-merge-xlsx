@@ -1,88 +1,78 @@
 /**
- * * index_controller.js
+ * * indexController.js
  * * angular controller definition
  * * @author Satoshi Haga
  * * @date 2015/10/06
  **/
 
-import Promise from 'bluebird'
-import ExcelMerge from 'js-merge-xlsx'
-import JSZip from 'jszip'
-import _ from 'underscore'
+var Promise = require('bluebird');
+var ExcelMerge = require('js-merge-xlsx');
+var JSZip = require('jszip');
+var _ = require('underscore');
 
-var index_controller = ($scope, $http)=>{
+var indexController = ($scope, $http)=>{
 
     /**
-     * * example_render
+     * * exampleRender
      * * example of ExcelMerge#render()
      */
-    $scope.example_render = ()=>{
+    $scope.exampleRender = ()=>{
         Promise.resolve($http.get('/template/Template.xlsx', {responseType: "arraybuffer"}))
-        .then((excel_template)=>{
+        .then((excelTemplate)=>{
             return Promise.props({
-                rendering_data: $http.get('/data/data1.json'),
-                merge: new ExcelMerge().load(new JSZip(excel_template.data))
+                data: $http.get('/data/data1.json'),
+                excelMerge: new ExcelMerge().load(new JSZip(excelTemplate.data))
             });
-        }).then((result)=>{
-            let rendering_data = result.rendering_data.data;
-            let merge =  result.merge;
-            return merge.render(rendering_data);
-        }).then((excel_data)=>{
-            saveAs(excel_data,'Example.xlsx');
+        }).then(({data, excelMerge})=>{
+            return excelMerge.render(data.data);
+        }).then((excelData)=>{
+            saveAs(excelData,'example.xlsx');   //FileSaver#saveAs()
         }).catch((err)=>{
             console.error(err);
         });
     };
 
     /**
-     * * example_bulk_render_multi_file
-     * * example of ExcelMerge#bulk_render_multi_file()
+     * * exampleBulkRenderMultiFile
+     * * example of ExcelMerge#exampleBulkRenderMultiFile()
      */
-    $scope.example_bulk_render_multi_file = ()=>{
+    $scope.exampleBulkRenderMultiFile = ()=>{
         Promise.resolve($http.get('/template/Template.xlsx', {responseType: "arraybuffer"}))
-            .then((excel_template)=>{
-                return Promise.props({
-                    rendering_data: $http.get('/data/data2.json'),
-                    merge: new ExcelMerge().load(new JSZip(excel_template.data))
-                });
-            }).then((result)=>{
-                let rendering_data = [];
-                _.each(result.rendering_data.data, (data,index)=>{
-                    rendering_data.push({name:'file'+(index+1)+'.xlsx', data:data});
-                });
-                let merge =  result.merge;
-                return merge.bulk_render_multi_file(rendering_data);
-            }).then((zip_data)=>{
-                saveAs(zip_data,'Example.zip');
-            }).catch((err)=>{
-                console.error(err);
+        .then((excelTemplate)=>{
+            return Promise.props({
+                data: $http.get('/data/data2.json'),
+                excelMerge: new ExcelMerge().load(new JSZip(excelTemplate.data))
             });
+        }).then(({data, excelMerge})=>{
+            data = _.map(data.data, (e,index)=>({name:`file${(index+1)}.xlsx`, data:e}));
+            return excelMerge.bulkRenderMultiFile(data); //FileSaver#saveAs()
+        }).then((zipData)=>{
+            saveAs(zipData,'example.zip');
+        }).catch((err)=>{
+            console.error(err);
+        });
     };
 
     /**
-     * * example_bulk_render_multi_sheet
-     * * example of ExcelMerge#bulk_render_multi_sheet()
+     * * exampleBulkRenderMultiSheet
+     * * example of ExcelMerge#exampleBulkRenderMultiSheet()
      */
-    $scope.example_bulk_render_multi_sheet = ()=>{
+    $scope.exampleBulkRenderMultiSheet = ()=>{
         Promise.resolve($http.get('/template/Template.xlsx', {responseType: "arraybuffer"}))
-            .then((excel_template)=>{
-                return Promise.props({
-                    rendering_data: $http.get('/data/data2.json'),
-                    merge: new ExcelMerge().load(new JSZip(excel_template.data))
-                });
-            }).then((result)=>{
-                let rendering_data = [];
-                _.each(result.rendering_data.data, (data,index)=>{
-                    rendering_data.push({name:'sample'+(index+1), data:data});
-                });
-                let merge =  result.merge;
-                return merge.bulk_render_multi_sheet(rendering_data);
-            }).then((excel_data)=>{
-                saveAs(excel_data,'Example.xlsx');
-            }).catch((err)=>{
-                console.error(err);
+        .then((excelTemplate)=>{
+            return Promise.props({
+                data: $http.get('/data/data2.json'),
+                excelMerge: new ExcelMerge().load(new JSZip(excelTemplate.data))
             });
+        }).then(({data, excelMerge})=>{
+            data = _.map(data.data, (e,index)=>({name:`sample${(index+1)}`, data:e}));
+            return excelMerge.bulkRenderMultiSheet(data);
+        }).then((excelData)=>{
+            saveAs(excelData,'example.xlsx');
+        }).catch((err)=>{
+            console.error(err);
+        });
     };
 };
 
-module.exports = index_controller;
+module.exports = indexController;
