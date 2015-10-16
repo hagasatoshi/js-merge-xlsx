@@ -117,15 +117,15 @@ class SpreadSheet{
         this.workbookxml.workbook.sheets[0].sheet.push({ '$': { name: destSheetName, sheetId: nextId.replace('rId',''), 'r:id': nextId } });
 
         //2.add sheet file.
-        let renderedStrings;
+        let mergedStrings;
         if(this.sharedstrings){
-            //prepare rendered-strings
-            renderedStrings = _(this.commonStringsWithVariable).deepCopy();
-            _.each(renderedStrings,(e)=>e.t[0] = Mustache.render(_(e.t).stringValue(), data));
+            //prepare merged-strings
+            mergedStrings = _(this.commonStringsWithVariable).deepCopy();
+            _.each(mergedStrings,(e)=>e.t[0] = Mustache.render(_(e.t).stringValue(), data));
 
-            //add rendered-string into sharedstrings
+            //add merged-string into sharedstrings
             let currentCount = this.sharedstrings.length;
-            _.each(renderedStrings,(e,index)=>{
+            _.each(mergedStrings,(e,index)=>{
                 e.sharedIndex = currentCount + index;
                 this.sharedstrings.push(e);
             });
@@ -133,7 +133,7 @@ class SpreadSheet{
 
         //build new sheet oject
         let sourceSheet = this._sheetByName(this.templateSheetName).value;
-        let addedSheet = this._buildNewSheet(sourceSheet, renderedStrings);
+        let addedSheet = this._buildNewSheet(sourceSheet, mergedStrings);
 
         //update sheet name.
         addedSheet.name = `sheet${nextId}.xml`;
