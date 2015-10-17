@@ -37,6 +37,7 @@ describe('Test for spreadsheet.js : ',  ()=>{
     it('logic / addSheetBindingData() / works correctly', test_spreadsheet.checkIfAddSheetBindingDataCorrectly);
     it('logic / deleteTemplateSheet() / works correctly', test_spreadsheet.checkIfDeleteTemplateSheetWorksCorrectly);
     it('logic / deleteSheet() / works correctly', test_spreadsheet.checkIfDeleteSheetWorksCorrectly);
+    it('logic / focusOnFirstSheet() / works correctly', test_spreadsheet.checkIfFocusOnFirstSheetWorksCorrectly);
 
 });
 
