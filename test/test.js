@@ -4,7 +4,6 @@
  * * @author Satoshi Haga
  * * @date 2015/09/30
  **/
-//require test cases
 'use strict';
 
 var assert = require('assert');
@@ -18,45 +17,48 @@ var EXCEL_OUTPUT_TYPE = {
     BULK_MULTIPLE_SHEET: 2
 };
 
-/** test for spreadsheet.js */
+/** SpreadSheet */
 describe('Test for spreadsheet.js : ', function () {
 
-    /* test for validation */
+    /* Validation */
     it('validation / load() / no parameter / error', test_spreadsheet.checkLoadWithNoParameterShouldReturnError);
-    it('validation / simpleRender() / no parameter / error', test_spreadsheet.simpleMergeWithNoParameterShouldReturnError);
+    it('validation / simpleMerge() / no parameter / error', test_spreadsheet.simpleMergeWithNoParameterShouldReturnError);
     it('validation / bulkMergeMultiFile() / no parameter / error', test_spreadsheet.bulkMergeMultiFileNoParameterShouldReturnError);
     it('validation / bulkMergeMultiFile() / object / error', test_spreadsheet.bulkMergeMultiFileMustHaveArrayAsParameter);
     it('validation / bulkMergeMultiFile() / object / error', test_spreadsheet.bulkMergeMultiFileMustHaveNameAndData);
     it('validation / addSheetBindingData() / no parameter / error', test_spreadsheet.addSheetBindingDataWithNoParameterShouldReturnError);
     it('validation / addSheetBindingData() / 1 parameter / error', test_spreadsheet.addSheetBindingDataWith1ParameterShouldReturnError);
-    it('validation / activateSheet() / no parameter / error', test_spreadsheet.activateSheetWithNoParameterShouldReturnError);
-    it('validation / activateSheet() / invalid sheetname / error', test_spreadsheet.activateSheetWithInvalidSheetnameShouldReturnError);
     it('validation / deleteSheet() / no parameter / error', test_spreadsheet.deleteSheetWithNoParameterShouldReturnError);
     it('validation / deleteSheet() / invalid sheetname / error', test_spreadsheet.deleteSheetWithInvalidSheetnameShouldReturnError);
 
-    /* test for logic */
+    /* Core logic */
     it('logic / load() / load each member from valid template', test_spreadsheet.checkLoadEachMemberFromValidTemplate);
     it('logic / load() / should return this instance', test_spreadsheet.checkLoadShouldReturnThisInstance);
     it('logic / simpleMerge() / renders correctly', test_spreadsheet.checkIfSimpleMergeRendersCorrectly);
     it('logic / bulkMergeMultiFile() / renders correctly', test_spreadsheet.checkIfBulkMergeMultiFileRendersCorrectly);
-    //it('logic / addSheetBindingData() / work correctly', test_spreadsheet.checkIfAddSheetBindingDataCorrectly);
+    it('logic / addSheetBindingData() / works correctly', test_spreadsheet.checkIfAddSheetBindingDataCorrectly);
+    it('logic / deleteTemplateSheet() / works correctly', test_spreadsheet.checkIfDeleteTemplateSheetWorksCorrectly);
+    it('logic / deleteSheet() / works correctly', test_spreadsheet.checkIfDeleteSheetWorksCorrectly);
 });
 
-/** test for spreadsheet.js */
+/** ExcelMerge */
 describe('Test for ExcelMerge.js : ', function () {
-    /* test for logic */
+
+    /* Validation */
     it('validation / load() / no parameter / error', test_excelmerge.checkLoadWithNoParameterShouldReturnError);
+    it('logic / merge() with no parameter / should return error', test_excelmerge.checkIfMergeWithNoParameterRendersCorrectly);
+    it('logic / bulkMergeMultiFile() with no parameter / should return error', test_excelmerge.checkIfBulkMergeMultiFileWithNoParameterShouldReturnError);
+    it('logic / bulkMergeMultiSheet() with no parameter / should return error', test_excelmerge.checkIfBulkMergeMultiSheetWithNoParameterShouldReturnError);
+
+    /* Core logic */
     it('logic / load() / load each member from valid template', test_excelmerge.checkLoadEachMemberFromValidTemplate);
     it('logic / load() / should return this instance', test_excelmerge.checkLoadShouldReturnThisInstance);
     it('logic / merge() / renders correctly', test_excelmerge.checkIfMergeRendersCorrectly);
-    it('logic / merge() with no parameter / should return error', test_excelmerge.checkIfMergeWithNoParameterRendersCorrectly);
     it('logic / bulkMergeMultiFile() / renders correctly', test_excelmerge.checkIfBulkMergeMultiFileRendersCorrectly);
-    it('logic / bulkMergeMultiFile() with no parameter / should return error', test_excelmerge.checkIfBulkMergeMultiFileWithNoParameterShouldReturnError);
     it('logic / bulkMergeMultiSheet() / renders correctly', test_excelmerge.checkIfBulkMergeMultiSheetRendersCorrectly);
-    it('logic / bulkMergeMultiSheet() with no parameter / should return error', test_excelmerge.checkIfBulkMergeMultiSheetWithNoParameterShouldReturnError);
 });
 
-/** output test */
+/** Output test */
 describe('output test : ', function () {
     var util = new Utilitly();
 

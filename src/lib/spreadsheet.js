@@ -23,22 +23,6 @@ const OPEN_XML_SCHEMA_DEFINITION = 'http://schemas.openxmlformats.org/officeDocu
 class SpreadSheet{
 
     /**
-     * * member variables
-     * * excel {Object} JSZip instance including template excel file
-     * * variables {Array} including mustache-variables defined in sharedstrings.xml
-     * * sharedstrings {Array} includings common strings defined in sharedstrings.xml
-     * * sharedstrings_obj {Object} whole sharedstrings object
-     * * commonStringsWithVariable {Array} including common strings only having mustache variables
-     * * sheetXmls {Array} including objects parsed from  'xl/worksheets/*.xml'
-     * * sheetXmlsRels {Array} including objects pared from 'xl/worksheets/_rels/*.xml.rels'
-     * * templateSheetData {Object} object parsed from 'xl/worksheets/*.xml'. this is used as template-file
-     * * templateSheetName {String} sheet-name of template-file
-     * * workbookxmlRels {Object} parsed from 'xl/_rels/workbook.xml.rels'
-     * * workbookxml {Object} parsed from 'xl/workbook.xml'
-     * */
-
-
-    /**
      * * load
      * * @param {Object} excel JsZip object including MS-Excel file
      * * @return {Promise} Promise instance including this
@@ -155,27 +139,12 @@ class SpreadSheet{
     }
 
     /**
-     * * activateSheet
+     * * hasSheet
      * * @param {String} sheetname target sheet name
-     * * @return {Object} this instance for chaining
+     * * @return {boolean}
      **/
-    activateSheet(sheetname){
-
-        //validation
-        if(!sheetname){
-            throw new Error('activateSheet() needs to have 1 paramter.');
-        }
-
-        let targetSheetName = this._sheetByName(sheetname);
-        if(!targetSheetName){
-            throw new Error(`Invalid sheet name '${sheetname}'.`);
-        }
-
-        _.each(this.sheet_xmls, (sheet)=>{
-            if(!sheet.worksheet) return;
-            sheet.worksheet.sheetViews[0].sheetView[0]['$'].tabSelected = (sheet.name === targetSheetName.value.worksheet.name) ? '1' : '0';
-        });
-        return this;
+    hasSheet(sheetname){
+        return !!this._sheetByName(sheetname);
     }
 
     /**
@@ -183,7 +152,32 @@ class SpreadSheet{
      * * @return {Object} this instance for chaining
      **/
     forcusOnFirstSheet(){
-        return this.activateSheet(this._firstSheetName());
+        let targetSheetName = this._sheetByName(this._firstSheetName());
+        _.each(this.sheet_xmls, (sheet)=>{
+            if(!sheet.worksheet) return;
+            sheet.worksheet.sheetViews[0].sheetView[0]['$'].tabSelected = (sheet.name === targetSheetName.value.worksheet.name) ? '1' : '0';
+        });
+        return this;
+
+    }
+
+    /**
+     * * isFocused
+     * * @param {String} sheetname target sheet name
+     * * @return {boolean}
+     **/
+    isFocused(sheetname){
+
+        //validation
+        if(!sheetname){
+            throw new Error('isFocused() needs to have 1 paramter.');
+        }
+        if(!this.hasSheet(sheetname)){
+            throw new Error(`Invalid sheet name '${sheetname}'.`);
+        }
+
+        let targetSheetName = this._sheetByName(sheetname);
+        return (targetSheetName.value.worksheet.sheetViews[0].sheetView[0]['$'].tabSelected === '1');
     }
 
     /**

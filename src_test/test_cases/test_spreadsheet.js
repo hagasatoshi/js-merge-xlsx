@@ -14,6 +14,8 @@ var Promise = require('bluebird');
 var readYamlAsync = Promise.promisify(require('read-yaml'));
 var fs = Promise.promisifyAll(require('fs'));
 var _ = require('underscore');
+var isNode = require('detect-node');
+const output_buffer = {type: (isNode?'nodebuffer':'blob'), compression:"DEFLATE"};
 
 module.exports = {
     checkLoadWithNoParameterShouldReturnError: ()=>{
@@ -205,32 +207,6 @@ module.exports = {
             });
     },
 
-    activateSheetWithNoParameterShouldReturnError: ()=>{
-        return fs.readFileAsync(`${__dirname}/../templates/Template.xlsx`)
-            .then((validTemplate)=>{
-                return new SpreadSheet().load(new JSZip(validTemplate));
-            }).then((spreadsheet)=>{
-                return spreadsheet.activateSheet();
-            }).then(()=>{
-                throw new Error('activateSheet_with_no_parameter_should_return_error failed ');
-            }).catch((err)=>{
-                assert.equal(err.message,'activateSheet() needs to have 1 paramter.');
-            });
-    },
-
-    activateSheetWithInvalidSheetnameShouldReturnError: ()=>{
-        return fs.readFileAsync(`${__dirname}/../templates/Template.xlsx`)
-            .then((valid_template)=>{
-                return new SpreadSheet().load(new JSZip(valid_template));
-            }).then((spreadsheet)=>{
-                return spreadsheet.activateSheet('hoge');
-            }).then(()=>{
-                throw new Error('activateSheet_with_no_parameter_should_return_error failed ');
-            }).catch((err)=>{
-                assert.equal(err.message,"Invalid sheet name 'hoge'.");
-            });
-    },
-
     deleteSheetWithNoParameterShouldReturnError: ()=>{
         return fs.readFileAsync(`${__dirname}/../templates/Template.xlsx`)
             .then((valid_template)=>{
@@ -262,16 +238,53 @@ module.exports = {
             .then((validTemplate)=>{
                 return new SpreadSheet().load(new JSZip(validTemplate));
             }).then((spreadsheet)=>{
-                return spreadsheet.addSheetBindingData({AccountName__c:'hoge account1',AccountAddress__c:'hoge street1'});
+                return spreadsheet
+                    .addSheetBindingData('sample', {AccountName__c:'hoge account1',AccountAddress__c:'hoge street1'})
+                    .deleteTemplateSheet()
+                    .generate(output_buffer);
             }).then((excelData)=>{
                 return new SpreadSheet().load(new JSZip(excelData));
             }).then((spreadsheet)=>{
                 assert(spreadsheet.hasAsSharedString('hoge account1'),"'hoge account1' is missing in excel file");
                 assert(spreadsheet.hasAsSharedString('hoge street1'),"'hoge street1' is missing in excel file");
-                assert(spreadsheet.hasAsSharedString('hoge account2'),"'hoge account2' is missing in excel file");
-                assert(spreadsheet.hasAsSharedString('hoge street2'),"'hoge street2' is missing in excel file");
-                assert(spreadsheet.hasAsSharedString('hoge account3'),"'hoge account3' is missing in excel file");
-                assert(spreadsheet.hasAsSharedString('hoge street3'),"'hoge street3' is missing in excel file");
             });
     },
+
+    checkIfDeleteTemplateSheetWorksCorrectly: ()=>{
+        return fs.readFileAsync(`${__dirname}/../templates/Template.xlsx`)
+            .then((validTemplate)=>{
+                return new SpreadSheet().load(new JSZip(validTemplate));
+            }).then((spreadsheet)=>{
+                return spreadsheet
+                    .addSheetBindingData('sample', {AccountName__c:'hoge account1',AccountAddress__c:'hoge street1'})
+                    .deleteTemplateSheet()
+                    .generate(output_buffer);
+            }).then((excelData)=>{
+                return new SpreadSheet().load(new JSZip(excelData));
+            }).then((spreadsheet)=>{
+                assert(!spreadsheet.hasSheet('Sheet1'),"deleteTemplateSheet() doesn't work correctly");
+                assert(spreadsheet.hasSheet('sample'),"deleteTemplateSheet() doesn't work correctly");
+            });
+    },
+
+    checkIfDeleteSheetWorksCorrectly: ()=>{
+        return fs.readFileAsync(`${__dirname}/../templates/Template.xlsx`)
+            .then((validTemplate)=>{
+                return new SpreadSheet().load(new JSZip(validTemplate));
+            }).then((spreadsheet)=>{
+                return spreadsheet
+                    .addSheetBindingData('sample1', {AccountName__c:'hoge account1',AccountAddress__c:'hoge street1'})
+                    .addSheetBindingData('sample2', {AccountName__c:'hoge account1',AccountAddress__c:'hoge street1'})
+                    .addSheetBindingData('sample3', {AccountName__c:'hoge account1',AccountAddress__c:'hoge street1'})
+                    .deleteSheet('sample2')
+                    .generate(output_buffer);
+            }).then((excelData)=>{
+                return new SpreadSheet().load(new JSZip(excelData));
+            }).then((spreadsheet)=>{
+                assert(spreadsheet.hasSheet('Sheet1'),"deleteTemplateSheet() doesn't work correctly");
+                assert(spreadsheet.hasSheet('sample1'),"deleteTemplateSheet() doesn't work correctly");
+                assert(!spreadsheet.hasSheet('sample2'),"deleteTemplateSheet() doesn't work correctly");
+                assert(spreadsheet.hasSheet('sample3'),"deleteTemplateSheet() doesn't work correctly");
+            });
+    }
 };
