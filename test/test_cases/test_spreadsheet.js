@@ -148,6 +148,23 @@ module.exports = {
         });
     },
 
+    checkIfBulkMergeMultiSheetRendersCorrectly: function checkIfBulkMergeMultiSheetRendersCorrectly() {
+        return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (validTemplate) {
+            return new SpreadSheet().load(new JSZip(validTemplate));
+        }).then(function (spreadsheet) {
+            return spreadsheet.bulkMergeMultiSheet([{ name: 'sheet1', data: { AccountName__c: 'hoge account1', AccountAddress__c: 'hoge street1' } }, { name: 'sheet2', data: { AccountName__c: 'hoge account2', AccountAddress__c: 'hoge street2' } }, { name: 'sheet3', data: { AccountName__c: 'hoge account3', AccountAddress__c: 'hoge street3' } }]);
+        }).then(function (excelData) {
+            return new SpreadSheet().load(new JSZip(excelData));
+        }).then(function (spreadsheet) {
+            assert(spreadsheet.hasAsSharedString('hoge account1'), "'hoge account1' is missing in excel file");
+            assert(spreadsheet.hasAsSharedString('hoge street1'), "'hoge street1' is missing in excel file");
+            assert(spreadsheet.hasAsSharedString('hoge account2'), "'hoge account2' is missing in excel file");
+            assert(spreadsheet.hasAsSharedString('hoge street2'), "'hoge street2' is missing in excel file");
+            assert(spreadsheet.hasAsSharedString('hoge account3'), "'hoge account3' is missing in excel file");
+            assert(spreadsheet.hasAsSharedString('hoge street3'), "'hoge street3' is missing in excel file");
+        });
+    },
+
     addSheetBindingDataWithNoParameterShouldReturnError: function addSheetBindingDataWithNoParameterShouldReturnError() {
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (validTemplate) {
             return new SpreadSheet().load(new JSZip(validTemplate));

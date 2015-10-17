@@ -7,6 +7,7 @@
 //require test cases
 var assert = require('assert');
 var test_spreadsheet = require('./test_cases/test_spreadsheet');
+var test_excelmerge = require('./test_cases/test_excelmerge');
 var Utilitly = require('./test_cases/test_output_excel_file');
 
 var EXCEL_OUTPUT_TYPE = {
@@ -34,8 +35,23 @@ describe('Test for spreadsheet.js : ',  ()=>{
     /* test for logic */
     it('logic / load() / load each member from valid template', test_spreadsheet.checkLoadEachMemberFromValidTemplate);
     it('logic / load() / should return this instance', test_spreadsheet.checkLoadShouldReturnThisInstance);
-    it('logic / simpleRender() / renders correctly', test_spreadsheet.checkIfSimpleMergeRendersCorrectly);
+    it('logic / simpleMerge() / renders correctly', test_spreadsheet.checkIfSimpleMergeRendersCorrectly);
     it('logic / bulkMergeMultiFile() / renders correctly', test_spreadsheet.checkIfBulkMergeMultiFileRendersCorrectly);
+
+});
+
+/** test for spreadsheet.js */
+describe('Test for ExcelMerge.js : ',  ()=>{
+    /* test for logic */
+    it('validation / load() / no parameter / error', test_excelmerge.checkLoadWithNoParameterShouldReturnError);
+    it('logic / load() / load each member from valid template', test_excelmerge.checkLoadEachMemberFromValidTemplate);
+    it('logic / load() / should return this instance', test_excelmerge.checkLoadShouldReturnThisInstance);
+    it('logic / merge() / renders correctly', test_excelmerge.checkIfMergeRendersCorrectly);
+    it('logic / merge() with no parameter / should return error', test_excelmerge.checkIfMergeWithNoParameterRendersCorrectly);
+    it('logic / bulkMergeMultiFile() / renders correctly', test_excelmerge.checkIfBulkMergeMultiFileRendersCorrectly);
+    it('logic / bulkMergeMultiFile() with no parameter / should return error', test_excelmerge.checkIfBulkMergeMultiFileWithNoParameterShouldReturnError);
+    it('logic / bulkMergeMultiSheet() / renders correctly', test_excelmerge.checkIfBulkMergeMultiSheetRendersCorrectly);
+    it('logic / bulkMergeMultiSheet() with no parameter / should return error', test_excelmerge.checkIfBulkMergeMultiSheetWithNoParameterShouldReturnError);
 
 });
 

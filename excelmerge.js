@@ -37,16 +37,18 @@ var ExcelMerge = (function () {
     /**
      * * load
      * * @param {Object} excel JsZip object including MS-Excel file
-     * * @param {Object} option option parameter
      * * @return {Promise} Promise instance including this
      **/
 
     _createClass(ExcelMerge, [{
         key: 'load',
-        value: function load(excel, option) {
+        value: function load(excel) {
             var _this = this;
 
-            return this.spreadsheet.load(excel, option).then(function () {
+            //validation
+            if (!(excel instanceof JSZip)) return Promise.reject('First parameter must be JSZip instance including MS-Excel data');
+
+            return this.spreadsheet.load(excel).then(function () {
                 return _this;
             });
         }
@@ -59,6 +61,10 @@ var ExcelMerge = (function () {
     }, {
         key: 'merge',
         value: function merge(bindData) {
+
+            //validation
+            if (!bindData) return Promise.reject('merge() must has parameter');
+
             return this.spreadsheet.simpleMerge(bindData);
         }
 
@@ -70,6 +76,10 @@ var ExcelMerge = (function () {
     }, {
         key: 'bulkMergeMultiFile',
         value: function bulkMergeMultiFile(bindDataArray) {
+
+            //validation
+            if (!bindDataArray) return Promise.reject('bulkMergeMultiFile() must has parameter');
+
             return this.spreadsheet.bulkMergeMultiFile(bindDataArray);
         }
 
@@ -82,6 +92,9 @@ var ExcelMerge = (function () {
         key: 'bulkMergeMultiSheet',
         value: function bulkMergeMultiSheet(bindDataArray) {
             var _this2 = this;
+
+            //validation
+            if (!bindDataArray) return Promise.reject('bulkMergeMultiSheet() must has parameter');
 
             return bindDataArray.reduce(function (promise, _ref) {
                 var name = _ref.name;

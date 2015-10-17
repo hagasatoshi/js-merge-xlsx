@@ -26,11 +26,13 @@ class ExcelMerge{
     /**
      * * load
      * * @param {Object} excel JsZip object including MS-Excel file
-     * * @param {Object} option option parameter
      * * @return {Promise} Promise instance including this
      **/
-    load(excel, option){
-        return this.spreadsheet.load(excel, option).then(()=>this);
+    load(excel){
+        //validation
+        if(!(excel instanceof JSZip)) return Promise.reject('First parameter must be JSZip instance including MS-Excel data');
+
+        return this.spreadsheet.load(excel).then(()=>this);
     }
 
     /**
@@ -39,6 +41,10 @@ class ExcelMerge{
      * * @return {Promise} Promise instance including MS-Excel data. data-format is determined by jszip_option
      **/
     merge(bindData){
+
+        //validation
+        if(!bindData) return Promise.reject('merge() must has parameter');
+
         return this.spreadsheet.simpleMerge(bindData);
     }
 
@@ -48,6 +54,10 @@ class ExcelMerge{
      * * @return {Promise} Promise instance including MS-Excel data.
      **/
     bulkMergeMultiFile(bindDataArray){
+
+        //validation
+        if(!bindDataArray) return Promise.reject('bulkMergeMultiFile() must has parameter');
+
         return this.spreadsheet.bulkMergeMultiFile(bindDataArray);
     }
 
@@ -57,6 +67,10 @@ class ExcelMerge{
      * * @return {Promise} Promise instance including MS-Excel data.
      **/
     bulkMergeMultiSheet(bindDataArray){
+
+        //validation
+        if(!bindDataArray) return Promise.reject('bulkMergeMultiSheet() must has parameter');
+
         return bindDataArray.reduce(
             (promise, {name, data})=>
                 promise.then((prior)=>{
