@@ -65,7 +65,7 @@ module.exports = {
         }).then(function () {
             throw new Error('simpleMergeWithNoParameterShouldReturnError failed ');
         })['catch'](function (err) {
-            assert.equal(err, 'simpleMerge() must has parameter');
+            assert.equal(err.message, 'simpleMerge() must has parameter');
         });
     },
 
@@ -91,7 +91,7 @@ module.exports = {
         }).then(function () {
             throw new Error('bulkMergeMultiFile_no_parameter_should_return_error failed ');
         })['catch'](function (err) {
-            assert.equal(err, 'bulkMergeMultiFile() has only array object');
+            assert.equal(err.message, 'bulkMergeMultiFile() has only array object');
         });
     },
 
@@ -103,7 +103,7 @@ module.exports = {
         }).then(function () {
             throw new Error('bulkMergeMultiFile_must_have_array_as_parameter failed ');
         })['catch'](function (err) {
-            assert.equal(err, 'bulkMergeMultiFile() has only array object');
+            assert.equal(err.message, 'bulkMergeMultiFile() has only array object');
         });
     },
 
@@ -115,7 +115,7 @@ module.exports = {
         }).then(function () {
             throw new Error('bulkMergeMultiFile_must_have_name_and_data failed ');
         })['catch'](function (err) {
-            assert.equal(err, 'bulkMergeMultiFile() is called with invalid parameter');
+            assert.equal(err.message, 'bulkMergeMultiFile() is called with invalid parameter');
         });
     },
 
@@ -173,7 +173,7 @@ module.exports = {
         }).then(function () {
             throw new Error('addSheetBindingData_with_no_parameter_should_return_error failed ');
         })['catch'](function (err) {
-            assert.equal(err, 'addSheetBindingData() needs to have 2 paramter.');
+            assert.equal(err.message, 'addSheetBindingData() needs to have 2 paramter.');
         });
     },
 
@@ -185,7 +185,7 @@ module.exports = {
         }).then(function () {
             throw new Error('addSheetBindingData_with_no_parameter_should_return_error failed ');
         })['catch'](function (err) {
-            assert.equal(err, 'addSheetBindingData() needs to have 2 paramter.');
+            assert.equal(err.message, 'addSheetBindingData() needs to have 2 paramter.');
         });
     },
 
@@ -197,7 +197,7 @@ module.exports = {
         }).then(function () {
             throw new Error('activateSheet_with_no_parameter_should_return_error failed ');
         })['catch'](function (err) {
-            assert.equal(err, 'activateSheet() needs to have 1 paramter.');
+            assert.equal(err.message, 'activateSheet() needs to have 1 paramter.');
         });
     },
 
@@ -209,7 +209,7 @@ module.exports = {
         }).then(function () {
             throw new Error('activateSheet_with_no_parameter_should_return_error failed ');
         })['catch'](function (err) {
-            assert.equal(err, "Invalid sheet name 'hoge'.");
+            assert.equal(err.message, "Invalid sheet name 'hoge'.");
         });
     },
 
@@ -221,7 +221,7 @@ module.exports = {
         }).then(function () {
             throw new Error('deleteSheet_with_no_parameter_should_return_error failed ');
         })['catch'](function (err) {
-            assert.equal(err, 'deleteSheet() needs to have 1 paramter.');
+            assert.equal(err.message, 'deleteSheet() needs to have 1 paramter.');
         });
     },
 
@@ -233,7 +233,24 @@ module.exports = {
         }).then(function () {
             throw new Error('deleteSheet_with_invalid_sheetname_should_return_error failed ');
         })['catch'](function (err) {
-            assert.equal(err, "Invalid sheet name 'hoge'.");
+            assert.equal(err.message, "Invalid sheet name 'hoge'.");
+        });
+    },
+
+    checkIfAddSheetBindingDataCorrectly: function checkIfAddSheetBindingDataCorrectly() {
+        return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (validTemplate) {
+            return new SpreadSheet().load(new JSZip(validTemplate));
+        }).then(function (spreadsheet) {
+            return spreadsheet.addSheetBindingData({ AccountName__c: 'hoge account1', AccountAddress__c: 'hoge street1' });
+        }).then(function (excelData) {
+            return new SpreadSheet().load(new JSZip(excelData));
+        }).then(function (spreadsheet) {
+            assert(spreadsheet.hasAsSharedString('hoge account1'), "'hoge account1' is missing in excel file");
+            assert(spreadsheet.hasAsSharedString('hoge street1'), "'hoge street1' is missing in excel file");
+            assert(spreadsheet.hasAsSharedString('hoge account2'), "'hoge account2' is missing in excel file");
+            assert(spreadsheet.hasAsSharedString('hoge street2'), "'hoge street2' is missing in excel file");
+            assert(spreadsheet.hasAsSharedString('hoge account3'), "'hoge account3' is missing in excel file");
+            assert(spreadsheet.hasAsSharedString('hoge street3'), "'hoge street3' is missing in excel file");
         });
     }
 };

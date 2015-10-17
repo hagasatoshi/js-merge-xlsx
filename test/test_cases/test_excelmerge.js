@@ -97,7 +97,7 @@ module.exports = {
         }).then(function () {
             throw new Error('checkIfMergeWithNoParameterRendersCorrectly failed');
         })['catch'](function (err) {
-            assert.equal(err, 'merge() must has parameter');
+            assert.equal(err.message, 'merge() must has parameter');
         });
     },
 
@@ -138,7 +138,7 @@ module.exports = {
         }).then(function () {
             throw new Error('checkIfBulkMergeMultiFileWithNoParameterShouldReturnError failed');
         })['catch'](function (err) {
-            assert.equal(err, 'bulkMergeMultiFile() must has parameter');
+            assert.equal(err.message, 'bulkMergeMultiFile() must has parameter');
         });
     },
 
@@ -150,7 +150,7 @@ module.exports = {
         }).then(function () {
             throw new Error('checkIfBulkMergeMultiSheetWithNoParameterShouldReturnError failed');
         })['catch'](function (err) {
-            assert.equal(err, 'bulkMergeMultiSheet() must has parameter');
+            assert.equal(err.message, 'bulkMergeMultiSheet() must has array as parameter');
         });
     }
 

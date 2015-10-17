@@ -45,7 +45,9 @@ class SpreadSheet{
      **/
     load(excel){
         //validation
-        if(!(excel instanceof JSZip)) return Promise.reject('First parameter must be JSZip instance including MS-Excel data');
+        if(!(excel instanceof JSZip)){
+            return Promise.reject('First parameter must be JSZip instance including MS-Excel data');
+        }
         //set member variable
         this.excel = excel;
         this.variables = _(excel.file('xl/sharedStrings.xml').asText()).variables();
@@ -81,7 +83,9 @@ class SpreadSheet{
     simpleMerge(bindData){
 
         //validation
-        if(!bindData) return Promise.reject('simpleMerge() must has parameter');
+        if(!bindData){
+            throw new Error('simpleMerge() must has parameter');
+        }
 
         return Promise.resolve().then(()=>this._simpleMerge(bindData, outputBuffer));
     }
@@ -94,8 +98,12 @@ class SpreadSheet{
     bulkMergeMultiFile(bindDataArray){
 
         //validation
-        if(!_.isArray(bindDataArray)) return Promise.reject('bulkMergeMultiFile() has only array object');
-        if(_.find(bindDataArray,(e)=>!(e.name && e.data))) return Promise.reject('bulkMergeMultiFile() is called with invalid parameter');
+        if(!_.isArray(bindDataArray)){
+            throw new Error('bulkMergeMultiFile() has only array object');
+        }
+        if(_.find(bindDataArray,(e)=>!(e.name && e.data))){
+            throw new Error('bulkMergeMultiFile() is called with invalid parameter');
+        }
 
         var allExcels = new JSZip();
         _.each(bindDataArray, ({name,data})=>allExcels.file(name, this._simpleMerge(data, jszipBuffer)));
@@ -110,7 +118,9 @@ class SpreadSheet{
      **/
     addSheetBindingData(destSheetName, data){
         //validation
-        if((!destSheetName) || !(data)) return Promise.reject('addSheetBindingData() needs to have 2 paramter.');
+        if((!destSheetName) || !(data)) {
+            throw new Error('addSheetBindingData() needs to have 2 paramter.');
+        }
         //1.add relation of next sheet
         let nextId = this._availableSheetid();
         this.workbookxmlRels.Relationships.Relationship.push({ '$': { Id: nextId, Type: OPEN_XML_SCHEMA_DEFINITION, Target: `worksheets/sheet${nextId}.xml`}});
@@ -152,10 +162,14 @@ class SpreadSheet{
     activateSheet(sheetname){
 
         //validation
-        if(!sheetname) return Promise.reject('activateSheet() needs to have 1 paramter.');
+        if(!sheetname){
+            throw new Error('activateSheet() needs to have 1 paramter.');
+        }
 
         let targetSheetName = this._sheetByName(sheetname);
-        if(!targetSheetName) return Promise.reject(`Invalid sheet name '${sheetname}'.`);
+        if(!targetSheetName){
+            throw new Error(`Invalid sheet name '${sheetname}'.`);
+        }
 
         _.each(this.sheet_xmls, (sheet)=>{
             if(!sheet.worksheet) return;
@@ -178,9 +192,13 @@ class SpreadSheet{
      * * @return {Object} this instance for chaining
      **/
     deleteSheet(sheetname){
-        if(!sheetname) return Promise.reject('deleteSheet() needs to have 1 paramter.');
+        if(!sheetname){
+            throw new Error('deleteSheet() needs to have 1 paramter.');
+        }
         let targetSheet = this._sheetByName(sheetname);
-        if(!targetSheet) return Promise.reject(`Invalid sheet name '${sheetname}'.`);
+        if(!targetSheet){
+            throw new Error(`Invalid sheet name '${sheetname}'.`);
+        }
         _.each(this.workbookxmlRels.Relationships.Relationship, (sheet,index)=>{
             if(sheet && (sheet['$'].Target === targetSheet.path)) this.workbookxmlRels.Relationships.Relationship.splice(index,1);
         });

@@ -106,7 +106,7 @@ module.exports = {
             }).then(()=>{
                 throw new Error('checkIfMergeWithNoParameterRendersCorrectly failed');
             }).catch((err)=>{
-                assert.equal(err,'merge() must has parameter');
+                assert.equal(err.message,'merge() must has parameter');
             });
     },
 
@@ -150,7 +150,7 @@ module.exports = {
             }).then(()=>{
                 throw new Error('checkIfBulkMergeMultiFileWithNoParameterShouldReturnError failed');
             }).catch((err)=>{
-                assert.equal(err,'bulkMergeMultiFile() must has parameter');
+                assert.equal(err.message,'bulkMergeMultiFile() must has parameter');
             });
     },
 
@@ -163,7 +163,7 @@ module.exports = {
             }).then(()=>{
                 throw new Error('checkIfBulkMergeMultiSheetWithNoParameterShouldReturnError failed');
             }).catch((err)=>{
-                assert.equal(err,'bulkMergeMultiSheet() must has parameter');
+                assert.equal(err.message,'bulkMergeMultiSheet() must has array as parameter');
             });
     }
 

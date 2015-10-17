@@ -37,6 +37,7 @@ describe('Test for spreadsheet.js : ',  ()=>{
     it('logic / load() / should return this instance', test_spreadsheet.checkLoadShouldReturnThisInstance);
     it('logic / simpleMerge() / renders correctly', test_spreadsheet.checkIfSimpleMergeRendersCorrectly);
     it('logic / bulkMergeMultiFile() / renders correctly', test_spreadsheet.checkIfBulkMergeMultiFileRendersCorrectly);
+    //it('logic / addSheetBindingData() / work correctly', test_spreadsheet.checkIfAddSheetBindingDataCorrectly);
 
 });
 

@@ -30,7 +30,9 @@ class ExcelMerge{
      **/
     load(excel){
         //validation
-        if(!(excel instanceof JSZip)) return Promise.reject('First parameter must be JSZip instance including MS-Excel data');
+        if(!(excel instanceof JSZip)){
+            return Promise.reject('First parameter must be JSZip instance including MS-Excel data');
+        }
 
         return this.spreadsheet.load(excel).then(()=>this);
     }
@@ -43,7 +45,9 @@ class ExcelMerge{
     merge(bindData){
 
         //validation
-        if(!bindData) return Promise.reject('merge() must has parameter');
+        if(!bindData){
+            throw new Error('merge() must has parameter');
+        }
 
         return this.spreadsheet.simpleMerge(bindData);
     }
@@ -56,8 +60,9 @@ class ExcelMerge{
     bulkMergeMultiFile(bindDataArray){
 
         //validation
-        if(!bindDataArray) return Promise.reject('bulkMergeMultiFile() must has parameter');
-
+        if(!bindDataArray){
+            throw new Error('bulkMergeMultiFile() must has parameter');
+        }
         return this.spreadsheet.bulkMergeMultiFile(bindDataArray);
     }
 
@@ -69,22 +74,14 @@ class ExcelMerge{
     bulkMergeMultiSheet(bindDataArray){
 
         //validation
-        if(!bindDataArray) return Promise.reject('bulkMergeMultiSheet() must has parameter');
+        if(!bindDataArray || !_.isArray(bindDataArray)) {
+            throw new Error('bulkMergeMultiSheet() must has array as parameter');
+        }
 
-        return bindDataArray.reduce(
-            (promise, {name, data})=>
-                promise.then((prior)=>{
-                    return this.spreadsheet.addSheetBindingData(name,data);
-                })
-            , Promise.resolve()
-        ).then(()=>{
-            return this.spreadsheet.deleteTemplateSheet()
-                .forcusOnFirstSheet()
-                .generate(output_buffer);
-        }).catch((err)=>{
-            console.error(new Error(err).stack);
-            Promise.reject();
-        });
+        _.each(bindDataArray, ({name,data})=>this.spreadsheet.addSheetBindingData(name,data));
+        return this.spreadsheet.deleteTemplateSheet()
+            .forcusOnFirstSheet()
+            .generate(output_buffer);
     }
 }
 

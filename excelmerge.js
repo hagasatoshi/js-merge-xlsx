@@ -46,7 +46,9 @@ var ExcelMerge = (function () {
             var _this = this;
 
             //validation
-            if (!(excel instanceof JSZip)) return Promise.reject('First parameter must be JSZip instance including MS-Excel data');
+            if (!(excel instanceof JSZip)) {
+                return Promise.reject('First parameter must be JSZip instance including MS-Excel data');
+            }
 
             return this.spreadsheet.load(excel).then(function () {
                 return _this;
@@ -63,7 +65,9 @@ var ExcelMerge = (function () {
         value: function merge(bindData) {
 
             //validation
-            if (!bindData) return Promise.reject('merge() must has parameter');
+            if (!bindData) {
+                throw new Error('merge() must has parameter');
+            }
 
             return this.spreadsheet.simpleMerge(bindData);
         }
@@ -78,8 +82,9 @@ var ExcelMerge = (function () {
         value: function bulkMergeMultiFile(bindDataArray) {
 
             //validation
-            if (!bindDataArray) return Promise.reject('bulkMergeMultiFile() must has parameter');
-
+            if (!bindDataArray) {
+                throw new Error('bulkMergeMultiFile() must has parameter');
+            }
             return this.spreadsheet.bulkMergeMultiFile(bindDataArray);
         }
 
@@ -94,20 +99,16 @@ var ExcelMerge = (function () {
             var _this2 = this;
 
             //validation
-            if (!bindDataArray) return Promise.reject('bulkMergeMultiSheet() must has parameter');
+            if (!bindDataArray || !_.isArray(bindDataArray)) {
+                throw new Error('bulkMergeMultiSheet() must has array as parameter');
+            }
 
-            return bindDataArray.reduce(function (promise, _ref) {
+            _.each(bindDataArray, function (_ref) {
                 var name = _ref.name;
                 var data = _ref.data;
-                return promise.then(function (prior) {
-                    return _this2.spreadsheet.addSheetBindingData(name, data);
-                });
-            }, Promise.resolve()).then(function () {
-                return _this2.spreadsheet.deleteTemplateSheet().forcusOnFirstSheet().generate(output_buffer);
-            })['catch'](function (err) {
-                console.error(new Error(err).stack);
-                Promise.reject();
+                return _this2.spreadsheet.addSheetBindingData(name, data);
             });
+            return this.spreadsheet.deleteTemplateSheet().forcusOnFirstSheet().generate(output_buffer);
         }
     }]);
 
