@@ -29,6 +29,7 @@ class ExcelMerge{
      * * @return {Promise} Promise instance including this
      **/
     load(excel){
+
         //validation
         if(!(excel instanceof JSZip)){
             return Promise.reject('First parameter must be JSZip instance including MS-Excel data');
@@ -46,7 +47,7 @@ class ExcelMerge{
 
         //validation
         if(!bindData){
-            throw new Error('merge() must has parameter');
+            return Promise.reject('merge() must has parameter');
         }
 
         return this.spreadsheet.simpleMerge(bindData);
@@ -61,7 +62,7 @@ class ExcelMerge{
 
         //validation
         if(!bindDataArray){
-            throw new Error('bulkMergeMultiFile() must has parameter');
+            return Promise.reject('bulkMergeMultiFile() must has parameter');
         }
         return this.spreadsheet.bulkMergeMultiFile(bindDataArray);
     }
@@ -75,7 +76,7 @@ class ExcelMerge{
 
         //validation
         if(!bindDataArray || !_.isArray(bindDataArray)) {
-            throw new Error('bulkMergeMultiSheet() must has array as parameter');
+            return Promise.reject('bulkMergeMultiSheet() must has array as parameter');
         }
 
         _.each(bindDataArray, ({name,data})=>this.spreadsheet.addSheetBindingData(name,data));

@@ -66,7 +66,7 @@ var ExcelMerge = (function () {
 
             //validation
             if (!bindData) {
-                throw new Error('merge() must has parameter');
+                return Promise.reject('merge() must has parameter');
             }
 
             return this.spreadsheet.simpleMerge(bindData);
@@ -83,7 +83,7 @@ var ExcelMerge = (function () {
 
             //validation
             if (!bindDataArray) {
-                throw new Error('bulkMergeMultiFile() must has parameter');
+                return Promise.reject('bulkMergeMultiFile() must has parameter');
             }
             return this.spreadsheet.bulkMergeMultiFile(bindDataArray);
         }
@@ -100,7 +100,7 @@ var ExcelMerge = (function () {
 
             //validation
             if (!bindDataArray || !_.isArray(bindDataArray)) {
-                throw new Error('bulkMergeMultiSheet() must has array as parameter');
+                return Promise.reject('bulkMergeMultiSheet() must has array as parameter');
             }
 
             _.each(bindDataArray, function (_ref) {

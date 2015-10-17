@@ -236,7 +236,7 @@ class SpreadSheet{
      * * generate
      * * call JSZip#generate() binding current data
      * * @param {Object} option option for JsZip#genereate()
-     * * @return {Object} Excel data. format is determinated by parameter
+     * * @return {Promise} Promise instance inclusing Excel data.
      **/
     generate(option){
         return parseString(this.excel.file('xl/sharedStrings.xml').asText())

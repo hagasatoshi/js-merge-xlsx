@@ -20,8 +20,8 @@ var _ = require('underscore');
 
 module.exports = {
     checkLoadWithNoParameterShouldReturnError: function checkLoadWithNoParameterShouldReturnError() {
-        return new SpreadSheet().load().then(function () {
-            throw new Error('test_load_with_no_parameter_should_return_error failed ');
+        return new ExcelMerge().load().then(function () {
+            throw new Error('checkLoadWithNoParameterShouldReturnError failed ');
         })['catch'](function (err) {
             assert.equal(err, 'First parameter must be JSZip instance including MS-Excel data');
         });
@@ -97,7 +97,7 @@ module.exports = {
         }).then(function () {
             throw new Error('checkIfMergeWithNoParameterRendersCorrectly failed');
         })['catch'](function (err) {
-            assert.equal(err.message, 'merge() must has parameter');
+            assert.equal(err, 'merge() must has parameter');
         });
     },
 
@@ -138,7 +138,7 @@ module.exports = {
         }).then(function () {
             throw new Error('checkIfBulkMergeMultiFileWithNoParameterShouldReturnError failed');
         })['catch'](function (err) {
-            assert.equal(err.message, 'bulkMergeMultiFile() must has parameter');
+            assert.equal(err, 'bulkMergeMultiFile() must has parameter');
         });
     },
 
@@ -150,7 +150,7 @@ module.exports = {
         }).then(function () {
             throw new Error('checkIfBulkMergeMultiSheetWithNoParameterShouldReturnError failed');
         })['catch'](function (err) {
-            assert.equal(err.message, 'bulkMergeMultiSheet() must has array as parameter');
+            assert.equal(err, 'bulkMergeMultiSheet() must has array as parameter');
         });
     }
 
