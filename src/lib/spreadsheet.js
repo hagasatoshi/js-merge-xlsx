@@ -5,7 +5,6 @@
  * * @date 2015/10/03
  **/
 //FIXME count in sharedstring.xml is not correct. fix count.
-//TODO remove old thumbnail file.
 var Mustache = require('mustache');
 var Promise = require('bluebird');
 var _ = require('underscore');
