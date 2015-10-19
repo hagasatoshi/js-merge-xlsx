@@ -4,7 +4,6 @@
  * * @author Satoshi Haga
  * * @date 2015/10/03
  **/
-//FIXME count in sharedstring.xml is not correct. fix count.
 var Mustache = require('mustache');
 var Promise = require('bluebird');
 var _ = require('underscore');
@@ -238,7 +237,8 @@ class SpreadSheet{
             //sharedstrings
             if(this.sharedstrings){
                 sharedstringsObj.sst.si = this._cleanSharedStrings();
-                sharedstringsObj.sst['$'].count = sharedstringsObj.sst['$'].uniqueCount = this.sharedstrings.length;
+                sharedstringsObj.sst['$'].uniqueCount = this.sharedstrings.length;
+                sharedstringsObj.sst['$'].count = this._stringCount();
                 this.excel.file('xl/sharedStrings.xml', builder.buildObject(sharedstringsObj))
             }
 
@@ -271,7 +271,6 @@ class SpreadSheet{
         })
 
     }
-
 
     /**
      * * _simpleMerge
@@ -462,6 +461,27 @@ class SpreadSheet{
      **/
     _deactiveSheets(){
         return _.filter(this.sheetXmls, (sheet)=>(sheet.worksheet.sheetViews[0].sheetView[0]['$'].tabSelected === '0'));
+    }
+
+    /**
+     * * _stringCount
+     * * @return {Number} count of string-cell
+     * * @private
+     **/
+    _stringCount(){
+        let stringCount = 0;
+        _.each(this.sheetXmls, (sheet)=>{
+            if(sheet.worksheet){
+                _.each(sheet.worksheet.sheetData[0].row, (row)=>{
+                    _.each(row.c, (cell)=>{
+                        if(cell['$'].t){
+                            stringCount++;
+                        }
+                    });
+                });
+            }
+        });
+        return stringCount;
     }
 }
 
