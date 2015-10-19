@@ -128,4 +128,15 @@ describe('output test : ', function () {
     it('bulk / normaldata / TemplateWithObject.xlsx', function () {
         return util.output('TemplateWithObject.xlsx', 'bulk_normal_data.yml', EXCEL_OUTPUT_TYPE.BULK_MULTIPLE_SHEET, '06_object/bulk_normaldata_with_object.xlsx');
     });
+
+    /* 07.Character Test */
+    it('single / characterdata / Template.xlsx', function () {
+        return util.output_character_test_single_record('Template.xlsx', '07_character/single_character.xlsx');
+    });
+    it('bulk / characterdata / Template.xlsx', function () {
+        return util.output_character_test_bulk_record_as_multifile('Template.xlsx', '07_character/bulk_character.zip');
+    });
+    it('bulk / characterdata / Template.xlsx', function () {
+        return util.output_character_test_bulk_record_as_multisheet('Template.xlsx', '07_character/bulk_character.xlsx');
+    });
 });
