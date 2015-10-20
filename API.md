@@ -18,49 +18,43 @@ Contructor. No arguments are required.
 Load MS-Excel template. Parameter is JSZip instance including MS-Excel data. Returns a new promise instance including this ExcelMerge instance. So you can code like method-chain as follows.  
 ```
 fs.readFileAsync('./Template.xlsx')
-.then((excel_template)=>{
-    return new ExcelMerge().load(new JSZip(excel_template)); //Initialize ExcelMerge object
-}).then((merge)=>{
-    //merge is ExcelMerge instance.
+.then((excelTemplate)=>{
+    return new ExcelMerge().load(new JSZip(excelTemplate)); 
+}).then((excelMerge)=>{
+    //excelMerge is ExcelMerge instance.
 ```
 # Render    
-#####`render(Object data)` -> `Promise`  
+#####`merge(Object data)` -> `Promise`  
 Render single object, not array. Returns Promise instance including MS-Excel data. If on Node.js, the type of data is Buffer instance. If on web browser, blob is returned.
 ```
-    return merge.render(some_data);
-}).then((excel_data)=>{
-    fs.writeFileAsync('Example1.xlsx',excel_data);
+  return excelMerge.merge(someData);
+}).then((excelData)=>{
+  fs.writeFileAsync('example1.xlsx',excelData);
 }).catch((err)=>{
-    console.error(err);
+  console.error(err);
 });
 ```
 
-#####`bulk_render_multi_file([{name:file's name of file1, data:data of file1},{name:file's name of file2, data:data of file2},,,])` -> `Promise`  
+#####`bulkMergeMultiFile([{name:file's name of file1, data:data of file1},{name:file's name of file2, data:data of file2},,,])` -> `Promise`  
 Render array as multiple files. Returns Promise instance including Zip-file data. If on Node.js, the type of data is Buffer instance. If on web browser, blob is returned. You can use 'name' property as each file-name in zip file.
 ```
-  let array_hoge = [];
-  _.each(array_fuga, (data,index)=>{
-      array_hoge.push({name:'example'+(index+1), data:data});
-  });
-  return merge.bulk_render_multi_file(array_hoge);
-}).then((zip_data)=>{
-  fs.writeFileAsync('piyo.zip',zip_data);
+  let arrayHoge = _.map(arrayFuga, (data,index)=>({name:`example${(index+1)}.xlsx`, data:data}));
+  return excelMerge.bulkRenderMultiFile(arrayHoge);
+}).then((zipData)=>{
+  fs.writeFileAsync('piyo.zip',zipData);
 }).catch((err)=>{
-    console.error(err);
+  console.error(err);
 });
 ```
 
-#####`bulk_render_multi_sheet([{name:sheet's name of file1, data:data of file1},{name:sheet's name of file1, data:data of file1},,,])` -> `Promise`  
+#####`bulkRenderMultiSheet([{name:sheet's name of file1, data:data of file1},{name:sheet's name of file1, data:data of file1},,,])` -> `Promise`  
 Render array as multiple sheet. Returns Promise instance including Excel-file data. If on Node.js, the type of data is Buffer instance. If on web browser, blob is returned. You can use 'name' property as each sheet-name in MS-Excel file.
 ```
-  let array_hoge = [];
-  _.each(array_fuga, (data,index)=>{
-      array_hoge.push({name:'example'+(index+1), data:data});
-  });
-  return merge.bulk_render_multi_sheet(array_hoge);
-}).then((excel_data)=>{
-  fs.writeFileAsync('piyo.xlsx',excel_data);
+  let arrayHoge = _.map(arrayFuga, (data,index)=>({name:`example${(index+1)}`, data:data}));
+  return merge.bulkRenderMultiSheet(arrayHoge);
+}).then((excelData)=>{
+  fs.writeFileAsync('piyo.xlsx',excelData);
 }).catch((err)=>{
-    console.error(err);
+  console.error(err);
 });
 ```
