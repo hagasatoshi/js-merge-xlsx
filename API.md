@@ -3,10 +3,10 @@
 - [Initialize](#initialize)
     - [`new ExcelMerge()`](#new-excelmerge---excelmerge)
     - [`.load(JSZip zip)`](#loadjszip-zip---promise)
-- [Render](#render)
-    - [`.render()`](#renderobject-data---promise)
-    - [`.bulk_render_multi_file()`](#bulk_render_multi_filenamefiles-name-of-file1-datadata-of-file1namefiles-name-of-file2-datadata-of-file2---promise)
-    - [`.bulk_render_multi_sheet()`](#bulk_render_multi_sheetnamesheets-name-of-file1-datadata-of-file1namesheets-name-of-file1-datadata-of-file1---promise)
+- [Merge](#render)
+    - [`.merge()`](#renderobject-data---promise)
+    - [`.bulkRenderMultiFile()`](#bulk_render_multi_filenamefiles-name-of-file1-datadata-of-file1namefiles-name-of-file2-datadata-of-file2---promise)
+    - [`.bulkRenderMultiSheet()`](#bulk_render_multi_sheetnamesheets-name-of-file1-datadata-of-file1namesheets-name-of-file1-datadata-of-file1---promise)
 
 Each code example is written with ES6 syntax
 # Initialize  
