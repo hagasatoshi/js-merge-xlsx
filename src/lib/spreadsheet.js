@@ -287,7 +287,6 @@ class SpreadSheet{
      **/
     _simpleMerge(bindData, option=outputBuffer){
         return new JSZip(this.excel.generate(jszipBuffer))
-            //.file('xl/sharedStrings.xml', Mustache.render(this.excel.file('xl/sharedStrings.xml').asText(), _(bindData).encode()))
             .file('xl/sharedStrings.xml', Mustache.render(this.excel.file('xl/sharedStrings.xml').asText(), bindData))
             .generate(option);
     }

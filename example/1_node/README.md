@@ -16,9 +16,9 @@ gulp
 node app.js
 ```
 The following 3 files are created.
-- Example1.xlsx : single printing.
-- Example2.zip : bulk printing. This zip file contains 3 files.
-- Example3.xlsx : bulk printing. This file has 3 Excel-sheets.
+- example1.xlsx : single printing.
+- example2.zip : bulk printing. This zip file contains 3 files.
+- example3.xlsx : bulk printing. This file has 3 Excel-sheets.
   
 # Source  
 app.js(ES6 syntax)
@@ -41,11 +41,13 @@ var _ = require('underscore');
 fs.readFileAsync('./template/Template.xlsx')
 .then((excelTemplate)=>{
     return Promise.props({
-    data: readYamlAsync('./data/data1.yml'),                        //Load single data
-        bulkData: readYamlAsync('./data/data2.yml'),                //Load array data
-        excelMerge: new ExcelMerge().load(new JSZip(excelTemplate)) //Initialize ExcelMerge object
+        data: readYamlAsync('./data/data1.yml'),
+        bulkData: readYamlAsync('./data/data2.yml'),
+        excelMerge1: new ExcelMerge().load(new JSZip(excelTemplate)),
+        excelMerge2: new ExcelMerge().load(new JSZip(excelTemplate)),
+        excelMerge3: new ExcelMerge().load(new JSZip(excelTemplate))
     });
-}).then(({data, bulkData, excelMerge})=>{
+}).then(({data, bulkData, excelMerge1, excelMerge2, excelMerge3})=>{
 
     //add name property for ExcelMerge#bulkMergeMultiFile()
     let bulkData1 = _.map(bulkData, (e,index)=> ({name:`file${index+1}.xlsx`, data:e}));
@@ -55,9 +57,9 @@ fs.readFileAsync('./template/Template.xlsx')
 
     //Execute merge
     return Promise.props({
-        excel1: excelMerge.merge(data),
-        excel2: excelMerge.bulkMergeMultiFile(bulkData1),
-        excel3: excelMerge.bulkMergeMultiSheet(bulkData2)
+        excel1: excelMerge1.merge(data),
+        excel2: excelMerge2.bulkMergeMultiFile(bulkData1),
+        excel3: excelMerge3.bulkMergeMultiSheet(bulkData2)
     });
 }).then(({excel1, excel2, excel3})=>{
     return Promise.all([
