@@ -23,9 +23,9 @@ fs.readFileAsync('./Template.xlsx')
 }).then((excelMerge)=>{
     //excelMerge is ExcelMerge instance.
 ```
-# Render    
+# Merge    
 #####`merge(Object data)` -> `Promise`  
-Render single object, not array. Returns Promise instance including MS-Excel data. If on Node.js, the type of data is Buffer instance. If on web browser, blob is returned.
+Merge single object, not array. Returns Promise instance including MS-Excel data. If on Node.js, the type of data is Buffer instance. If on web browser, blob is returned.
 ```
   return excelMerge.merge(someData);
 }).then((excelData)=>{
@@ -36,7 +36,7 @@ Render single object, not array. Returns Promise instance including MS-Excel dat
 ```
 
 #####`bulkMergeMultiFile([{name:file's name of file1, data:data of file1},{name:file's name of file2, data:data of file2},,,])` -> `Promise`  
-Render array as multiple files. Returns Promise instance including Zip-file data. If on Node.js, the type of data is Buffer instance. If on web browser, blob is returned. You can use 'name' property as each file-name in zip file.
+Merge array as multiple files. Returns Promise instance including Zip-file data. If on Node.js, the type of data is Buffer instance. If on web browser, blob is returned. You can use 'name' property as each file-name in zip file.
 ```
   let arrayHoge = _.map(arrayFuga, (data,index)=>({name:`example${(index+1)}.xlsx`, data:data}));
   return excelMerge.bulkRenderMultiFile(arrayHoge);
@@ -48,7 +48,7 @@ Render array as multiple files. Returns Promise instance including Zip-file data
 ```
 
 #####`bulkRenderMultiSheet([{name:sheet's name of file1, data:data of file1},{name:sheet's name of file1, data:data of file1},,,])` -> `Promise`  
-Render array as multiple sheet. Returns Promise instance including Excel-file data. If on Node.js, the type of data is Buffer instance. If on web browser, blob is returned. You can use 'name' property as each sheet-name in MS-Excel file.
+Merge array as multiple sheet. Returns Promise instance including Excel-file data. If on Node.js, the type of data is Buffer instance. If on web browser, blob is returned. You can use 'name' property as each sheet-name in MS-Excel file.
 ```
   let arrayHoge = _.map(arrayFuga, (data,index)=>({name:`example${(index+1)}`, data:data}));
   return merge.bulkRenderMultiSheet(arrayHoge);
