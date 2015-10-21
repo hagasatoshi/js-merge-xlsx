@@ -3,6 +3,7 @@ node_modules
 bower_components
 .idea
 build
+test/mocha/output/*
 .env
-test/mocha/output
+
 
