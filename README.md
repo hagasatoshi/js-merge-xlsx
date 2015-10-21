@@ -1,4 +1,4 @@
-# js-merge-xlsx  
+# js-merge-xlsx  [![Build Status](https://travis-ci.org/hagasatoshi/js-merge-xlsx.svg?branch=master)](https://travis-ci.org/hagasatoshi/js-merge-xlsx)
 Minimum JavaScript-based template engine for MS-Excel. js-merge-xlsx empowers you to print JavaScript objects.
 
 - Available for both web browser and Node.js .
