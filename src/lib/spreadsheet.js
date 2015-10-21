@@ -111,6 +111,7 @@ class SpreadSheet{
         //2.add sheet file.
         let mergedStrings;
         if(this.sharedstrings){
+
             //prepare merged-strings
             mergedStrings = _(this.commonStringsWithVariable).deepCopy();
             _.each(mergedStrings,(e)=>e.t[0] = Mustache.render(_(e.t).stringValue(), data));
@@ -232,21 +233,26 @@ class SpreadSheet{
      **/
     generate(option){
         return parseString(this.excel.file('xl/sharedStrings.xml').asText())
-        .then((sharedstringsObj)=>{
+        .then((sharedstringsObj)=> {
 
-            //sharedstrings
-            if(this.sharedstrings){
-                sharedstringsObj.sst.si = this._cleanSharedStrings();
-                sharedstringsObj.sst['$'].uniqueCount = this.sharedstrings.length;
-                sharedstringsObj.sst['$'].count = this._stringCount();
-                this.excel.file('xl/sharedStrings.xml', builder.buildObject(sharedstringsObj))
-            }
+                //sharedstrings
+                //debug start
+                if (this.sharedstrings) {
+                    sharedstringsObj.sst.si = this._cleanSharedStrings();
+                    sharedstringsObj.sst['$'].uniqueCount = this.sharedstrings.length;
+                    sharedstringsObj.sst['$'].count = this._stringCount();
 
+                    this.excel.file('xl/sharedStrings.xml', _(builder.buildObject(sharedstringsObj)).decode())
+                }
+                //debug end
+
+
+        //}).then((sharedstringsObj)=>{
             //workbook.xml.rels
-            this.excel.file("xl/_rels/workbook.xml.rels",builder.buildObject(this.workbookxmlRels))
+            this.excel.file("xl/_rels/workbook.xml.rels",_(builder.buildObject(this.workbookxmlRels)).decode());
 
             //workbook.xml
-            this.excel.file("xl/workbook.xml",builder.buildObject(this.workbookxml));
+            this.excel.file("xl/workbook.xml", _(builder.buildObject(this.workbookxml)).decode());
 
             //sheetXmls
             _.each(this.sheetXmls, (sheet)=>{
@@ -254,13 +260,13 @@ class SpreadSheet{
                     var sheetObj = {};
                     sheetObj.worksheet = {};
                     _.extend(sheetObj.worksheet, sheet.worksheet);
-                    this.excel.file(`xl/worksheets/${sheet.name}`, builder.buildObject(sheetObj));
+                    this.excel.file(`xl/worksheets/${sheet.name}`, _(builder.buildObject(sheetObj)).decode());
                 }
             });
 
             //sheetXmlsRels
             if(this.templateSheetRelsData.value && this.templateSheetRelsData.value.Relationships){
-                let strTemplateSheetRels = builder.buildObject({Relationships:this.templateSheetRelsData.value.Relationships});
+                let strTemplateSheetRels = _(builder.buildObject({Relationships:this.templateSheetRelsData.value.Relationships})).decode();
                 _.each(this.sheetXmls, (sheet)=>{
                     if(sheet.name) this.excel.file(`xl/worksheets/_rels/${sheet.name}.rels`, strTemplateSheetRels);
                 });
@@ -281,6 +287,7 @@ class SpreadSheet{
      **/
     _simpleMerge(bindData, option=outputBuffer){
         return new JSZip(this.excel.generate(jszipBuffer))
+            //.file('xl/sharedStrings.xml', Mustache.render(this.excel.file('xl/sharedStrings.xml').asText(), _(bindData).encode()))
             .file('xl/sharedStrings.xml', Mustache.render(this.excel.file('xl/sharedStrings.xml').asText(), bindData))
             .generate(option);
     }

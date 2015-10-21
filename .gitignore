@@ -4,6 +4,5 @@ bower_components
 .idea
 build
 .env
-wrk
-wrk2
-test/output
+test/mocha/output
+

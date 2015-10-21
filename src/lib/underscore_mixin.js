@@ -7,6 +7,7 @@
 
 var _ = require('underscore');
 var Mustache = require('mustache');
+var builder = require('xml2js').Builder();
 
 _.mixin({
     /**
@@ -64,5 +65,17 @@ _.mixin({
      * * @param {Object} obj
      * * @returns {Object}
      */
-    deepCopy: (obj)=>JSON.parse(JSON.stringify(obj))
+    deepCopy: (obj)=>JSON.parse(JSON.stringify(obj)),
+
+    /**
+     * * decode
+     * * @param {String} val
+     * * @returns {String}
+     */
+    decode: (val)=>{
+        if(!val || (typeof val !== 'string')) return val;
+        let decodeMap = {'&lt;': '<', '&gt;': '>', '&quot;': '"', '&#39;': '\'', '&amp;': '&'};
+        return val.replace(/(&lt;|&gt;|&quot;|&#39;|&amp;)/g, (str, item)=>decodeMap[item]);
+    }
+
 });

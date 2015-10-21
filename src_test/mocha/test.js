@@ -18,7 +18,7 @@ var EXCEL_OUTPUT_TYPE = {
 /** SpreadSheet */
 describe('Test for spreadsheet.js : ',  ()=>{
 
-    /* Validation */
+    //Validation
     it('validation / load() / no parameter / error', test_spreadsheet.checkLoadWithNoParameterShouldReturnError);
     it('validation / simpleMerge() / no parameter / error', test_spreadsheet.simpleMergeWithNoParameterShouldReturnError);
     it('validation / bulkMergeMultiFile() / no parameter / error', test_spreadsheet.bulkMergeMultiFileNoParameterShouldReturnError);
@@ -29,7 +29,7 @@ describe('Test for spreadsheet.js : ',  ()=>{
     it('validation / deleteSheet() / no parameter / error', test_spreadsheet.deleteSheetWithNoParameterShouldReturnError);
     it('validation / deleteSheet() / invalid sheetname / error', test_spreadsheet.deleteSheetWithInvalidSheetnameShouldReturnError);
 
-    /* Core logic */
+    //Core
     it('logic / load() / load each member from valid template', test_spreadsheet.checkLoadEachMemberFromValidTemplate);
     it('logic / load() / should return this instance', test_spreadsheet.checkLoadShouldReturnThisInstance);
     it('logic / simpleMerge() / renders correctly', test_spreadsheet.checkIfSimpleMergeRendersCorrectly);
@@ -44,28 +44,26 @@ describe('Test for spreadsheet.js : ',  ()=>{
 /** ExcelMerge */
 describe('Test for ExcelMerge.js : ',  ()=>{
 
-    /* Validation */
+    //Validation
     it('validation / load() / no parameter / error', test_excelmerge.checkLoadWithNoParameterShouldReturnError);
     it('logic / merge() with no parameter / should return error', test_excelmerge.checkIfMergeWithNoParameterRendersCorrectly);
     it('logic / bulkMergeMultiFile() with no parameter / should return error', test_excelmerge.checkIfBulkMergeMultiFileWithNoParameterShouldReturnError);
     it('logic / bulkMergeMultiSheet() with no parameter / should return error', test_excelmerge.checkIfBulkMergeMultiSheetWithNoParameterShouldReturnError);
 
-    /* Core logic */
+    //Core
     it('logic / load() / load each member from valid template', test_excelmerge.checkLoadEachMemberFromValidTemplate);
     it('logic / load() / should return this instance', test_excelmerge.checkLoadShouldReturnThisInstance);
     it('logic / merge() / renders correctly', test_excelmerge.checkIfMergeRendersCorrectly);
     it('logic / bulkMergeMultiFile() / renders correctly', test_excelmerge.checkIfBulkMergeMultiFileRendersCorrectly);
     it('logic / bulkMergeMultiSheet() / renders correctly', test_excelmerge.checkIfBulkMergeMultiSheetRendersCorrectly);
 
-
 });
-
 
 /** Output test */
 describe('output test : ',  ()=>{
     let util = new Utilitly();
 
-    /* 01.Normal Case */
+    //01.Normal Case
     it('single / normaldata / Template.xlsx',
         ()=>util.output('Template.xlsx','single_normal_data.yml',EXCEL_OUTPUT_TYPE.SINGLE,'01_normal_case/single_normaldata_temlate.xlsx'));
     it('bulk / normaldata / Template.xlsx',
@@ -73,7 +71,7 @@ describe('output test : ',  ()=>{
     it('bulk / normaldata / Template.xlsx',
         ()=>util.output('Template.xlsx','bulk_normal_data.yml',EXCEL_OUTPUT_TYPE.BULK_MULTIPLE_SHEET,'01_normal_case/bulk_normaldata_temlate.xlsx'));
 
-    /* 02.No Image */
+    //02.No Image
     it('single / normaldata / TemplateNoImage.xlsx',
         ()=>util.output('TemplateNoImage.xlsx','single_normal_data.yml',EXCEL_OUTPUT_TYPE.SINGLE,'02_no_image/single_normaldata_noimage.xlsx'));
     it('bulk / normaldata / TemplateNoImage.xlsx',
@@ -81,7 +79,7 @@ describe('output test : ',  ()=>{
     it('bulk / normaldata / TemplateNoImage.xlsx',
         ()=>util.output('TemplateNoImage.xlsx','bulk_normal_data.yml',EXCEL_OUTPUT_TYPE.BULK_MULTIPLE_SHEET,'02_no_image/bulk_normaldata_noimage.xlsx'));
 
-    /* 03.No String */
+    //03.No String
     it('single / normaldata / TemplateNoStrings.xlsx', function () {
         return util.output('TemplateNoStrings.xlsx', 'single_normal_data.yml', EXCEL_OUTPUT_TYPE.SINGLE, '03_no_strings/single_normaldata_nostrings.xlsx');
     });
@@ -92,7 +90,7 @@ describe('output test : ',  ()=>{
         return util.output('TemplateNoStrings.xlsx', 'bulk_normal_data.yml', EXCEL_OUTPUT_TYPE.BULK_MULTIPLE_SHEET, '03_no_strings/bulk_normaldata_nostrings.xlsx');
     });
 
-    /* 04.String with no variables */
+    //04.String with no variables
     it('single / normaldata / TemplateStringWithNoVariables.xlsx', function () {
         return util.output('TemplateStringWithNoVariables.xlsx', 'single_normal_data.yml', EXCEL_OUTPUT_TYPE.SINGLE, '04_variables/single_normaldata_novariables.xlsx');
     });
@@ -103,7 +101,7 @@ describe('output test : ',  ()=>{
         return util.output('TemplateStringWithNoVariables.xlsx', 'bulk_normal_data.yml', EXCEL_OUTPUT_TYPE.BULK_MULTIPLE_SHEET, '04_variables/bulk_normaldata_novariables.xlsx');
     });
 
-    /* 05.multiple images */
+    //05.multiple images
     it('single / normaldata / TemplateMultiImages.xlsx', function () {
         return util.output('TemplateMultiImages.xlsx', 'single_normal_data.yml', EXCEL_OUTPUT_TYPE.SINGLE, '05_multiple_images/single_normaldata_multiple_images.xlsx');
     });
@@ -114,7 +112,7 @@ describe('output test : ',  ()=>{
         return util.output('TemplateMultiImages.xlsx', 'bulk_normal_data.yml', EXCEL_OUTPUT_TYPE.BULK_MULTIPLE_SHEET, '05_multiple_images/bulk_normaldata_multiple_images.xlsx');
     });
 
-    /* 06.With objects */
+    //06.With objects
     it('single / normaldata / TemplateWithObject.xlsx', function () {
         return util.output('TemplateWithObject.xlsx', 'single_normal_data.yml', EXCEL_OUTPUT_TYPE.SINGLE, '06_object/single_normaldata_with_object.xlsx');
     });
@@ -125,7 +123,7 @@ describe('output test : ',  ()=>{
         return util.output('TemplateWithObject.xlsx', 'bulk_normal_data.yml', EXCEL_OUTPUT_TYPE.BULK_MULTIPLE_SHEET, '06_object/bulk_normaldata_with_object.xlsx');
     });
 
-    /* 07.Character Test */
+    //07.Character Test
     it('single / characterdata / Template.xlsx', function () {
         return util.output_character_test_single_record('Template.xlsx', '07_character/single_character.xlsx');
     });
@@ -135,6 +133,7 @@ describe('output test : ',  ()=>{
     it('bulk / characterdata / Template.xlsx', function () {
         return util.output_character_test_bulk_record_as_multisheet('Template.xlsx', '07_character/bulk_character.xlsx');
     });
+
 
 
 });
