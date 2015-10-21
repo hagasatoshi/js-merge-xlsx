@@ -19,22 +19,6 @@ html(ng-app="app")
         #ContentArea
             .main-view
                 .button-area
-                    a.btn.btn-primary(ng-click="exampleMerge()") Normal / Single
-                    a.btn.btn-primary(ng-click="exampleBulkMergeMultiFile()") Normal / Bulk / files
-                    a.btn.btn-primary(ng-click="exampleBulkMergeMultiSheet()") Normal / Bulk / sheets
-                .button-area
-                    a.btn.btn-primary(ng-click="charSingle()") Char / Single
-                    a.btn.btn-primary(ng-click="charBulkFiles()") Char / Bulk / files
-                    a.btn.btn-primary(ng-click="charBulkSheets()") Char / Bulk / sheets
-                .button-area
-                    a.btn.btn-primary(ng-click="exampleBulkMergeMultiFile()") Mass / files
-                    a.btn.btn-primary(ng-click="exampleBulkMergeMultiSheet()") Mass / sheets
-                .button-area
-                    a.btn.btn-primary(ng-click="exampleMerge()") Inline / Single
-                    a.btn.btn-primary(ng-click="exampleBulkMergeMultiFile()") Inline / Bulk / files
-                    a.btn.btn-primary(ng-click="exampleBulkMergeMultiSheet()") Inline / Bulk / sheets
-                .button-area
-                    a.btn.btn-primary(ng-click="exampleMerge()") Inline-Char / Single
-                    a.btn.btn-primary(ng-click="exampleBulkMergeMultiFile()") Inline-Char / Bulk / files
-                    a.btn.btn-primary(ng-click="exampleBulkMergeMultiSheet()") Inline-Char / Bulk / sheets
-
+                    a.btn.btn-primary(ng-click="exampleMerge()") ExcelMerge#merge()
+                    a.btn.btn-primary(ng-click="exampleBulkMergeMultiFile()") ExcelMerge#bulkMergeMultiFile()
+                    a.btn.btn-primary(ng-click="exampleBulkMergeMultiSheet()") ExcelMerge#bulkMergeMultiSheet()

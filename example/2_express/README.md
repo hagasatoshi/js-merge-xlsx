@@ -22,9 +22,9 @@ You can access 'http://localhost:3000/' as follows.
   
 Each button prints using js-merge-xlsx.
 
-- ExcelMerge#render() : single printing.
-- ExcelMerge#bulk_render_multi_file() : bulk printing as 'multiple file'.
-- ExcelMerge#bulk_render_multi_sheet() : bulk printing as 'multiple sheet'.
+- ExcelMerge#merge() : single merge.
+- ExcelMerge#bulkMergeMultiFile() : bulk merge as 'multiple file'.
+- ExcelMerge#bulkMergeMultiSheet() : bulk merge as 'multiple sheet'.
   
 # Source  
 Angular's controller(ES6 syntax)
