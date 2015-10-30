@@ -108,7 +108,7 @@ var ExcelMerge = (function () {
                 var data = _ref.data;
                 return _this2.spreadsheet.addSheetBindingData(name, data);
             });
-            return this.spreadsheet.deleteTemplateSheet().forcusOnFirstSheet().generate(output_buffer);
+            return this.spreadsheet.deleteTemplateSheet().focusOnFirstSheet().generate(output_buffer);
         }
     }]);
 

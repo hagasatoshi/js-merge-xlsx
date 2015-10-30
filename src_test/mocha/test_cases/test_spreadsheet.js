@@ -297,15 +297,15 @@ module.exports = {
                     .addSheetBindingData('sample1', {AccountName__c:'hoge account1',AccountAddress__c:'hoge street1'})
                     .addSheetBindingData('sample2', {AccountName__c:'hoge account1',AccountAddress__c:'hoge street1'})
                     .addSheetBindingData('sample3', {AccountName__c:'hoge account1',AccountAddress__c:'hoge street1'})
-                    .forcusOnFirstSheet()
+                    .focusOnFirstSheet()
                     .generate(output_buffer);
             }).then((excelData)=>{
                 return new SpreadSheet().load(new JSZip(excelData));
             }).then((spreadsheet)=>{
-                assert(spreadsheet.isFocused('Sheet1'),"forcusOnFirstSheet() doesn't work correctly");
-                assert(!spreadsheet.isFocused('sample1'),"forcusOnFirstSheet() doesn't work correctly");
-                assert(!spreadsheet.isFocused('sample2'),"forcusOnFirstSheet() doesn't work correctly");
-                assert(!spreadsheet.isFocused('sample3'),"forcusOnFirstSheet() doesn't work correctly");
+                assert(spreadsheet.isFocused('Sheet1'),"focusOnFirstSheet() doesn't work correctly");
+                assert(!spreadsheet.isFocused('sample1'),"focusOnFirstSheet() doesn't work correctly");
+                assert(!spreadsheet.isFocused('sample2'),"focusOnFirstSheet() doesn't work correctly");
+                assert(!spreadsheet.isFocused('sample3'),"focusOnFirstSheet() doesn't work correctly");
             });
     }
 };

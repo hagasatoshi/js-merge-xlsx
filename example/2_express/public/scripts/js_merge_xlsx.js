@@ -38496,7 +38496,7 @@
 	                var data = _ref.data;
 	                return _this2.spreadsheet.addSheetBindingData(name, data);
 	            });
-	            return this.spreadsheet.deleteTemplateSheet().forcusOnFirstSheet().generate(output_buffer);
+	            return this.spreadsheet.deleteTemplateSheet().focusOnFirstSheet().generate(output_buffer);
 	        }
 	    }]);
 
@@ -52066,12 +52066,12 @@
 	        }
 
 	        /**
-	         * * forcusOnFirstSheet
+	         * * focusOnFirstSheet
 	         * * @return {Object} this instance for chaining
 	         **/
 	    }, {
-	        key: 'forcusOnFirstSheet',
-	        value: function forcusOnFirstSheet() {
+	        key: 'focusOnFirstSheet',
+	        value: function focusOnFirstSheet() {
 	            var targetSheetName = this._sheetByName(this._firstSheetName());
 	            _.each(this.sheet_xmls, function (sheet) {
 	                if (!sheet.worksheet) return;

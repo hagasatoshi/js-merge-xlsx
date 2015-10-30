@@ -147,10 +147,10 @@ class SpreadSheet{
     }
 
     /**
-     * * forcusOnFirstSheet
+     * * focusOnFirstSheet
      * * @return {Object} this instance for chaining
      **/
-    forcusOnFirstSheet(){
+    focusOnFirstSheet(){
         let targetSheetName = this._sheetByName(this._firstSheetName());
         _.each(this.sheet_xmls, (sheet)=>{
             if(!sheet.worksheet) return;
