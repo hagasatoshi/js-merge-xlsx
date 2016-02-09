@@ -14,7 +14,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 var Promise = require('bluebird');
 var _ = require('underscore');
 var JSZip = require('jszip');
-var SpreadSheet = require('./lib/spreadsheet');
+var SheetHelper = require('./lib/sheetHelper');
 var isNode = require('detect-node');
 var output_buffer = { type: isNode ? 'nodebuffer' : 'blob', compression: "DEFLATE" };
 
@@ -27,7 +27,7 @@ var ExcelMerge = (function () {
     function ExcelMerge() {
         _classCallCheck(this, ExcelMerge);
 
-        this.spreadsheet = new SpreadSheet();
+        this.sheetHelper = new SheetHelper();
     }
 
     //Exports
@@ -48,7 +48,7 @@ var ExcelMerge = (function () {
                 return Promise.reject('First parameter must be JSZip instance including MS-Excel data');
             }
 
-            return this.spreadsheet.load(excel).then(function () {
+            return this.sheetHelper.load(excel).then(function () {
                 return _this;
             });
         }
@@ -67,7 +67,7 @@ var ExcelMerge = (function () {
                 return Promise.reject('merge() must has parameter');
             }
 
-            return this.spreadsheet.simpleMerge(bindData);
+            return this.sheetHelper.simpleMerge(bindData);
         }
 
         /**
@@ -83,7 +83,7 @@ var ExcelMerge = (function () {
             if (!bindDataArray) {
                 return Promise.reject('bulkMergeMultiFile() must has parameter');
             }
-            return this.spreadsheet.bulkMergeMultiFile(bindDataArray);
+            return this.sheetHelper.bulkMergeMultiFile(bindDataArray);
         }
 
         /**
@@ -104,9 +104,9 @@ var ExcelMerge = (function () {
             _.each(bindDataArray, function (_ref) {
                 var name = _ref.name;
                 var data = _ref.data;
-                return _this2.spreadsheet.addSheetBindingData(name, data);
+                return _this2.sheetHelper.addSheetBindingData(name, data);
             });
-            return this.spreadsheet.deleteTemplateSheet().focusOnFirstSheet().generate(output_buffer);
+            return this.sheetHelper.deleteTemplateSheet().focusOnFirstSheet().generate(output_buffer);
         }
     }]);
 

@@ -8,7 +8,7 @@
 var Promise = require('bluebird');
 var _ = require('underscore');
 var JSZip = require('jszip');
-var SpreadSheet = require('./lib/spreadsheet');
+var SheetHelper = require('./lib/sheetHelper');
 var isNode = require('detect-node');
 const output_buffer = {type: (isNode?'nodebuffer':'blob'), compression:"DEFLATE"};
 
@@ -18,7 +18,7 @@ class ExcelMerge{
      * constructor
      */
     constructor(){
-        this.spreadsheet = new SpreadSheet();
+        this.sheetHelper = new SheetHelper();
     }
 
     /**
@@ -33,7 +33,7 @@ class ExcelMerge{
             return Promise.reject('First parameter must be JSZip instance including MS-Excel data');
         }
 
-        return this.spreadsheet.load(excel).then(()=>this);
+        return this.sheetHelper.load(excel).then(()=>this);
     }
 
     /**
@@ -48,7 +48,7 @@ class ExcelMerge{
             return Promise.reject('merge() must has parameter');
         }
 
-        return this.spreadsheet.simpleMerge(bindData);
+        return this.sheetHelper.simpleMerge(bindData);
     }
 
     /**
@@ -62,7 +62,7 @@ class ExcelMerge{
         if(!bindDataArray){
             return Promise.reject('bulkMergeMultiFile() must has parameter');
         }
-        return this.spreadsheet.bulkMergeMultiFile(bindDataArray);
+        return this.sheetHelper.bulkMergeMultiFile(bindDataArray);
     }
 
     /**
@@ -77,8 +77,8 @@ class ExcelMerge{
             return Promise.reject('bulkMergeMultiSheet() must has array as parameter');
         }
 
-        _.each(bindDataArray, ({name,data})=>this.spreadsheet.addSheetBindingData(name,data));
-        return this.spreadsheet.deleteTemplateSheet()
+        _.each(bindDataArray, ({name,data})=>this.sheetHelper.addSheetBindingData(name,data));
+        return this.sheetHelper.deleteTemplateSheet()
             .focusOnFirstSheet()
             .generate(output_buffer);
     }

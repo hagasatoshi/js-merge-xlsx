@@ -4,6 +4,7 @@
  * * @author Satoshi Haga
  * * @date 2015/10/10
  **/
+
 'use strict';
 
 var path = require('path');
@@ -11,7 +12,7 @@ var cwd = path.resolve('');
 var assert = require('assert');
 var JSZip = require('jszip');
 var ExcelMerge = require(cwd + '/excelmerge');
-var SpreadSheet = require(cwd + '/lib/spreadsheet');
+var SpreadSheet = require(cwd + '/lib/sheetHelper');
 require(cwd + '/lib/underscore_mixin');
 var Promise = require('bluebird');
 var readYamlAsync = Promise.promisify(require('read-yaml'));
@@ -58,16 +59,16 @@ module.exports = {
         }).then(function (excelMerge) {
 
             //excel
-            assert(excelMerge.spreadsheet.excel instanceof JSZip, 'SpreadSheet#excel is not assigned correctly');
+            assert(excelMerge.sheetHelper.excel instanceof JSZip, 'SpreadSheet#excel is not assigned correctly');
 
             //check if each variables is parsed or not.
             var variables = ['AccountName__c', 'StartDateFormat__c', 'EndDateFormat__c', 'JobDescription__c', 'StartTime__c', 'EndTime__c', 'hasOverTime__c', 'HoliDayType__c', 'Salary__c', 'DueDate__c', 'SalaryDate__c', 'AccountName__c', 'AccountAddress__c'];
-            var chkCommonStringsWithVariable = _.map(excelMerge.spreadsheet.commonStringsWithVariable, function (e) {
+            var chkCommonStringsWithVariable = _.map(excelMerge.sheetHelper.commonStringsWithVariable, function (e) {
                 return _(e.t).stringValue();
             });
             _.each(variables, function (e) {
                 //variables
-                assert(_.contains(excelMerge.spreadsheet.variables, e), 'ExcelMerge#load() doesn\'t set up ' + e + ' as variable correctly');
+                assert(_.contains(excelMerge.sheetHelper.variables, e), 'ExcelMerge#load() doesn\'t set up ' + e + ' as variable correctly');
                 assert(_.find(chkCommonStringsWithVariable, function (v) {
                     return v.indexOf('{{' + e + '}}') !== -1;
                 }), 'ExcelMerge#load() doesn\'t set up ' + e + ' as variable correctly');

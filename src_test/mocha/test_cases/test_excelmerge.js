@@ -10,7 +10,7 @@ var cwd = path.resolve('');
 var assert = require('assert');
 var JSZip = require('jszip');
 var ExcelMerge = require(cwd + '/excelmerge');
-var SpreadSheet = require(cwd + '/lib/spreadsheet');
+var SpreadSheet = require(cwd + '/lib/sheetHelper');
 require(cwd + '/lib/underscore_mixin');
 var Promise = require('bluebird');
 var readYamlAsync = Promise.promisify(require('read-yaml'));
