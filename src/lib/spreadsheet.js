@@ -414,16 +414,6 @@ class SpreadSheet{
         return this._sheetRelsByName(this.templateSheetName);
     }
 
-
-    /**
-     * _sheetNames
-     * @return {Array} array including sheet name
-     * @private
-     */
-    _sheetNames(){
-        return _.map(this.sheetXmls, (e)=>e.name);
-    }
-
     /**
      * _cleanSharedStrings
      * @return {Array} shared strings
@@ -444,24 +434,6 @@ class SpreadSheet{
      */
     _firstSheetName(){
         return this.workbookxml.workbook.sheets[0].sheet[0]['$'].name;
-    }
-
-    /**
-     * _activeSheets
-     * @return {Array} array including only active sheets.
-     * @private
-     */
-    _activeSheets(){
-        return _.filter(this.sheetXmls, (sheet)=>(sheet.worksheet.sheetViews[0].sheetView[0]['$'].tabSelected === '1'));
-    }
-
-    /**
-     * _deactiveSheets
-     * @return {Array} array including only deactive sheets.
-     * @private
-     */
-    _deactiveSheets(){
-        return _.filter(this.sheetXmls, (sheet)=>(sheet.worksheet.sheetViews[0].sheetView[0]['$'].tabSelected === '0'));
     }
 
     /**
