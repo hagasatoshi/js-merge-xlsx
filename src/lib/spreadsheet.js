@@ -32,7 +32,7 @@ class SpreadSheet{
         }
         //set member variable
         this.excel = excel;
-        this.variables = _(excel.file('xl/sharedStrings.xml').asText()).variables();
+        this.variables = _.variables(excel.file('xl/sharedStrings.xml').asText());
         this.commonStringsWithVariable = [];
 
         //some members are parsed in promise-chain because xml2js parses asynchronously
@@ -50,7 +50,7 @@ class SpreadSheet{
             this.sheetXmlsRels = sheetXmlsRels;
             this.templateSheetName = this.workbookxml.workbook.sheets[0].sheet[0]['$'].name;
             this.templateSheetData = _.find(sheetXmls,(e)=>(e.name.indexOf('.rels') === -1)).worksheet.sheetData[0].row;
-            this.templateSheetRelsData = _(this._templateSheetRels()).deepCopy();
+            this.templateSheetRelsData = _.deepCopy(this._templateSheetRels());
             this.commonStringsWithVariable = this._parseCommonStringWithVariable();
             //return this for chaining
             return this;
@@ -113,8 +113,8 @@ class SpreadSheet{
         if(this.sharedstrings){
 
             //prepare merged-strings
-            mergedStrings = _(this.commonStringsWithVariable).deepCopy();
-            _.each(mergedStrings,(e)=>e.t[0] = Mustache.render(_(e.t).stringValue(), data));
+            mergedStrings = _.deepCopy(this.commonStringsWithVariable);
+            _.each(mergedStrings,(e)=>e.t[0] = Mustache.render(_.stringValue(e.t), data));
 
             //add merged-string into sharedstrings
             let currentCount = this.sharedstrings.length;
@@ -240,14 +240,14 @@ class SpreadSheet{
                 sharedstringsObj.sst['$'].uniqueCount = this.sharedstrings.length;
                 sharedstringsObj.sst['$'].count = this._stringCount();
 
-                this.excel.file('xl/sharedStrings.xml', _(builder.buildObject(sharedstringsObj)).decode())
+                this.excel.file('xl/sharedStrings.xml', _.decode(builder.buildObject(sharedstringsObj)))
             }
 
             //workbook.xml.rels
-            this.excel.file("xl/_rels/workbook.xml.rels",_(builder.buildObject(this.workbookxmlRels)).decode());
+            this.excel.file("xl/_rels/workbook.xml.rels",_.decode(builder.buildObject(this.workbookxmlRels)));
 
             //workbook.xml
-            this.excel.file("xl/workbook.xml", _(builder.buildObject(this.workbookxml)).decode());
+            this.excel.file("xl/workbook.xml", _.decode(builder.buildObject(this.workbookxml)));
 
             //sheetXmls
             _.each(this.sheetXmls, (sheet)=>{
@@ -255,13 +255,13 @@ class SpreadSheet{
                     var sheetObj = {};
                     sheetObj.worksheet = {};
                     _.extend(sheetObj.worksheet, sheet.worksheet);
-                    this.excel.file(`xl/worksheets/${sheet.name}`, _(builder.buildObject(sheetObj)).decode());
+                    this.excel.file(`xl/worksheets/${sheet.name}`, _.decode(builder.buildObject(sheetObj)));
                 }
             });
 
             //sheetXmlsRels
             if(this.templateSheetRelsData.value && this.templateSheetRelsData.value.Relationships){
-                let strTemplateSheetRels = _(builder.buildObject({Relationships:this.templateSheetRelsData.value.Relationships})).decode();
+                let strTemplateSheetRels = _.decode(builder.buildObject({Relationships:this.templateSheetRelsData.value.Relationships}));
                 _.each(this.sheetXmls, (sheet)=>{
                     if(sheet.name) this.excel.file(`xl/worksheets/_rels/${sheet.name}.rels`, strTemplateSheetRels);
                 });
@@ -294,7 +294,7 @@ class SpreadSheet{
     _parseCommonStringWithVariable(){
         let commonStringsWithVariable = [];
         _.each(this.sharedstrings,(stringObj, index)=>{
-            if(_(stringObj.t).stringValue() && _(_(stringObj.t).stringValue()).hasVariable()){
+            if(_.stringValue(stringObj.t) && _.hasVariable(_.stringValue(stringObj.t))){
                 stringObj.sharedIndex = index;
                 commonStringsWithVariable.push(stringObj);
             }
@@ -348,7 +348,7 @@ class SpreadSheet{
      * @private
      */
     _buildNewSheet(sourceSheet, commonStringsWithVariable){
-        let addedSheet = _(sourceSheet).deepCopy();
+        let addedSheet = _.deepCopy(sourceSheet);
         addedSheet.worksheet.sheetViews[0].sheetView[0]['$'].tabSelected = '0';
         if(!commonStringsWithVariable) return addedSheet;
 
