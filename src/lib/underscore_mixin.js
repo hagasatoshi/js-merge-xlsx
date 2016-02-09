@@ -68,6 +68,19 @@ _.mixin({
     deepCopy: (obj)=>JSON.parse(JSON.stringify(obj)),
 
     /**
+     * deleteProperties
+     * delete properties
+     * @param {Object} data
+     * @returns {Object}
+     */
+    deleteProperties: (data, properties)=>{
+        let isArray = _.isArray(data);
+        if(!isArray) data = [data];
+        _.each(data, (e)=> _.each(properties, (prop)=>delete e[prop]));
+        return isArray? data : data[0];
+    },
+
+    /**
      * decode
      * @param {String} val
      * @returns {String}
