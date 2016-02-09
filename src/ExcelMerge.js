@@ -5,7 +5,6 @@
  * @date 2015/09/30
  */
 
-var Mustache = require('mustache');
 var Promise = require('bluebird');
 var _ = require('underscore');
 var JSZip = require('jszip');
