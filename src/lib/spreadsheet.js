@@ -236,7 +236,7 @@ class SpreadSheet{
         .then((sharedstringsObj)=> {
 
             if (this.sharedstrings) {
-                sharedstringsObj.sst.si = this._cleanSharedStrings();
+                sharedstringsObj.sst.si = _.deleteProperties(this.sharedstrings, ['sharedIndex', 'usingCells']);
                 sharedstringsObj.sst['$'].uniqueCount = this.sharedstrings.length;
                 sharedstringsObj.sst['$'].count = this._stringCount();
 
@@ -412,19 +412,6 @@ class SpreadSheet{
      */
     _templateSheetRels(){
         return this._sheetRelsByName(this.templateSheetName);
-    }
-
-    /**
-     * _cleanSharedStrings
-     * @return {Array} shared strings
-     * @private
-     */
-    _cleanSharedStrings(){
-        _.each(this.sharedstrings, (e) =>{
-            delete e.sharedIndex;
-            delete e.usingCells;
-        });
-        return this.sharedstrings;
     }
 
     /**
