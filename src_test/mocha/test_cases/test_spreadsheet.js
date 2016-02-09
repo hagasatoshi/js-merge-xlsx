@@ -1,9 +1,9 @@
 /**
- * * test_spreadsheet.js
- * * Test code for spreadsheet
- * * @author Satoshi Haga
- * * @date 2015/10/10
- **/
+ * test_spreadsheet.js
+ * Test code for spreadsheet
+ * @author Satoshi Haga
+ * @date 2015/10/10
+ */
 var path = require('path');
 var cwd = path.resolve('');
 var assert = require('assert');

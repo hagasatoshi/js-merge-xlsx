@@ -1,9 +1,9 @@
 /**
- * * test.js
- * * Test script for js-merge-xlsx
- * * @author Satoshi Haga
- * * @date 2015/09/30
- **/
+ * test.js
+ * Test script for js-merge-xlsx
+ * @author Satoshi Haga
+ * @date 2015/09/30
+ */
 var assert = require('assert');
 var test_spreadsheet = require('./test_cases/test_spreadsheet');
 var test_excelmerge = require('./test_cases/test_excelmerge');

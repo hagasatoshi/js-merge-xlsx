@@ -1,9 +1,9 @@
 /**
- * * ExcelMerge
- * * top level api class for js-merge-xlsx
- * * @author Satoshi Haga
- * * @date 2015/09/30
- **/
+ * ExcelMerge
+ * top level api class for js-merge-xlsx
+ * @author Satoshi Haga
+ * @date 2015/09/30
+ */
 
 var Mustache = require('mustache');
 var Promise = require('bluebird');
@@ -16,18 +16,17 @@ const output_buffer = {type: (isNode?'nodebuffer':'blob'), compression:"DEFLATE"
 class ExcelMerge{
 
     /**
-     * * constructor
-     * *
-     **/
+     * constructor
+     */
     constructor(){
         this.spreadsheet = new SpreadSheet();
     }
 
     /**
-     * * load
-     * * @param {Object} excel JsZip object including MS-Excel file
-     * * @return {Promise} Promise instance including this
-     **/
+     * load
+     * @param {Object} excel JsZip object including MS-Excel file
+     * @return {Promise} Promise instance including this
+     */
     load(excel){
 
         //validation
@@ -39,10 +38,10 @@ class ExcelMerge{
     }
 
     /**
-     * * merge
-     * * @param {Object} bindData binding data
-     * * @return {Promise} Promise instance including MS-Excel data. data-format is determined by jszip_option
-     **/
+     * merge
+     * @param {Object} bindData binding data
+     * @return {Promise} Promise instance including MS-Excel data. data-format is determined by jszip_option
+     */
     merge(bindData){
 
         //validation
@@ -54,10 +53,10 @@ class ExcelMerge{
     }
 
     /**
-     * * bulkMergeMultiFile
-     * * @param {Array} bindDataArray including data{name: file's name, data: binding-data}
-     * * @return {Promise} Promise instance including MS-Excel data.
-     **/
+     * bulkMergeMultiFile
+     * @param {Array} bindDataArray including data{name: file's name, data: binding-data}
+     * @return {Promise} Promise instance including MS-Excel data.
+     */
     bulkMergeMultiFile(bindDataArray){
 
         //validation
@@ -68,10 +67,10 @@ class ExcelMerge{
     }
 
     /**
-     * * bulkMergeMultiSheet
-     * * @param {Array} bindDataArray including data{name: file's name, data: binding-data}
-     * * @return {Promise} Promise instance including MS-Excel data.
-     **/
+     * bulkMergeMultiSheet
+     * @param {Array} bindDataArray including data{name: file's name, data: binding-data}
+     * @return {Promise} Promise instance including MS-Excel data.
+     */
     bulkMergeMultiSheet(bindDataArray){
 
         //validation

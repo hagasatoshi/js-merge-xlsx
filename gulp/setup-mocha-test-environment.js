@@ -1,9 +1,9 @@
 /**
- * * Gulp task definition
- * * Setup mocha test environment
- * * @author Satoshi Haga
- * * @date 2015/09/30
- **/
+ * Gulp task definition
+ * Setup mocha test environment
+ * @author Satoshi Haga
+ * @date 2015/09/30
+ */
 var gulp = require('gulp');
 var babel = require('gulp-babel');
 

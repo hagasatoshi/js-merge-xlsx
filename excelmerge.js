@@ -1,9 +1,9 @@
 /**
- * * ExcelMerge
- * * top level api class for js-merge-xlsx
- * * @author Satoshi Haga
- * * @date 2015/09/30
- **/
+ * ExcelMerge
+ * top level api class for js-merge-xlsx
+ * @author Satoshi Haga
+ * @date 2015/09/30
+ */
 
 'use strict';
 
@@ -22,9 +22,8 @@ var output_buffer = { type: isNode ? 'nodebuffer' : 'blob', compression: "DEFLAT
 var ExcelMerge = (function () {
 
     /**
-     * * constructor
-     * *
-     **/
+     * constructor
+     */
 
     function ExcelMerge() {
         _classCallCheck(this, ExcelMerge);
@@ -35,10 +34,10 @@ var ExcelMerge = (function () {
     //Exports
 
     /**
-     * * load
-     * * @param {Object} excel JsZip object including MS-Excel file
-     * * @return {Promise} Promise instance including this
-     **/
+     * load
+     * @param {Object} excel JsZip object including MS-Excel file
+     * @return {Promise} Promise instance including this
+     */
 
     _createClass(ExcelMerge, [{
         key: 'load',
@@ -56,10 +55,10 @@ var ExcelMerge = (function () {
         }
 
         /**
-         * * merge
-         * * @param {Object} bindData binding data
-         * * @return {Promise} Promise instance including MS-Excel data. data-format is determined by jszip_option
-         **/
+         * merge
+         * @param {Object} bindData binding data
+         * @return {Promise} Promise instance including MS-Excel data. data-format is determined by jszip_option
+         */
     }, {
         key: 'merge',
         value: function merge(bindData) {
@@ -73,10 +72,10 @@ var ExcelMerge = (function () {
         }
 
         /**
-         * * bulkMergeMultiFile
-         * * @param {Array} bindDataArray including data{name: file's name, data: binding-data}
-         * * @return {Promise} Promise instance including MS-Excel data.
-         **/
+         * bulkMergeMultiFile
+         * @param {Array} bindDataArray including data{name: file's name, data: binding-data}
+         * @return {Promise} Promise instance including MS-Excel data.
+         */
     }, {
         key: 'bulkMergeMultiFile',
         value: function bulkMergeMultiFile(bindDataArray) {
@@ -89,10 +88,10 @@ var ExcelMerge = (function () {
         }
 
         /**
-         * * bulkMergeMultiSheet
-         * * @param {Array} bindDataArray including data{name: file's name, data: binding-data}
-         * * @return {Promise} Promise instance including MS-Excel data.
-         **/
+         * bulkMergeMultiSheet
+         * @param {Array} bindDataArray including data{name: file's name, data: binding-data}
+         * @return {Promise} Promise instance including MS-Excel data.
+         */
     }, {
         key: 'bulkMergeMultiSheet',
         value: function bulkMergeMultiSheet(bindDataArray) {
