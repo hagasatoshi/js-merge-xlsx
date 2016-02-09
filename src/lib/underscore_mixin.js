@@ -55,7 +55,7 @@ _.mixin({
      * @returns {boolean}
      */
     hasVariable: (template)=> {
-        return _(template).isString() && (_(template).variables().length !== 0)
+        return _.isString(template) && (_.variables(template).length !== 0)
     },
 
     //TODO this is temporary solution for lodash#deepCoy(). clarify why lodash#deepCoy() is so slow.
