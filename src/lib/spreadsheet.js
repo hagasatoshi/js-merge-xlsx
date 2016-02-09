@@ -1,9 +1,9 @@
 /**
- * * SpreadSheet
- * * Manage MS-Excel file. core business-logic class for js-merge-xlsx.
- * * @author Satoshi Haga
- * * @date 2015/10/03
- **/
+ * SpreadSheet
+ * Manage MS-Excel file. core business-logic class for js-merge-xlsx.
+ * @author Satoshi Haga
+ * @date 2015/10/03
+ */
 var Mustache = require('mustache');
 var Promise = require('bluebird');
 var _ = require('underscore');
@@ -21,10 +21,10 @@ const OPEN_XML_SCHEMA_DEFINITION = 'http://schemas.openxmlformats.org/officeDocu
 class SpreadSheet{
 
     /**
-     * * load
-     * * @param {Object} excel JsZip object including MS-Excel file
-     * * @return {Promise} Promise instance including this
-     **/
+     * load
+     * @param {Object} excel JsZip object including MS-Excel file
+     * @return {Promise} Promise instance including this
+     */
     load(excel){
         //validation
         if(!(excel instanceof JSZip)){
@@ -58,10 +58,10 @@ class SpreadSheet{
     }
 
     /**
-     * * simpleMerge
-     * * @param {Object} bindData binding data
-     * * @return {Promise} Promise instance including MS-Excel data.
-     **/
+     * simpleMerge
+     * @param {Object} bindData binding data
+     * @return {Promise} Promise instance including MS-Excel data.
+     */
     simpleMerge(bindData){
 
         //validation
@@ -73,10 +73,10 @@ class SpreadSheet{
     }
 
     /**
-     * * bulkMergeMultiFile
-     * * @param {Array} bindDataArray including data{name: file's name, data: binding-data}
-     * * @return {Promise} Promise instance including MS-Excel data.
-     **/
+     * bulkMergeMultiFile
+     * @param {Array} bindDataArray including data{name: file's name, data: binding-data}
+     * @return {Promise} Promise instance including MS-Excel data.
+     */
     bulkMergeMultiFile(bindDataArray){
 
         //validation
@@ -93,11 +93,11 @@ class SpreadSheet{
     }
 
     /**
-     * * addSheetBindingData
-     * * @param {String} dest_sheet_name name of new sheet
-     * * @param {Object} data binding data
-     * * @return {Object} this instance for chaining
-     **/
+     * addSheetBindingData
+     * @param {String} dest_sheet_name name of new sheet
+     * @param {Object} data binding data
+     * @return {Object} this instance for chaining
+     */
     addSheetBindingData(destSheetName, data){
         //validation
         if((!destSheetName) || !(data)) {
@@ -138,18 +138,18 @@ class SpreadSheet{
     }
 
     /**
-     * * hasSheet
-     * * @param {String} sheetname target sheet name
-     * * @return {boolean}
-     **/
+     * hasSheet
+     * @param {String} sheetname target sheet name
+     * @return {boolean}
+     */
     hasSheet(sheetname){
         return !!this._sheetByName(sheetname);
     }
 
     /**
-     * * focusOnFirstSheet
-     * * @return {Object} this instance for chaining
-     **/
+     * focusOnFirstSheet
+     * @return {Object} this instance for chaining
+     */
     focusOnFirstSheet(){
         let targetSheetName = this._sheetByName(this._firstSheetName());
         _.each(this.sheet_xmls, (sheet)=>{
@@ -161,10 +161,10 @@ class SpreadSheet{
     }
 
     /**
-     * * isFocused
-     * * @param {String} sheetname target sheet name
-     * * @return {boolean}
-     **/
+     * isFocused
+     * @param {String} sheetname target sheet name
+     * @return {boolean}
+     */
     isFocused(sheetname){
 
         //validation
@@ -180,10 +180,10 @@ class SpreadSheet{
     }
 
     /**
-     * * deleteSheet
-     * * @param {String} sheetname target sheet name
-     * * @return {Object} this instance for chaining
-     **/
+     * deleteSheet
+     * @param {String} sheetname target sheet name
+     * @return {Object} this instance for chaining
+     */
     deleteSheet(sheetname){
         if(!sheetname){
             throw new Error('deleteSheet() needs to have 1 paramter.');
@@ -209,45 +209,40 @@ class SpreadSheet{
     }
 
     /**
-     * * deleteTemplateSheet
-     * * @return {Object} this instance for chaining
-     **/
+     * deleteTemplateSheet
+     * @return {Object} this instance for chaining
+     */
     deleteTemplateSheet(){
         return this.deleteSheet(this.templateSheetName);
     }
 
     /**
-     * * hasAsSharedString
-     * * @param {String} targetStr
-     * * @return {boolean}
-     **/
+     * hasAsSharedString
+     * @param {String} targetStr
+     * @return {boolean}
+     */
     hasAsSharedString(targetStr){
         return (this.excel.file('xl/sharedStrings.xml').asText().indexOf(targetStr) !== -1)
     }
 
     /**
-     * * generate
-     * * call JSZip#generate() binding current data
-     * * @param {Object} option option for JsZip#genereate()
-     * * @return {Promise} Promise instance inclusing Excel data.
-     **/
+     * generate
+     * call JSZip#generate() binding current data
+     * @param {Object} option option for JsZip#genereate()
+     * @return {Promise} Promise instance inclusing Excel data.
+     */
     generate(option){
         return parseString(this.excel.file('xl/sharedStrings.xml').asText())
         .then((sharedstringsObj)=> {
 
-                //sharedstrings
-                //debug start
-                if (this.sharedstrings) {
-                    sharedstringsObj.sst.si = this._cleanSharedStrings();
-                    sharedstringsObj.sst['$'].uniqueCount = this.sharedstrings.length;
-                    sharedstringsObj.sst['$'].count = this._stringCount();
+            if (this.sharedstrings) {
+                sharedstringsObj.sst.si = this._cleanSharedStrings();
+                sharedstringsObj.sst['$'].uniqueCount = this.sharedstrings.length;
+                sharedstringsObj.sst['$'].count = this._stringCount();
 
-                    this.excel.file('xl/sharedStrings.xml', _(builder.buildObject(sharedstringsObj)).decode())
-                }
-                //debug end
+                this.excel.file('xl/sharedStrings.xml', _(builder.buildObject(sharedstringsObj)).decode())
+            }
 
-
-        //}).then((sharedstringsObj)=>{
             //workbook.xml.rels
             this.excel.file("xl/_rels/workbook.xml.rels",_(builder.buildObject(this.workbookxmlRels)).decode());
 
@@ -279,12 +274,12 @@ class SpreadSheet{
     }
 
     /**
-     * * _simpleMerge
-     * * @param {Object} bindData binding data
-     * * @param {Object} option JsZip#generate() option.
-     * * @returns {Object} rendered MS-Excel data. data-format is determined by jszip_option
-     * * @private
-     **/
+     * _simpleMerge
+     * @param {Object} bindData binding data
+     * @param {Object} option JsZip#generate() option.
+     * @returns {Object} rendered MS-Excel data. data-format is determined by jszip_option
+     * @private
+     */
     _simpleMerge(bindData, option=outputBuffer){
         return new JSZip(this.excel.generate(jszipBuffer))
             .file('xl/sharedStrings.xml', Mustache.render(this.excel.file('xl/sharedStrings.xml').asText(), bindData))
@@ -292,10 +287,10 @@ class SpreadSheet{
     }
 
     /**
-     * * _parseCommonStringWithVariable
-     * * @return {Array} including common strings only having mustache-variable
-     * * @private
-     **/
+     * _parseCommonStringWithVariable
+     * @return {Array} including common strings only having mustache-variable
+     * @private
+     */
     _parseCommonStringWithVariable(){
         let commonStringsWithVariable = [];
         _.each(this.sharedstrings,(stringObj, index)=>{
@@ -321,11 +316,11 @@ class SpreadSheet{
     }
 
     /**
-     * * _parseDirInExcel
-     * * @param {String} dir directory name in Zip file.
-     * * @return {Promise|Array} array including files parsed by xml2js
-     * * @private
-     **/
+     * _parseDirInExcel
+     * @param {String} dir directory name in Zip file.
+     * @return {Promise|Array} array including files parsed by xml2js
+     * @private
+     */
     _parseDirInExcel(dir){
         let files = this.excel.folder(dir).file(/.xml/);
         let fileXmls = [];
@@ -346,12 +341,12 @@ class SpreadSheet{
     }
 
     /**
-     * * _buildNewSheet
-     * * @param {Object} sourceSheet
-     * * @param {Array} commonStringsWithVariable
-     * * @return {Object}
-     * * @private
-     **/
+     * _buildNewSheet
+     * @param {Object} sourceSheet
+     * @param {Array} commonStringsWithVariable
+     * @return {Object}
+     * @private
+     */
     _buildNewSheet(sourceSheet, commonStringsWithVariable){
         let addedSheet = _(sourceSheet).deepCopy();
         addedSheet.worksheet.sheetViews[0].sheetView[0]['$'].tabSelected = '0';
@@ -372,10 +367,10 @@ class SpreadSheet{
     }
 
     /**
-     * * _availableSheetid
-     * * @return {String} id of next sheet
-     * * @private
-     **/
+     * _availableSheetid
+     * @return {String} id of next sheet
+     * @private
+     */
     _availableSheetid(){
         let maxRel = _.max(this.workbookxmlRels.Relationships.Relationship, (e)=> Number(e['$'].Id.replace('rId','')));
         let nextId = 'rId' + ('00' + (((maxRel['$'].Id.replace('rId','') >> 0))+1)).slice(-3);
@@ -383,11 +378,11 @@ class SpreadSheet{
     }
 
     /**
-     * * _sheetByName
-     * * @param {String} sheetname target sheet name
-     * * @return {Object} sheet object
-     * * @private
-     **/
+     * _sheetByName
+     * @param {String} sheetname target sheet name
+     * @return {Object} sheet object
+     * @private
+     */
     _sheetByName(sheetname){
         let targetSheet = _.find(this.workbookxml.workbook.sheets[0].sheet, (e)=> (e['$'].name === sheetname));
         if(!targetSheet) return null;  //invalid sheet name
@@ -399,11 +394,11 @@ class SpreadSheet{
     }
 
     /**
-     * * _sheetRelsByName
-     * * @param {String} sheetname target sheet name
-     * * @return {Object} sheet_rels object
-     * * @private
-     **/
+     * _sheetRelsByName
+     * @param {String} sheetname target sheet name
+     * @return {Object} sheet_rels object
+     * @private
+     */
     _sheetRelsByName(sheetname){
         let targetFilePath = this._sheetByName(sheetname).path;
         let targetName = `${_.last(targetFilePath.split('/'))}.rels`;
@@ -411,29 +406,29 @@ class SpreadSheet{
     }
 
     /**
-     * * _templateSheetRels
-     * * @return {Object} sheet_rels object of template-sheet
-     * * @private
-     **/
+     * _templateSheetRels
+     * @return {Object} sheet_rels object of template-sheet
+     * @private
+     */
     _templateSheetRels(){
         return this._sheetRelsByName(this.templateSheetName);
     }
 
 
     /**
-     * * _sheetNames
-     * * @return {Array} array including sheet name
-     * * @private
-     **/
+     * _sheetNames
+     * @return {Array} array including sheet name
+     * @private
+     */
     _sheetNames(){
         return _.map(this.sheetXmls, (e)=>e.name);
     }
 
     /**
-     * * _cleanSharedStrings
-     * * @return {Array} shared strings
-     * * @private
-     **/
+     * _cleanSharedStrings
+     * @return {Array} shared strings
+     * @private
+     */
     _cleanSharedStrings(){
         _.each(this.sharedstrings, (e) =>{
             delete e.sharedIndex;
@@ -443,37 +438,37 @@ class SpreadSheet{
     }
 
     /**
-     * * _firstSheetName
-     * * @return {String} name of first-sheet of MS-Excel file
-     * * @private
-     **/
+     * _firstSheetName
+     * @return {String} name of first-sheet of MS-Excel file
+     * @private
+     */
     _firstSheetName(){
         return this.workbookxml.workbook.sheets[0].sheet[0]['$'].name;
     }
 
     /**
-     * * _activeSheets
-     * * @return {Array} array including only active sheets.
-     * * @private
-     **/
+     * _activeSheets
+     * @return {Array} array including only active sheets.
+     * @private
+     */
     _activeSheets(){
         return _.filter(this.sheetXmls, (sheet)=>(sheet.worksheet.sheetViews[0].sheetView[0]['$'].tabSelected === '1'));
     }
 
     /**
-     * * _deactiveSheets
-     * * @return {Array} array including only deactive sheets.
-     * * @private
-     **/
+     * _deactiveSheets
+     * @return {Array} array including only deactive sheets.
+     * @private
+     */
     _deactiveSheets(){
         return _.filter(this.sheetXmls, (sheet)=>(sheet.worksheet.sheetViews[0].sheetView[0]['$'].tabSelected === '0'));
     }
 
     /**
-     * * _stringCount
-     * * @return {Number} count of string-cell
-     * * @private
-     **/
+     * _stringCount
+     * @return {Number} count of string-cell
+     * @private
+     */
     _stringCount(){
         let stringCount = 0;
         _.each(this.sheetXmls, (sheet)=>{

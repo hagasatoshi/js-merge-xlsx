@@ -1,9 +1,9 @@
 /**
- * * test.js
- * * Test script for js-merge-xlsx
- * * @author Satoshi Haga
- * * @date 2015/09/30
- **/
+ * test.js
+ * Test script for js-merge-xlsx
+ * @author Satoshi Haga
+ * @date 2015/09/30
+ */
 'use strict';
 
 var assert = require('assert');

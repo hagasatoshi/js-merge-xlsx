@@ -1,9 +1,9 @@
 /**
- * * underscore mixin
- * * utility functions for js-merge-xlsx.
- * * @author Satoshi Haga
- * * @date 2015/10/03
- **/
+ * underscore mixin
+ * utility functions for js-merge-xlsx.
+ * @author Satoshi Haga
+ * @date 2015/10/03
+ */
 
 var _ = require('underscore');
 var Mustache = require('mustache');
@@ -11,19 +11,19 @@ var builder = require('xml2js').Builder();
 
 _.mixin({
     /**
-     * * isString
-     * * @param {Object} arg
-     * * @returns {boolean}
+     * isString
+     * @param {Object} arg
+     * @returns {boolean}
      */
     isString: (arg)=>{
         return (typeof arg === 'string');
     },
 
     /**
-     * * stringValue
-     * * return string value.
-     * * @param arg
-     * * @returns {String}
+     * stringValue
+     * return string value.
+     * @param arg
+     * @returns {String}
      */
     stringValue: (xml2jsElement)=>{
         if(!_.isArray(xml2jsElement)){
@@ -36,10 +36,10 @@ _.mixin({
     },
 
     /**
-     * * variables
-     * * pick up and return the list of mustache-variables
-     * * @param {String} template
-     * * @returns {Array}
+     * variables
+     * pick up and return the list of mustache-variables
+     * @param {String} template
+     * @returns {Array}
      */
     variables: (template)=>{
         if(!_(template).isString()){
@@ -49,10 +49,10 @@ _.mixin({
     },
 
     /**
-     * * hasVariable
-     * * check if parameter-string has mustache-variables or not
-     * * @param {String} template
-     * * @returns {boolean}
+     * hasVariable
+     * check if parameter-string has mustache-variables or not
+     * @param {String} template
+     * @returns {boolean}
      */
     hasVariable: (template)=> {
         return _(template).isString() && (_(template).variables().length !== 0)
@@ -60,17 +60,17 @@ _.mixin({
 
     //TODO this is temporary solution for lodash#deepCoy(). clarify why lodash#deepCoy() is so slow.
     /**
-     * * deepCopy
-     * * workaround for lodash#deepCoy(). clone object.
-     * * @param {Object} obj
-     * * @returns {Object}
+     * deepCopy
+     * workaround for lodash#deepCoy(). clone object.
+     * @param {Object} obj
+     * @returns {Object}
      */
     deepCopy: (obj)=>JSON.parse(JSON.stringify(obj)),
 
     /**
-     * * decode
-     * * @param {String} val
-     * * @returns {String}
+     * decode
+     * @param {String} val
+     * @returns {String}
      */
     decode: (val)=>{
         if(!val || (typeof val !== 'string')) return val;
