@@ -82,6 +82,14 @@ class ExcelMerge{
             .focusOnFirstSheet()
             .generate(output_buffer);
     }
+
+    /**
+     * variables
+     * @return {Array}
+     */
+    variables(){
+        return this.sheetHelper.templateVariables();
+    }
 }
 
 //Exports

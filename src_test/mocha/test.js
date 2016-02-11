@@ -38,6 +38,7 @@ describe('Test for spreadsheet.js : ',  ()=>{
     it('logic / deleteTemplateSheet() / works correctly', test_spreadsheet.checkIfDeleteTemplateSheetWorksCorrectly);
     it('logic / deleteSheet() / works correctly', test_spreadsheet.checkIfDeleteSheetWorksCorrectly);
     it('logic / focusOnFirstSheet() / works correctly', test_spreadsheet.checkIfFocusOnFirstSheetWorksCorrectly);
+    it('logic / templateVariablesWorkCorrectly() / works correctly', test_spreadsheet.checkTemplateVariablesWorkCorrectly);
 
 });
 
@@ -56,6 +57,7 @@ describe('Test for ExcelMerge.js : ',  ()=>{
     it('logic / merge() / renders correctly', test_excelmerge.checkIfMergeRendersCorrectly);
     it('logic / bulkMergeMultiFile() / renders correctly', test_excelmerge.checkIfBulkMergeMultiFileRendersCorrectly);
     it('logic / bulkMergeMultiSheet() / renders correctly', test_excelmerge.checkIfBulkMergeMultiSheetRendersCorrectly);
+    it('logic / variables() / parse correctly', test_excelmerge.checkVariablesWorkCorrectly)
 
 });
 

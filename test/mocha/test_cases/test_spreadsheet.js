@@ -59,6 +59,18 @@ module.exports = {
         });
     },
 
+    checkTemplateVariablesWorkCorrectly: function checkTemplateVariablesWorkCorrectly() {
+        return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (validTemplate) {
+            return new SpreadSheet().load(new JSZip(validTemplate));
+        }).then(function (spreadsheet) {
+            var variables = ['AccountName__c', 'StartDateFormat__c', 'EndDateFormat__c', 'Address__c', 'JobDescription__c', 'StartTime__c', 'EndTime__c', 'hasOverTime__c', 'HoliDayType__c', 'Salary__c', 'DueDate__c', 'SalaryDate__c', 'AccountName__c', 'AccountAddress__c'];
+            var parsedVariables = spreadsheet.templateVariables();
+            _.each(variables, function (e) {
+                assert(_.contains(parsedVariables, e), e + ' is not parsed correctly by variables()');
+            });
+        });
+    },
+
     simpleMergeWithNoParameterShouldReturnError: function simpleMergeWithNoParameterShouldReturnError() {
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (validTemplate) {
             return new SpreadSheet().load(new JSZip(validTemplate));

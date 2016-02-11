@@ -226,6 +226,14 @@ class SheetHelper{
     }
 
     /**
+     * variables
+     * @return {Array}
+     */
+    templateVariables(){
+        return this.variables;
+    }
+
+    /**
      * generate
      * call JSZip#generate() binding current data
      * @param {Object} option option for JsZip#genereate()

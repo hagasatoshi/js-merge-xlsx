@@ -108,6 +108,16 @@ var ExcelMerge = (function () {
             });
             return this.sheetHelper.deleteTemplateSheet().focusOnFirstSheet().generate(output_buffer);
         }
+
+        /**
+         * variables
+         * @return {Array}
+         */
+    }, {
+        key: 'variables',
+        value: function variables() {
+            return this.sheetHelper.templateVariables();
+        }
     }]);
 
     return ExcelMerge;
