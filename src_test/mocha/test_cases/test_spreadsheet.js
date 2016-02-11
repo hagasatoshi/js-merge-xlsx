@@ -61,6 +61,22 @@ module.exports = {
             });
     },
 
+    checkTemplateVariablesWorkCorrectly: ()=>{
+        return fs.readFileAsync(__dirname + '/../templates/Template.xlsx')
+            .then((validTemplate)=>{
+                return new SpreadSheet().load(new JSZip(validTemplate));
+            }).then((spreadsheet)=>{
+                let variables = [
+                    'AccountName__c', 'StartDateFormat__c', 'EndDateFormat__c', 'Address__c', 'JobDescription__c', 'StartTime__c', 'EndTime__c',
+                    'hasOverTime__c', 'HoliDayType__c', 'Salary__c', 'DueDate__c', 'SalaryDate__c', 'AccountName__c', 'AccountAddress__c'
+                ];
+                let parsedVariables = spreadsheet.templateVariables();
+                _.each(variables, (e)=>{
+                    assert(_.contains(parsedVariables,e), `${e} is not parsed correctly by variables()`);
+                });
+            });
+    },
+
     simpleMergeWithNoParameterShouldReturnError: ()=> {
         return fs.readFileAsync(`${__dirname}/../templates/Template.xlsx`)
             .then((validTemplate)=>{
