@@ -1,9 +1,9 @@
 /**
- * * test_spreadsheet.js
- * * Test code for spreadsheet
- * * @author Satoshi Haga
- * * @date 2015/10/10
- **/
+ * test_spreadsheet.js
+ * Test code for spreadsheet
+ * @author Satoshi Haga
+ * @date 2015/10/10
+ */
 
 'use strict';
 
@@ -76,7 +76,7 @@ module.exports = {
             //check if each variables is parsed or not.
             var variables = ['AccountName__c', 'StartDateFormat__c', 'EndDateFormat__c', 'JobDescription__c', 'StartTime__c', 'EndTime__c', 'hasOverTime__c', 'HoliDayType__c', 'Salary__c', 'DueDate__c', 'SalaryDate__c', 'AccountName__c', 'AccountAddress__c'];
             var chkCommonStringsWithVariable = _.map(excelMerge.sheetHelper.commonStringsWithVariable, function (e) {
-                return _(e.t).stringValue();
+                return _.stringValue(e.t);
             });
             _.each(variables, function (e) {
                 //variables
