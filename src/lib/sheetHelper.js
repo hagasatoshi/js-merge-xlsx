@@ -1,5 +1,5 @@
 /**
- * SpreadSheet
+ * SheetHelper
  * Manage MS-Excel file. core business-logic class for js-merge-xlsx.
  * @author Satoshi Haga
  * @date 2015/10/03
@@ -18,7 +18,7 @@ var builder = new xml2js.Builder();
 
 const OPEN_XML_SCHEMA_DEFINITION = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet';
 
-class SpreadSheet{
+class SheetHelper{
 
     /**
      * load
@@ -446,4 +446,4 @@ class SpreadSheet{
 }
 
 //Exports
-module.exports = SpreadSheet;
+module.exports = SheetHelper;

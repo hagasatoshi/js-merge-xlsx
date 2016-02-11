@@ -5,8 +5,6 @@
  * * @date 2015/10/10
  **/
 
-'use strict';
-
 var path = require('path');
 var cwd = path.resolve('');
 var assert = require('assert');
