@@ -2,7 +2,7 @@
   "dependencies": {
     "bluebird": "^2.10.2",
     "fs": "0.0.2",
-    "js-merge-xlsx": "*",
+    "js-merge-xlsx": "1.0.1",
     "jszip": "^2.5.0",
     "read-yaml": "^1.0.0"
   },
