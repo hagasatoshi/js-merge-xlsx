@@ -12,6 +12,7 @@ var runSequence = require('run-sequence');
 gulp.task('default', function(callback){
     runSequence(
         ['compile-source-resources','setup-mocha-test-environment'],
+        'compress',
         'running-mocha-tests',
         callback
     )
