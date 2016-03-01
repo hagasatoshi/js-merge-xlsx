@@ -4,10 +4,8 @@
  * @date 2015/09/30
  */
 const gulp = require('gulp');
+const $ = require('gulp-load-plugins')();
 const runSequence = require('run-sequence');
-const babel = require('gulp-babel');
-const uglify = require('gulp-uglify');
-const mocha = require('gulp-mocha');
 
 const config = {
     js: {
@@ -29,31 +27,31 @@ const config = {
 
 gulp.task('compile', ()=>{
     return gulp.src(config.js.src)
-        .pipe(babel())
+        .pipe($.babel())
         .pipe(gulp.dest(config.js.dest));
 });
 
 gulp.task('compress', ['compress-excelmerge', 'compress-lib']);
 gulp.task('compress-excelmerge', ()=>{
     return gulp.src(config.uglify.src)
-        .pipe(uglify())
+        .pipe($.uglify())
         .pipe(gulp.dest(config.uglify.dest));
 });
 gulp.task('compress-lib', ()=>{
     return gulp.src(config.uglify.src_lib)
-        .pipe(uglify())
+        .pipe($.uglify())
         .pipe(gulp.dest(config.uglify.dest_lib));
 });
 
 gulp.task('test-setup', ()=>{
     return gulp.src(config.test.src)
-        .pipe(babel())
+        .pipe($.babel())
         .pipe(gulp.dest(config.test.dest));
 });
 
 gulp.task('mocha', ()=>{
     return gulp.src(config.test.main)
-        .pipe(mocha());
+        .pipe($.mocha());
 });
 
 gulp.task('default',(cb)=>{
