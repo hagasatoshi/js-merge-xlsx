@@ -9,32 +9,50 @@ const babel = require('gulp-babel');
 const uglify = require('gulp-uglify');
 const mocha = require('gulp-mocha');
 
+const config = {
+    js: {
+        src: 'src/**/*.js',
+        dest: './'
+    },
+    uglify: {
+        src: './excelmerge.js',
+        src_lib: 'lib/*.js',
+        dest: './',
+        dest_lib: 'lib'
+    },
+    test: {
+        src: 'src_test/mocha/**/*.js',
+        dest: 'test/mocha',
+        main: 'test/mocha/test.js'
+    }
+};
+
 gulp.task('compile', ()=>{
-    return gulp.src('src/**/*.js')
+    return gulp.src(config.js.src)
         .pipe(babel())
-        .pipe(gulp.dest('./'));
+        .pipe(gulp.dest(config.js.dest));
 });
 
 gulp.task('compress', ['compress-excelmerge', 'compress-lib']);
 gulp.task('compress-excelmerge', ()=>{
-    return gulp.src('./excelmerge.js')
+    return gulp.src(config.uglify.src)
         .pipe(uglify())
-        .pipe(gulp.dest('./'));
+        .pipe(gulp.dest(config.uglify.dest));
 });
 gulp.task('compress-lib', ()=>{
-    return gulp.src('lib/*.js')
+    return gulp.src(config.uglify.src_lib)
         .pipe(uglify())
-        .pipe(gulp.dest('lib'));
+        .pipe(gulp.dest(config.uglify.dest_lib));
 });
 
 gulp.task('test-setup', ()=>{
-    return gulp.src('src_test/mocha/**/*.js')
+    return gulp.src(config.test.src)
         .pipe(babel())
-        .pipe(gulp.dest('test/mocha'));
+        .pipe(gulp.dest(config.test.dest));
 });
 
 gulp.task('mocha', ()=>{
-    return gulp.src('test/mocha/test.js')
+    return gulp.src(config.test.main)
         .pipe(mocha());
 });
 
