@@ -5,12 +5,16 @@
  * @date 2015/09/30
  */
 
-var Promise = require('bluebird');
-var _ = require('underscore');
-var JSZip = require('jszip');
-var SheetHelper = require('./lib/sheetHelper');
-var isNode = require('detect-node');
+const Promise = require('bluebird');
+const _ = require('underscore');
+const JSZip = require('jszip');
+const SheetHelper = require('./lib/sheetHelper');
+const isNode = require('detect-node');
+
 const output_buffer = {type: (isNode?'nodebuffer':'blob'), compression:"DEFLATE"};
+const SINGLE_DATA = 'SINGLE_DATA';
+const MULTI_FILE = 'MULTI_FILE';
+const MULTI_SHEET = 'MULTI_SHEET';
 
 class ExcelMerge{
 
@@ -34,6 +38,26 @@ class ExcelMerge{
         }
 
         return this.sheetHelper.load(excel).then(()=>this);
+    }
+
+    /**
+     * mergeByType
+     * @param {String} mergeType
+     * @param {Object} bindData binding data
+     * @return {Promise} Promise instance including MS-Excel data. data-format is determined by jszip_option
+     */
+    mergeByType(mergeType, bindData){
+        switch (mergeType){
+            case SINGLE_DATA :
+                return this.merge(bindData);
+            case MULTI_FILE :
+                return this.bulkMergeMultiFile(bindData);
+            case MULTI_SHEET :
+                return this.bulkMergeMultiSheet(bindData);
+            default :
+                return Promise.reject('Invalid parameter : mergeType');
+        }
+
     }
 
     /**
