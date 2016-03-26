@@ -4,17 +4,17 @@
  * @author Satoshi Haga
  * @date 2015/10/03
  */
-var Mustache = require('mustache');
-var Promise = require('bluebird');
-var _ = require('underscore');
+const Mustache = require('mustache');
+const Promise = require('bluebird');
+const _ = require('underscore');
 require('./underscore_mixin');
-var JSZip = require('jszip');
-var isNode = require('detect-node');
+const JSZip = require('jszip');
+const isNode = require('detect-node');
 const outputBuffer = {type: (isNode?'nodebuffer':'blob'), compression:"DEFLATE"};
 const jszipBuffer = {type: (isNode?'nodebuffer':'arraybuffer'), compression:"DEFLATE"};
-var xml2js = require('xml2js');
-var parseString = Promise.promisify(xml2js.parseString);
-var builder = new xml2js.Builder();
+const xml2js = require('xml2js');
+const parseString = Promise.promisify(xml2js.parseString);
+const builder = new xml2js.Builder();
 
 const OPEN_XML_SCHEMA_DEFINITION = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet';
 
