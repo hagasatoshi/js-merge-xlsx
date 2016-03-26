@@ -5,9 +5,8 @@
  * @date 2015/10/03
  */
 
-var _ = require('underscore');
-var Mustache = require('mustache');
-var builder = require('xml2js').Builder();
+const _ = require('underscore');
+const Mustache = require('mustache');
 
 _.mixin({
     isString: (arg)=>{
