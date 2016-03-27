@@ -13,7 +13,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 var path = require('path');
 var cwd = path.resolve('');
 var assert = require('assert');
-var JSZip = require('jszip');
+var Excel = require(cwd + '/lib/Excel');
 var ExcelMerge = require(cwd + '/excelmerge');
 var SpreadSheet = require(cwd + '/lib/sheetHelper');
 require(cwd + '/lib/underscore_mixin');
@@ -39,7 +39,7 @@ var Utility = (function () {
             return fs.readFileAsync(__dirname + '/../templates/' + templateName).then(function (excelTemplate) {
                 return Promise.props({
                     renderingData: readYamlAsync(__dirname + '/../input/' + inputFileName), //Load single data
-                    excelMerge: new ExcelMerge().load(new JSZip(excelTemplate)) //Initialize ExcelMerge object
+                    excelMerge: new ExcelMerge().load(new Excel(excelTemplate)) //Initialize ExcelMerge object
                 });
             }).then(function (_ref) {
                 var renderingData = _ref.renderingData;
@@ -78,7 +78,7 @@ var Utility = (function () {
         key: 'output_character_test_single_record',
         value: function output_character_test_single_record(templateName, outputFileName) {
             return fs.readFileAsync(__dirname + '/../templates/' + templateName).then(function (excelTemplate) {
-                return new ExcelMerge().load(new JSZip(excelTemplate));
+                return new ExcelMerge().load(new Excel(excelTemplate));
             }).then(function (excelMerge) {
                 var renderingData = {
                     AccountName__c: '<>"\'&\'(0=0|~|==0~==0)=((\'(\'&\'%%&%%\'$%$',
@@ -104,7 +104,7 @@ var Utility = (function () {
         key: 'output_character_test_bulk_record_as_multifile',
         value: function output_character_test_bulk_record_as_multifile(templateName, outputFileName) {
             return fs.readFileAsync(__dirname + '/../templates/' + templateName).then(function (excelTemplate) {
-                return new ExcelMerge().load(new JSZip(excelTemplate));
+                return new ExcelMerge().load(new Excel(excelTemplate));
             }).then(function (excelMerge) {
                 var renderingData = [{
                     name: 'file1.xlsx',
@@ -157,7 +157,7 @@ var Utility = (function () {
         key: 'output_character_test_bulk_record_as_multisheet',
         value: function output_character_test_bulk_record_as_multisheet(templateName, outputFileName) {
             return fs.readFileAsync(__dirname + '/../templates/' + templateName).then(function (excelTemplate) {
-                return new ExcelMerge().load(new JSZip(excelTemplate));
+                return new ExcelMerge().load(new Excel(excelTemplate));
             }).then(function (excelMerge) {
                 var renderingData = [{
                     name: 'sheet1',

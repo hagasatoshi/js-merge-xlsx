@@ -7,7 +7,7 @@
 var path = require('path');
 var cwd = path.resolve('');
 var assert = require('assert');
-var JSZip = require('jszip');
+const Excel = require(cwd + '/lib/Excel');
 var ExcelMerge = require(`${cwd}/excelmerge`);
 var SpreadSheet = require(`${cwd}/lib/sheetHelper`);
 require(cwd+'/lib/underscore_mixin');
@@ -29,7 +29,7 @@ class Utility{
         .then((excelTemplate)=>{
             return Promise.props({
                 renderingData: readYamlAsync(`${__dirname}/../input/${inputFileName}`),     //Load single data
-                excelMerge: new ExcelMerge().load(new JSZip(excelTemplate)) //Initialize ExcelMerge object
+                excelMerge: new ExcelMerge().load(new Excel(excelTemplate)) //Initialize ExcelMerge object
             });
         }).then(({renderingData,excelMerge})=>{
             let dataArray = [];
@@ -61,7 +61,7 @@ class Utility{
     output_character_test_single_record(templateName, outputFileName){
         return fs.readFileAsync(`${__dirname}/../templates/${templateName}`)
             .then((excelTemplate)=>{
-                return new ExcelMerge().load(new JSZip(excelTemplate));
+                return new ExcelMerge().load(new Excel(excelTemplate));
             }).then((excelMerge)=>{
                 let renderingData = {
                     AccountName__c: `<>"'&'(0=0|~|==0~==0)=(('('&'%%&%%'$%$`,
@@ -87,7 +87,7 @@ class Utility{
     output_character_test_bulk_record_as_multifile(templateName, outputFileName){
         return fs.readFileAsync(`${__dirname}/../templates/${templateName}`)
             .then((excelTemplate)=>{
-                return new ExcelMerge().load(new JSZip(excelTemplate));
+                return new ExcelMerge().load(new Excel(excelTemplate));
             }).then((excelMerge)=>{
                 let renderingData = [
                     {
@@ -145,7 +145,7 @@ class Utility{
     output_character_test_bulk_record_as_multisheet(templateName, outputFileName){
         return fs.readFileAsync(`${__dirname}/../templates/${templateName}`)
             .then((excelTemplate)=>{
-                return new ExcelMerge().load(new JSZip(excelTemplate));
+                return new ExcelMerge().load(new Excel(excelTemplate));
             }).then((excelMerge)=>{
                 let renderingData = [
                     {

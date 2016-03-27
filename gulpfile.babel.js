@@ -25,6 +25,13 @@ const config = {
     }
 };
 
+gulp.task('wrk', ()=>{
+    return gulp.src('./wrk/*.js')
+        .pipe($.babel())
+        .pipe(gulp.dest('./wrkBuild'));
+});
+
+
 gulp.task('compile', ()=>{
     return gulp.src(config.js.src)
         .pipe($.babel())
