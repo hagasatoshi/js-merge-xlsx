@@ -7,7 +7,7 @@
 
 const Promise = require('bluebird');
 const _ = require('underscore');
-const JSZip = require('jszip');
+const Excel = require('./lib/Excel');
 const SheetHelper = require('./lib/sheetHelper');
 const isNode = require('detect-node');
 const output_buffer = {type: (isNode?'nodebuffer':'blob'), compression:"DEFLATE"};
@@ -22,8 +22,8 @@ class ExcelMerge{
     }
 
     load(excel){
-        if(!(excel instanceof JSZip)){
-            return Promise.reject('First parameter must be JSZip instance including MS-Excel data');
+        if(!(excel instanceof Excel)){
+            return Promise.reject('First parameter must be Excel instance including MS-Excel data');
         }
         return this.sheetHelper.load(excel).then(()=>this);
     }

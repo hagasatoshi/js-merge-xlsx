@@ -7,6 +7,9 @@
 
 const _ = require('underscore');
 const Mustache = require('mustache');
+const xml2js = require('xml2js');
+const builder = new xml2js.Builder();
+
 
 _.mixin({
     isString: (arg)=>{
@@ -41,5 +44,8 @@ _.mixin({
         if(!val || (typeof val !== 'string')) return val;
         let decodeMap = {'&lt;': '<', '&gt;': '>', '&quot;': '"', '&#39;': '\'', '&amp;': '&'};
         return val.replace(/(&lt;|&gt;|&quot;|&#39;|&amp;)/g, (str, item)=>decodeMap[item]);
+    },
+    xml: (obj) => {
+        return _.decode(builder.buildObject(obj));
     }
 });

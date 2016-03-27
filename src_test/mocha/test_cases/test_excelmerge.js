@@ -8,7 +8,7 @@
 const path = require('path');
 const cwd = path.resolve('');
 const assert = require('assert');
-const JSZip = require('jszip');
+const Excel = require(cwd + '/lib/Excel');
 const ExcelMerge = require(cwd + '/excelmerge');
 const SpreadSheet = require(cwd + '/lib/sheetHelper');
 require(cwd + '/lib/underscore_mixin');
@@ -27,14 +27,14 @@ module.exports = {
             .then(()=>{
                 throw new Error('checkLoadWithNoParameterShouldReturnError failed ');
             }).catch((err)=>{
-                assert.equal(err, 'First parameter must be JSZip instance including MS-Excel data');
+                assert.equal(err, 'First parameter must be Excel instance including MS-Excel data');
             });
     },
 
     checkLoadShouldReturnThisInstance: ()=>{
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx')
             .then((validTemplate)=>{
-                return new ExcelMerge().load(new JSZip(validTemplate));
+                return new ExcelMerge().load(new Excel(validTemplate));
             }).then((excelMerge)=>{
                 assert(excelMerge instanceof ExcelMerge, 'ExcelMerge#load() should return this instance');
             });
@@ -43,7 +43,7 @@ module.exports = {
     checkVariablesWorkCorrectly: ()=>{
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx')
             .then((validTemplate)=>{
-                return new ExcelMerge().load(new JSZip(validTemplate));
+                return new ExcelMerge().load(new Excel(validTemplate));
             }).then((excelMerge)=>{
                 let variables = [
                     'AccountName__c', 'StartDateFormat__c', 'EndDateFormat__c', 'Address__c', 'JobDescription__c', 'StartTime__c', 'EndTime__c',
@@ -59,7 +59,7 @@ module.exports = {
     checkIfBulkMergeMultiSheetRendersCorrectly: ()=>{
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx')
             .then((validTemplate)=>{
-                return new ExcelMerge().load(new JSZip(validTemplate));
+                return new ExcelMerge().load(new Excel(validTemplate));
             }).then((excelMerge)=>{
                 return excelMerge.bulkMergeMultiSheet([
                     { name: 'sheet1', data: { AccountName__c: 'hoge account1', AccountAddress__c: 'hoge street1' } },
@@ -67,21 +67,21 @@ module.exports = {
                     { name: 'sheet3', data: { AccountName__c: 'hoge account3', AccountAddress__c: 'hoge street3' } }
                 ]);
             }).then((excelData)=>{
-                return new SpreadSheet().load(new JSZip(excelData));
+                return new SpreadSheet().load(new Excel(excelData));
             }).then((spreadsheet)=>{
-                assert(spreadsheet.hasAsSharedString('hoge account1'), "'hoge account1' is missing in excel file");
-                assert(spreadsheet.hasAsSharedString('hoge street1'), "'hoge street1' is missing in excel file");
-                assert(spreadsheet.hasAsSharedString('hoge account2'), "'hoge account2' is missing in excel file");
-                assert(spreadsheet.hasAsSharedString('hoge street2'), "'hoge street2' is missing in excel file");
-                assert(spreadsheet.hasAsSharedString('hoge account3'), "'hoge account3' is missing in excel file");
-                assert(spreadsheet.hasAsSharedString('hoge street3'), "'hoge street3' is missing in excel file");
+                assert(spreadsheet.excel.hasAsSharedString('hoge account1'), "'hoge account1' is missing in excel file");
+                assert(spreadsheet.excel.hasAsSharedString('hoge street1'), "'hoge street1' is missing in excel file");
+                assert(spreadsheet.excel.hasAsSharedString('hoge account2'), "'hoge account2' is missing in excel file");
+                assert(spreadsheet.excel.hasAsSharedString('hoge street2'), "'hoge street2' is missing in excel file");
+                assert(spreadsheet.excel.hasAsSharedString('hoge account3'), "'hoge account3' is missing in excel file");
+                assert(spreadsheet.excel.hasAsSharedString('hoge street3'), "'hoge street3' is missing in excel file");
             });
     },
 
     checkIfMergeByTypeRendersCorrectly3: ()=>{
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx')
             .then((validTemplate)=>{
-                return new ExcelMerge().load(new JSZip(validTemplate));
+                return new ExcelMerge().load(new Excel(validTemplate));
             }).then((excelMerge)=>{
                 return excelMerge.mergeByType(MULTI_SHEET,[
                     { name: 'sheet1', data: { AccountName__c: 'hoge account1', AccountAddress__c: 'hoge street1' } },
@@ -89,25 +89,25 @@ module.exports = {
                     { name: 'sheet3', data: { AccountName__c: 'hoge account3', AccountAddress__c: 'hoge street3' } }
                 ]);
             }).then((excelData)=>{
-                return new SpreadSheet().load(new JSZip(excelData));
+                return new SpreadSheet().load(new Excel(excelData));
             }).then((spreadsheet)=>{
-                assert(spreadsheet.hasAsSharedString('hoge account1'), "'hoge account1' is missing in excel file");
-                assert(spreadsheet.hasAsSharedString('hoge street1'), "'hoge street1' is missing in excel file");
-                assert(spreadsheet.hasAsSharedString('hoge account2'), "'hoge account2' is missing in excel file");
-                assert(spreadsheet.hasAsSharedString('hoge street2'), "'hoge street2' is missing in excel file");
-                assert(spreadsheet.hasAsSharedString('hoge account3'), "'hoge account3' is missing in excel file");
-                assert(spreadsheet.hasAsSharedString('hoge street3'), "'hoge street3' is missing in excel file");
+                assert(spreadsheet.excel.hasAsSharedString('hoge account1'), "'hoge account1' is missing in excel file");
+                assert(spreadsheet.excel.hasAsSharedString('hoge street1'), "'hoge street1' is missing in excel file");
+                assert(spreadsheet.excel.hasAsSharedString('hoge account2'), "'hoge account2' is missing in excel file");
+                assert(spreadsheet.excel.hasAsSharedString('hoge street2'), "'hoge street2' is missing in excel file");
+                assert(spreadsheet.excel.hasAsSharedString('hoge account3'), "'hoge account3' is missing in excel file");
+                assert(spreadsheet.excel.hasAsSharedString('hoge street3'), "'hoge street3' is missing in excel file");
             });
     },
 
     checkLoadEachMemberFromValidTemplate: ()=>{
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx')
             .then((validTemplate)=>{
-                return new ExcelMerge().load(new JSZip(validTemplate));
+                return new ExcelMerge().load(new Excel(validTemplate));
             }).then((excelMerge)=>{
 
                 //excel
-                assert(excelMerge.sheetHelper.excel instanceof JSZip, 'SpreadSheet#excel is not assigned correctly');
+                assert(excelMerge.sheetHelper.excel instanceof Excel, 'SpreadSheet#excel is not assigned correctly');
 
                 //check if each variables is parsed or not.
                 var variables = [
@@ -132,36 +132,36 @@ module.exports = {
     checkIfMergeRendersCorrectly: ()=>{
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx')
             .then((validTemplate)=>{
-                return new ExcelMerge().load(new JSZip(validTemplate));
+                return new ExcelMerge().load(new Excel(validTemplate));
             }).then((excelMerge)=>{
                 return excelMerge.merge({ AccountName__c: 'hoge account', AccountAddress__c: 'hoge street' });
             }).then((excelData)=>{
-                return new SpreadSheet().load(new JSZip(excelData));
+                return new SpreadSheet().load(new Excel(excelData));
             }).then(function (spreadsheet) {
                 assert(spreadsheet.variables.length === 0, "ExcelMerge#merge() doesn't work correctly");
-                assert(spreadsheet.hasAsSharedString('hoge account'), "'hoge account' is not rendered by SpreadSheet#simpleMerge()");
-                assert(spreadsheet.hasAsSharedString('hoge street'), "'hoge street' is not rendered by SpreadSheet#simpleMerge()");
+                assert(spreadsheet.excel.hasAsSharedString('hoge account'), "'hoge account' is not rendered by SpreadSheet#simpleMerge()");
+                assert(spreadsheet.excel.hasAsSharedString('hoge street'), "'hoge street' is not rendered by SpreadSheet#simpleMerge()");
             });
     },
 
     checkIfMergeByTypeRendersCorrectly1: ()=>{
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx')
             .then((validTemplate)=>{
-                return new ExcelMerge().load(new JSZip(validTemplate));
+                return new ExcelMerge().load(new Excel(validTemplate));
             }).then((excelMerge)=>{
                 return excelMerge.mergeByType(SINGLE_DATA, { AccountName__c: 'hoge account', AccountAddress__c: 'hoge street' });
             }).then((excelData)=>{
-                return new SpreadSheet().load(new JSZip(excelData));
+                return new SpreadSheet().load(new Excel(excelData));
             }).then(function (spreadsheet) {
                 assert(spreadsheet.variables.length === 0, "ExcelMerge#merge() doesn't work correctly");
-                assert(spreadsheet.hasAsSharedString('hoge account'), "'hoge account' is not rendered by SpreadSheet#simpleMerge()");
-                assert(spreadsheet.hasAsSharedString('hoge street'), "'hoge street' is not rendered by SpreadSheet#simpleMerge()");
+                assert(spreadsheet.excel.hasAsSharedString('hoge account'), "'hoge account' is not rendered by SpreadSheet#simpleMerge()");
+                assert(spreadsheet.excel.hasAsSharedString('hoge street'), "'hoge street' is not rendered by SpreadSheet#simpleMerge()");
             });
     },
     checkIfMergeWithNoParameterRendersCorrectly: ()=>{
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx')
             .then((validTemplate)=>{
-                return new ExcelMerge().load(new JSZip(validTemplate));
+                return new ExcelMerge().load(new Excel(validTemplate));
             }).then((excelMerge)=>{
                 return excelMerge.merge();
             }).then(()=>{
@@ -174,7 +174,7 @@ module.exports = {
     checkIfBulkMergeMultiFileRendersCorrectly: ()=>{
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx')
             .then((validTemplate)=>{
-                return new ExcelMerge().load(new JSZip(validTemplate));
+                return new ExcelMerge().load(new Excel(validTemplate));
             }).then((excelMerge)=>{
                 return excelMerge.bulkMergeMultiFile([
                     { name: 'file1.xlsx', data: { AccountName__c: 'hoge account1', AccountAddress__c: 'hoge street1' } },
@@ -182,29 +182,29 @@ module.exports = {
                     { name: 'file3.xlsx', data: { AccountName__c: 'hoge account3', AccountAddress__c: 'hoge street3' } }
                 ]);
             }).then((zipData)=>{
-                var zip = new JSZip(zipData);
+                var zip = new Excel(zipData);
                 var excel1 = zip.file('file1.xlsx').asArrayBuffer();
                 var excel2 = zip.file('file2.xlsx').asArrayBuffer();
                 var excel3 = zip.file('file3.xlsx').asArrayBuffer();
                 return Promise.props({
-                    sp1: new SpreadSheet().load(new JSZip(excel1)),
-                    sp2: new SpreadSheet().load(new JSZip(excel2)),
-                    sp3: new SpreadSheet().load(new JSZip(excel3))
+                    sp1: new SpreadSheet().load(new Excel(excel1)),
+                    sp2: new SpreadSheet().load(new Excel(excel2)),
+                    sp3: new SpreadSheet().load(new Excel(excel3))
                 }).then(({sp1,sp2,sp3})=>{
 
-                    assert(sp1.hasAsSharedString('hoge account1'), "'hoge account1' is missing in excel file");
-                    assert(sp1.hasAsSharedString('hoge street1'), "'hoge street1' is missing in excel file");
-                    assert(sp2.hasAsSharedString('hoge account2'), "'hoge account2' is missing in excel file");
-                    assert(sp2.hasAsSharedString('hoge street2'), "'hoge street2' is missing in excel file");
-                    assert(sp3.hasAsSharedString('hoge account3'), "'hoge account3' is missing in excel file");
-                    assert(sp3.hasAsSharedString('hoge street3'), "'hoge street3' is missing in excel file");
+                    assert(sp1.excel.hasAsSharedString('hoge account1'), "'hoge account1' is missing in excel file");
+                    assert(sp1.excel.hasAsSharedString('hoge street1'), "'hoge street1' is missing in excel file");
+                    assert(sp2.excel.hasAsSharedString('hoge account2'), "'hoge account2' is missing in excel file");
+                    assert(sp2.excel.hasAsSharedString('hoge street2'), "'hoge street2' is missing in excel file");
+                    assert(sp3.excel.hasAsSharedString('hoge account3'), "'hoge account3' is missing in excel file");
+                    assert(sp3.excel.hasAsSharedString('hoge street3'), "'hoge street3' is missing in excel file");
                 });
             });
     },
     checkIfMergeByTypeRendersCorrectly2: ()=>{
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx')
             .then((validTemplate)=>{
-                return new ExcelMerge().load(new JSZip(validTemplate));
+                return new ExcelMerge().load(new Excel(validTemplate));
             }).then((excelMerge)=>{
                 return excelMerge.mergeByType(MULTI_FILE, [
                     { name: 'file1.xlsx', data: { AccountName__c: 'hoge account1', AccountAddress__c: 'hoge street1' } },
@@ -212,29 +212,29 @@ module.exports = {
                     { name: 'file3.xlsx', data: { AccountName__c: 'hoge account3', AccountAddress__c: 'hoge street3' } }
                 ]);
             }).then((zipData)=>{
-                var zip = new JSZip(zipData);
+                var zip = new Excel(zipData);
                 var excel1 = zip.file('file1.xlsx').asArrayBuffer();
                 var excel2 = zip.file('file2.xlsx').asArrayBuffer();
                 var excel3 = zip.file('file3.xlsx').asArrayBuffer();
                 return Promise.props({
-                    sp1: new SpreadSheet().load(new JSZip(excel1)),
-                    sp2: new SpreadSheet().load(new JSZip(excel2)),
-                    sp3: new SpreadSheet().load(new JSZip(excel3))
+                    sp1: new SpreadSheet().load(new Excel(excel1)),
+                    sp2: new SpreadSheet().load(new Excel(excel2)),
+                    sp3: new SpreadSheet().load(new Excel(excel3))
                 }).then(({sp1,sp2,sp3})=>{
 
-                    assert(sp1.hasAsSharedString('hoge account1'), "'hoge account1' is missing in excel file");
-                    assert(sp1.hasAsSharedString('hoge street1'), "'hoge street1' is missing in excel file");
-                    assert(sp2.hasAsSharedString('hoge account2'), "'hoge account2' is missing in excel file");
-                    assert(sp2.hasAsSharedString('hoge street2'), "'hoge street2' is missing in excel file");
-                    assert(sp3.hasAsSharedString('hoge account3'), "'hoge account3' is missing in excel file");
-                    assert(sp3.hasAsSharedString('hoge street3'), "'hoge street3' is missing in excel file");
+                    assert(sp1.excel.hasAsSharedString('hoge account1'), "'hoge account1' is missing in excel file");
+                    assert(sp1.excel.hasAsSharedString('hoge street1'), "'hoge street1' is missing in excel file");
+                    assert(sp2.excel.hasAsSharedString('hoge account2'), "'hoge account2' is missing in excel file");
+                    assert(sp2.excel.hasAsSharedString('hoge street2'), "'hoge street2' is missing in excel file");
+                    assert(sp3.excel.hasAsSharedString('hoge account3'), "'hoge account3' is missing in excel file");
+                    assert(sp3.excel.hasAsSharedString('hoge street3'), "'hoge street3' is missing in excel file");
                 });
             });
     },
     checkIfBulkMergeMultiFileWithNoParameterShouldReturnError: ()=>{
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx')
             .then((validTemplate)=>{
-                return new ExcelMerge().load(new JSZip(validTemplate));
+                return new ExcelMerge().load(new Excel(validTemplate));
             }).then((excelMerge)=>{
                 return excelMerge.bulkMergeMultiFile();
             }).then(()=>{
@@ -247,7 +247,7 @@ module.exports = {
     checkIfBulkMergeMultiSheetWithNoParameterShouldReturnError: ()=>{
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx')
             .then((validTemplate)=>{
-                return new ExcelMerge().load(new JSZip(validTemplate));
+                return new ExcelMerge().load(new Excel(validTemplate));
             }).then((excelMerge)=>{
                 return excelMerge.bulkMergeMultiSheet();
             }).then(()=>{
@@ -260,7 +260,7 @@ module.exports = {
     checkIfMergeByTypeThrowErrorWithInvalidType: ()=>{
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx')
             .then((validTemplate)=>{
-                return new ExcelMerge().load(new JSZip(validTemplate));
+                return new ExcelMerge().load(new Excel(validTemplate));
             }).then((excelMerge)=>{
                 return excelMerge.mergeByType('hoge', [
                     { name: 'file1.xlsx', data: { AccountName__c: 'hoge account1', AccountAddress__c: 'hoge street1' } },

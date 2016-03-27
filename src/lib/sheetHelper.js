@@ -8,32 +8,29 @@ const Mustache = require('mustache');
 const Promise = require('bluebird');
 const _ = require('underscore');
 require('./underscore_mixin');
-const JSZip = require('jszip');
+const Excel = require('./Excel');
 const isNode = require('detect-node');
 const outputBuffer = {type: (isNode?'nodebuffer':'blob'), compression:"DEFLATE"};
 const jszipBuffer = {type: (isNode?'nodebuffer':'arraybuffer'), compression:"DEFLATE"};
-const xml2js = require('xml2js');
-const parseString = Promise.promisify(xml2js.parseString);
-const builder = new xml2js.Builder();
 
 const OPEN_XML_SCHEMA_DEFINITION = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet';
 
 class SheetHelper{
 
     load(excel){
-        if(!(excel instanceof JSZip)){
-            return Promise.reject('First parameter must be JSZip instance including MS-Excel data');
+        if(!(excel instanceof Excel)){
+            return Promise.reject('First parameter must be Excel instance including MS-Excel data');
         }
         this.excel = excel;
-        this.variables = _.variables(excel.file('xl/sharedStrings.xml').asText());
+        this.variables = _.variables(excel.sharedStrings());
         this.commonStringsWithVariable = [];
 
         return Promise.props({
-            sharedstringsObj: parseString(excel.file('xl/sharedStrings.xml').asText()),
-            workbookxmlRels: parseString(this.excel.file('xl/_rels/workbook.xml.rels').asText()),
-            workbookxml: parseString(this.excel.file('xl/workbook.xml').asText()),
-            sheetXmls: this._parseDirInExcel('xl/worksheets'),
-            sheetXmlsRels: this._parseDirInExcel('xl/worksheets/_rels')
+            sharedstringsObj: excel.parseSharedStrings(),
+            workbookxmlRels: excel.parseWorkbookRels(),
+            workbookxml: excel.parseWorkbook(),
+            sheetXmls: excel.parseWorksheetsDir(),
+            sheetXmlsRels: excel.parseWorksheetRelsDir()
         }).then(({sharedstringsObj, workbookxmlRels,workbookxml,sheetXmls,sheetXmlsRels})=>{
             this.sharedstrings = sharedstringsObj.sst.si;
             this.workbookxmlRels = workbookxmlRels;
@@ -65,7 +62,7 @@ class SheetHelper{
             throw new Error('bulkMergeMultiFile() is called with invalid parameter');
         }
 
-        var allExcels = new JSZip();
+        var allExcels = new Excel();
         _.each(bindDataArray, ({name,data})=>allExcels.file(name, this._simpleMerge(data, jszipBuffer)));
         return Promise.resolve().then(()=> allExcels.generate(outputBuffer));
     }
@@ -144,8 +141,8 @@ class SheetHelper{
         _.each(this.sheetXmls, (sheetXml,index)=>{
             if(sheetXml && (sheetXml.name === targetSheet.value.name)) {
                 this.sheetXmls.splice(index,1);
-                this.excel.remove(`xl/worksheets/${targetSheet.value.name}`);
-                this.excel.remove(`xl/worksheets/_rels/${targetSheet.value.name}.rels`);
+                this.excel.removeWorksheet(targetSheet.value.name);
+                this.excel.removeWorksheetRel(targetSheet.value.name);
             }
         });
         return this;
@@ -155,16 +152,12 @@ class SheetHelper{
         return this.deleteSheet(this.templateSheetName);
     }
 
-    hasAsSharedString(targetStr){
-        return (this.excel.file('xl/sharedStrings.xml').asText().indexOf(targetStr) !== -1)
-    }
-
     templateVariables(){
         return this.variables;
     }
 
     generate(option){
-        return parseString(this.excel.file('xl/sharedStrings.xml').asText())
+        return this.excel.parseSharedStrings()
         .then((sharedstringsObj)=> {
 
             if (this.sharedstrings) {
@@ -172,22 +165,23 @@ class SheetHelper{
                 sharedstringsObj.sst['$'].uniqueCount = this.sharedstrings.length;
                 sharedstringsObj.sst['$'].count = this._stringCount();
 
-                this.excel.file('xl/sharedStrings.xml', _.decode(builder.buildObject(sharedstringsObj)))
+                this.excel.setSharedStrings(_.xml(sharedstringsObj));
             }
-            this.excel.file("xl/_rels/workbook.xml.rels",_.decode(builder.buildObject(this.workbookxmlRels)));
-            this.excel.file("xl/workbook.xml", _.decode(builder.buildObject(this.workbookxml)));
+            this.excel.setWorkbookRels(_.xml(this.workbookxmlRels));
+            this.excel.setWorkbook(_.xml(this.workbookxml));
+
             _.each(this.sheetXmls, (sheet)=>{
                 if(sheet.name){
                     var sheetObj = {};
                     sheetObj.worksheet = {};
                     _.extend(sheetObj.worksheet, sheet.worksheet);
-                    this.excel.file(`xl/worksheets/${sheet.name}`, _.decode(builder.buildObject(sheetObj)));
+                    this.excel.setWorksheet(sheet.name, _.xml(sheetObj));
                 }
             });
             if(this.templateSheetRelsData.value && this.templateSheetRelsData.value.Relationships){
-                let strTemplateSheetRels = _.decode(builder.buildObject({Relationships:this.templateSheetRelsData.value.Relationships}));
+                let strTemplateSheetRels = _.xml({ Relationships: this.templateSheetRelsData.value.Relationships });
                 _.each(this.sheetXmls, (sheet)=>{
-                    if(sheet.name) this.excel.file(`xl/worksheets/_rels/${sheet.name}.rels`, strTemplateSheetRels);
+                    if(sheet.name) this.excel.setWorksheetRel(sheet.name, strTemplateSheetRels);
                 });
             }
 
@@ -197,8 +191,8 @@ class SheetHelper{
     }
 
     _simpleMerge(bindData, option=outputBuffer){
-        return new JSZip(this.excel.generate(jszipBuffer))
-            .file('xl/sharedStrings.xml', Mustache.render(this.excel.file('xl/sharedStrings.xml').asText(), bindData))
+        return new Excel(this.excel.generate(jszipBuffer))
+            .file('xl/sharedStrings.xml', Mustache.render(this.excel.sharedStrings(), bindData))
             .generate(option);
     }
 
@@ -224,25 +218,6 @@ class SheetHelper{
         });
 
         return commonStringsWithVariable;
-    }
-
-    _parseDirInExcel(dir){
-        let files = this.excel.folder(dir).file(/.xml/);
-        let fileXmls = [];
-        return files.reduce(
-            (promise, file)=>
-                promise.then((prior_file)=>
-                    Promise.resolve()
-                        .then(()=>parseString(this.excel.file(file.name).asText()))
-                        .then((file_xml)=>{
-                            file_xml.name = _.last(file.name.split('/'));
-                            fileXmls.push(file_xml);
-                            return fileXmls;
-                        })
-                )
-            ,
-            Promise.resolve()
-        );
     }
 
     _buildNewSheet(sourceSheet, commonStringsWithVariable){
