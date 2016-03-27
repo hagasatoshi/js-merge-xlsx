@@ -77,19 +77,6 @@ module.exports = {
             });
     },
 
-    simpleMergeWithNoParameterShouldReturnError: ()=> {
-        return fs.readFileAsync(`${__dirname}/../templates/Template.xlsx`)
-            .then((validTemplate)=>{
-                return new SpreadSheet().load(new Excel(validTemplate));
-            }).then((spreadsheet)=>{
-                return spreadsheet.simpleMerge();
-            }).then(()=>{
-                throw new Error('simpleMergeWithNoParameterShouldReturnError failed ');
-            }).catch((err)=>{
-                assert.equal(err.message,'simpleMerge() must has parameter');
-            });
-    },
-
     checkIfSimpleMergeRendersCorrectly: ()=>{
         return fs.readFileAsync(`${__dirname}/../templates/Template.xlsx`)
             .then((validTemplate)=>{

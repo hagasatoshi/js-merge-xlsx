@@ -39,8 +39,8 @@ class SheetHelper{
             this.sheetXmlsRels = sheetXmlsRels;
             this.templateSheetName = this.workbookxml.workbook.sheets[0].sheet[0]['$'].name;
             this.templateSheetData = _.find(sheetXmls,(e)=>(e.name.indexOf('.rels') === -1)).worksheet.sheetData[0].row;
-            this.templateSheetRelsData = _.deepCopy(this._templateSheetRels());
-            this.commonStringsWithVariable = this._parseCommonStringWithVariable();
+            this.templateSheetRelsData = _.deepCopy(this.templateSheetRels());
+            this.commonStringsWithVariable = this.parseCommonStringWithVariable();
             //return this for chaining
             return this;
         });
@@ -51,7 +51,7 @@ class SheetHelper{
             throw new Error('simpleMerge() must has parameter');
         }
 
-        return Promise.resolve().then(()=>this._simpleMerge(bindData, outputBuffer));
+        return Promise.resolve().then(()=>this.simpleMerge(bindData, outputBuffer));
     }
 
     bulkMergeMultiFile(bindDataArray){
@@ -63,7 +63,7 @@ class SheetHelper{
         }
 
         var allExcels = new Excel();
-        _.each(bindDataArray, ({name,data})=>allExcels.file(name, this._simpleMerge(data, jszipBuffer)));
+        _.each(bindDataArray, ({name,data})=>allExcels.file(name, this.simpleMerge(data, jszipBuffer)));
         return Promise.resolve().then(()=> allExcels.generate(outputBuffer));
     }
 
@@ -71,7 +71,7 @@ class SheetHelper{
         if((!destSheetName) || !(data)) {
             throw new Error('addSheetBindingData() needs to have 2 paramter.');
         }
-        let nextId = this._availableSheetid();
+        let nextId = this.availableSheetid();
         this.workbookxmlRels.Relationships.Relationship.push({ '$': { Id: nextId, Type: OPEN_XML_SCHEMA_DEFINITION, Target: `worksheets/sheet${nextId}.xml`}});
         this.workbookxml.workbook.sheets[0].sheet.push({ '$': { name: destSheetName, sheetId: nextId.replace('rId',''), 'r:id': nextId } });
 
@@ -88,8 +88,8 @@ class SheetHelper{
             });
         }
 
-        let sourceSheet = this._sheetByName(this.templateSheetName).value;
-        let addedSheet = this._buildNewSheet(sourceSheet, mergedStrings);
+        let sourceSheet = this.sheetByName(this.templateSheetName).value;
+        let addedSheet = this.buildNewSheet(sourceSheet, mergedStrings);
 
         addedSheet.name = `sheet${nextId}.xml`;
 
@@ -99,11 +99,11 @@ class SheetHelper{
     }
 
     hasSheet(sheetname){
-        return !!this._sheetByName(sheetname);
+        return !!this.sheetByName(sheetname);
     }
 
     focusOnFirstSheet(){
-        let targetSheetName = this._sheetByName(this._firstSheetName());
+        let targetSheetName = this.sheetByName(this.firstSheetName());
         _.each(this.sheet_xmls, (sheet)=>{
             if(!sheet.worksheet) return;
             sheet.worksheet.sheetViews[0].sheetView[0]['$'].tabSelected = (sheet.name === targetSheetName.value.worksheet.name) ? '1' : '0';
@@ -120,7 +120,7 @@ class SheetHelper{
             throw new Error(`Invalid sheet name '${sheetname}'.`);
         }
 
-        let targetSheetName = this._sheetByName(sheetname);
+        let targetSheetName = this.sheetByName(sheetname);
         return (targetSheetName.value.worksheet.sheetViews[0].sheetView[0]['$'].tabSelected === '1');
     }
 
@@ -128,7 +128,7 @@ class SheetHelper{
         if(!sheetname){
             throw new Error('deleteSheet() needs to have 1 paramter.');
         }
-        let targetSheet = this._sheetByName(sheetname);
+        let targetSheet = this.sheetByName(sheetname);
         if(!targetSheet){
             throw new Error(`Invalid sheet name '${sheetname}'.`);
         }
@@ -163,7 +163,7 @@ class SheetHelper{
             if (this.sharedstrings) {
                 sharedstringsObj.sst.si = _.deleteProperties(this.sharedstrings, ['sharedIndex', 'usingCells']);
                 sharedstringsObj.sst['$'].uniqueCount = this.sharedstrings.length;
-                sharedstringsObj.sst['$'].count = this._stringCount();
+                sharedstringsObj.sst['$'].count = this.stringCount();
 
                 this.excel.setSharedStrings(_.xml(sharedstringsObj));
             }
@@ -190,13 +190,13 @@ class SheetHelper{
 
     }
 
-    _simpleMerge(bindData, option=outputBuffer){
+    simpleMerge(bindData, option=outputBuffer){
         return new Excel(this.excel.generate(jszipBuffer))
             .file('xl/sharedStrings.xml', Mustache.render(this.excel.sharedStrings(), bindData))
             .generate(option);
     }
 
-    _parseCommonStringWithVariable(){
+    parseCommonStringWithVariable(){
         let commonStringsWithVariable = [];
         _.each(this.sharedstrings,(stringObj, index)=>{
             if(_.stringValue(stringObj.t) && _.hasVariable(_.stringValue(stringObj.t))){
@@ -220,7 +220,7 @@ class SheetHelper{
         return commonStringsWithVariable;
     }
 
-    _buildNewSheet(sourceSheet, commonStringsWithVariable){
+    buildNewSheet(sourceSheet, commonStringsWithVariable){
         let addedSheet = _.deepCopy(sourceSheet);
         addedSheet.worksheet.sheetViews[0].sheetView[0]['$'].tabSelected = '0';
         if(!commonStringsWithVariable) return addedSheet;
@@ -239,13 +239,13 @@ class SheetHelper{
         return addedSheet;
     }
 
-    _availableSheetid(){
+    availableSheetid(){
         let maxRel = _.max(this.workbookxmlRels.Relationships.Relationship, (e)=> Number(e['$'].Id.replace('rId','')));
         let nextId = 'rId' + ('00' + (((maxRel['$'].Id.replace('rId','') >> 0))+1)).slice(-3);
         return nextId;
     }
 
-    _sheetByName(sheetname){
+    sheetByName(sheetname){
         let targetSheet = _.find(this.workbookxml.workbook.sheets[0].sheet, (e)=> (e['$'].name === sheetname));
         if(!targetSheet) return null;  //invalid sheet name
 
@@ -255,21 +255,21 @@ class SheetHelper{
         return {path: targetFilePath, value: _.find(this.sheetXmls, (e)=>(e.name === targetFileName))};
     }
 
-    _sheetRelsByName(sheetname){
-        let targetFilePath = this._sheetByName(sheetname).path;
+    sheetRelsByName(sheetname){
+        let targetFilePath = this.sheetByName(sheetname).path;
         let targetName = `${_.last(targetFilePath.split('/'))}.rels`;
         return {name: targetName, value: _.find(this.sheetXmlsRels, e=>(e.name === targetName))};
     }
 
-    _templateSheetRels(){
-        return this._sheetRelsByName(this.templateSheetName);
+    templateSheetRels(){
+        return this.sheetRelsByName(this.templateSheetName);
     }
 
-    _firstSheetName(){
+    firstSheetName(){
         return this.workbookxml.workbook.sheets[0].sheet[0]['$'].name;
     }
 
-    _stringCount(){
+    stringCount(){
         let stringCount = 0;
         _.each(this.sheetXmls, (sheet)=>{
             if(sheet.worksheet){

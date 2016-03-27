@@ -71,18 +71,6 @@ module.exports = {
         });
     },
 
-    simpleMergeWithNoParameterShouldReturnError: function simpleMergeWithNoParameterShouldReturnError() {
-        return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (validTemplate) {
-            return new SpreadSheet().load(new Excel(validTemplate));
-        }).then(function (spreadsheet) {
-            return spreadsheet.simpleMerge();
-        }).then(function () {
-            throw new Error('simpleMergeWithNoParameterShouldReturnError failed ');
-        })['catch'](function (err) {
-            assert.equal(err.message, 'simpleMerge() must has parameter');
-        });
-    },
-
     checkIfSimpleMergeRendersCorrectly: function checkIfSimpleMergeRendersCorrectly() {
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (validTemplate) {
             return new SpreadSheet().load(new Excel(validTemplate));
