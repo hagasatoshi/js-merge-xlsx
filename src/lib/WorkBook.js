@@ -10,16 +10,43 @@ class WorkBook {
 
     constructor(workbookxml) {
         this.workbookxml = workbookxml;
-        this.sheetDefinitions = workbookxml.workbook.sheets[0].sheet;
+        this.sheetDefinitions = new SheetDefinitions(workbookxml.workbook.sheets[0].sheet);
     }
 
     valueWorkbookxml() {
-        this.workbookxml.workbook.sheets[0].sheet = this.sheetDefinitions;
+        this.workbookxml.workbook.sheets[0].sheet = this.sheetDefinitions.getValue();
         return this.workbookxml;
     }
 
     addSheetDefinition(sheetName, sheetId) {
-        this.sheetDefinitions.push(
+        this.sheetDefinitions.add(sheetName, sheetId);
+    }
+
+    deleteSheetDefinition(sheetName) {
+        this.sheetDefinitions.delete(sheetName);
+    }
+
+    findSheetDefinition(sheetName) {
+        return this.sheetDefinitions.find(sheetName);
+    }
+
+    firstSheetName() {
+        return this.sheetDefinitions.firstSheetName();
+    }
+}
+
+class SheetDefinitions {
+
+    constructor(sheets) {
+        this.sheets = sheets;
+    }
+
+    getValue(){
+        return this.sheets;
+    }
+
+    add(sheetName, sheetId) {
+        this.sheets.push(
             { '$':
                 { name: sheetName,
                     sheetId: sheetId.replace('rId',''),
@@ -29,21 +56,22 @@ class WorkBook {
         );
     }
 
-    deleteSheetDefinition(sheetName) {
-        _.each(this.sheetDefinitions, (sheet,index)=>{
+    delete(sheetName) {
+        _.each(this.sheets, (sheet, index) => {
             if(sheet && (sheet['$'].name === sheetName)) {
-                this.sheetDefinitions.splice(index,1);
+                this.sheets.splice(index,1);
             }
         });
     }
 
-    findSheetDefinition(sheetName) {
-        return _.find(this.sheetDefinitions, (e)=> (e['$'].name === sheetName));
+    find(sheetName) {
+        return _.find(this.sheets, (e)=> (e['$'].name === sheetName));
     }
 
     firstSheetName() {
-        return this.sheetDefinitions[0]['$'].name;
+        return this.sheets[0]['$'].name;
     }
+
 }
 
 module.exports = WorkBook;
