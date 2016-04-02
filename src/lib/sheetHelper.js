@@ -39,7 +39,6 @@ class SheetHelper{
             this.workbook = new WorkBook(workbookxml);
             this.sheetXmls = sheetXmls;
             this.sheetXmlsRels = sheetXmlsRels;
-            this.templateSheetName = this.workbook.firstSheetName();
             this.templateSheetData = _.find(sheetXmls,(e)=>(e.name.indexOf('.rels') === -1)).worksheet.sheetData[0].row;
             this.templateSheetRelsData = _.deepCopy(this.templateSheetRels());
             this.commonStringsWithVariable = this.parseCommonStringWithVariable();
@@ -90,7 +89,7 @@ class SheetHelper{
             });
         }
 
-        let sourceSheet = this.sheetByName(this.templateSheetName).value;
+        let sourceSheet = this.sheetByName(this.workbook.firstSheetName()).value;
         let addedSheet = this.buildNewSheet(sourceSheet, mergedStrings);
 
         addedSheet.name = `sheet${nextId}.xml`;
@@ -149,7 +148,7 @@ class SheetHelper{
     }
 
     deleteTemplateSheet(){
-        return this.deleteSheet(this.templateSheetName);
+        return this.deleteSheet(this.workbook.firstSheetName());
     }
 
     templateVariables(){
@@ -261,7 +260,7 @@ class SheetHelper{
     }
 
     templateSheetRels(){
-        return this.sheetRelsByName(this.templateSheetName);
+        return this.sheetRelsByName(this.workbook.firstSheetName());
     }
 
     stringCount(){
