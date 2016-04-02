@@ -9,6 +9,7 @@ const Promise = require('bluebird');
 const _ = require('underscore');
 require('./underscore_mixin');
 const Excel = require('./Excel');
+const WorkBook = require('./WorkBook');
 const isNode = require('detect-node');
 const outputBuffer = {type: (isNode?'nodebuffer':'blob'), compression:"DEFLATE"};
 const jszipBuffer = {type: (isNode?'nodebuffer':'arraybuffer'), compression:"DEFLATE"};
@@ -35,9 +36,10 @@ class SheetHelper{
             this.sharedstrings = sharedstringsObj.sst.si;
             this.relationship = workbookxmlRels.Relationships.Relationship;
             this.workbookxml = workbookxml;
+            this.workbook = new WorkBook(workbookxml);
             this.sheetXmls = sheetXmls;
             this.sheetXmlsRels = sheetXmlsRels;
-            this.templateSheetName = this.workbookxml.workbook.sheets[0].sheet[0]['$'].name;
+            this.templateSheetName = this.workbook.firstSheetName();
             this.templateSheetData = _.find(sheetXmls,(e)=>(e.name.indexOf('.rels') === -1)).worksheet.sheetData[0].row;
             this.templateSheetRelsData = _.deepCopy(this.templateSheetRels());
             this.commonStringsWithVariable = this.parseCommonStringWithVariable();
@@ -73,7 +75,7 @@ class SheetHelper{
         }
         let nextId = this.availableSheetid();
         this.relationship.push({ '$': { Id: nextId, Type: OPEN_XML_SCHEMA_DEFINITION, Target: `worksheets/sheet${nextId}.xml`}});
-        this.workbookxml.workbook.sheets[0].sheet.push({ '$': { name: destSheetName, sheetId: nextId.replace('rId',''), 'r:id': nextId } });
+        this.workbook.addSheetDefinition(destSheetName, nextId);
 
         let mergedStrings;
         if(this.sharedstrings){
@@ -103,7 +105,7 @@ class SheetHelper{
     }
 
     focusOnFirstSheet(){
-        let targetSheetName = this.sheetByName(this.firstSheetName());
+        let targetSheetName = this.sheetByName(this.workbook.firstSheetName());
         _.each(this.sheet_xmls, (sheet)=>{
             if(!sheet.worksheet) return;
             sheet.worksheet.sheetViews[0].sheetView[0]['$'].tabSelected = (sheet.name === targetSheetName.value.worksheet.name) ? '1' : '0';
@@ -135,9 +137,7 @@ class SheetHelper{
         _.each(this.relationship, (sheet,index)=>{
             if(sheet && (sheet['$'].Target === targetSheet.path)) this.relationship.splice(index,1);
         });
-        _.each(this.workbookxml.workbook.sheets[0].sheet, (sheet,index)=>{
-            if(sheet && (sheet['$'].name === sheetname))this.workbookxml.workbook.sheets[0].sheet.splice(index,1);
-        });
+        this.workbook.deleteSheetDefinition(sheetname);
         _.each(this.sheetXmls, (sheetXml,index)=>{
             if(sheetXml && (sheetXml.name === targetSheet.value.name)) {
                 this.sheetXmls.splice(index,1);
@@ -168,7 +168,7 @@ class SheetHelper{
                 this.excel.setSharedStrings(sharedstringsObj);
             }
             this.excel.setWorkbookRels(this.relationship);
-            this.excel.setWorkbook(this.workbookxml);
+            this.excel.setWorkbook(this.workbook.valueWorkbookxml());
 
             _.each(this.sheetXmls, (sheet)=>{
                 if(sheet.name){
@@ -245,7 +245,7 @@ class SheetHelper{
     }
 
     sheetByName(sheetname){
-        let targetSheet = _.find(this.workbookxml.workbook.sheets[0].sheet, (e)=> (e['$'].name === sheetname));
+        let targetSheet = this.workbook.findSheetDefinition(sheetname);
         if(!targetSheet) return null;  //invalid sheet name
 
         let sheetid = targetSheet['$']['r:id'];
@@ -262,10 +262,6 @@ class SheetHelper{
 
     templateSheetRels(){
         return this.sheetRelsByName(this.templateSheetName);
-    }
-
-    firstSheetName(){
-        return this.workbookxml.workbook.sheets[0].sheet[0]['$'].name;
     }
 
     stringCount(){
