@@ -15,12 +15,12 @@ class WorkBookRels {
         this.sheetRelationships = workBookRels.Relationships.Relationship;
     }
 
-    valueWorkBookRels() {
+    value() {
         this.workBookRels.Relationships.Relationship = this.sheetRelationships;
         return this.workBookRels;
     }
 
-    addSheetRelationship(sheetId) {
+    add(sheetId) {
         this.sheetRelationships.push(
             { '$':
                 { Id: sheetId,
@@ -31,7 +31,7 @@ class WorkBookRels {
         );
     }
 
-    deleteSheetRelationship(sheetPath) {
+    delete(sheetPath) {
         _.each(this.sheetRelationships, (sheet, index) => {
             if(sheet && (sheet['$'].Target === sheetPath)) {
                 this.sheetRelationships.splice(index,1);

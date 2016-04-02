@@ -14,12 +14,12 @@ class WorkBookXml {
         this.sheetDefinitions = workBookXml.workbook.sheets[0].sheet;
     }
 
-    valueWorkBookXml() {
+    value() {
         this.workBookXml.workbook.sheets[0].sheet = this.sheetDefinitions;
         return this.workBookXml;
     }
 
-    addSheetDefinition(sheetName, sheetId) {
+    add(sheetName, sheetId) {
         this.sheetDefinitions.push(
             { '$':
                 { name: sheetName,
@@ -30,7 +30,7 @@ class WorkBookXml {
         );
     }
 
-    deleteSheetDefinition(sheetName) {
+    delete(sheetName) {
         _.each(this.sheetDefinitions, (sheet, index) => {
             if(sheet && (sheet['$'].name === sheetName)) {
                 this.sheetDefinitions.splice(index,1);

@@ -73,8 +73,8 @@ class SheetHelper{
             throw new Error('addSheetBindingData() needs to have 2 paramter.');
         }
         let nextId = this.availableSheetid();
-        this.relationship.addSheetRelationship(nextId);
-        this.workbookxml.addSheetDefinition(destSheetName, nextId);
+        this.relationship.add(nextId);
+        this.workbookxml.add(destSheetName, nextId);
 
         let mergedStrings;
         if(this.sharedstrings){
@@ -133,8 +133,8 @@ class SheetHelper{
         if(!targetSheet){
             throw new Error(`Invalid sheet name '${sheetname}'.`);
         }
-        this.relationship.deleteSheetRelationship(targetSheet.path);
-        this.workbookxml.deleteSheetDefinition(sheetname);
+        this.relationship.delete(targetSheet.path);
+        this.workbookxml.delete(sheetname);
         _.each(this.sheetXmls, (sheetXml,index)=>{
             if(sheetXml && (sheetXml.name === targetSheet.value.name)) {
                 this.sheetXmls.splice(index,1);
@@ -164,8 +164,8 @@ class SheetHelper{
 
                 this.excel.setSharedStrings(sharedstringsObj);
             }
-            this.excel.setWorkbookRels(this.relationship.valueWorkBookRels());
-            this.excel.setWorkbook(this.workbookxml.valueWorkBookXml());
+            this.excel.setWorkbookRels(this.relationship.value());
+            this.excel.setWorkbook(this.workbookxml.value());
 
             _.each(this.sheetXmls, (sheet)=>{
                 if(sheet.name){
