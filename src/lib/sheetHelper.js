@@ -11,6 +11,7 @@ require('./underscore_mixin');
 const Excel = require('./Excel');
 const WorkBookXml = require('./WorkBookXml');
 const WorkBookRels = require('./WorkBookRels');
+const SheetXmls = require('./SheetXmls');
 const isNode = require('detect-node');
 const outputBuffer = {type: (isNode?'nodebuffer':'blob'), compression:"DEFLATE"};
 const jszipBuffer = {type: (isNode?'nodebuffer':'arraybuffer'), compression:"DEFLATE"};
@@ -37,7 +38,7 @@ class SheetHelper{
             this.sharedstrings = sharedstringsObj.sst.si;
             this.relationship = new WorkBookRels(workbookxmlRels);
             this.workbookxml = new WorkBookXml(workbookxml);
-            this.sheetXmls = sheetXmls;
+            this.sheetXmls = new SheetXmls(sheetXmls);
             this.sheetXmlsRels = sheetXmlsRels;
             this.templateSheetData = _.find(sheetXmls,(e)=>(e.name.indexOf('.rels') === -1)).worksheet.sheetData[0].row;
             this.templateSheetRelsData = _.deepCopy(this.templateSheetRels());
@@ -94,7 +95,7 @@ class SheetHelper{
 
         addedSheet.name = `sheet${nextId}.xml`;
 
-        this.sheetXmls.push(addedSheet);
+        this.sheetXmls.add(addedSheet);
 
         return this;
     }
@@ -125,13 +126,14 @@ class SheetHelper{
         }
         this.relationship.delete(targetSheet.path);
         this.workbookxml.delete(sheetname);
-        _.each(this.sheetXmls, (sheetXml,index)=>{
-            if(sheetXml && (sheetXml.name === targetSheet.value.name)) {
-                this.sheetXmls.splice(index,1);
+
+        _.each(this.sheetXmls.value(), ({name, data})=>{
+            if((name === targetSheet.value.name)) {
                 this.excel.removeWorksheet(targetSheet.value.name);
                 this.excel.removeWorksheetRel(targetSheet.value.name);
             }
         });
+        this.sheetXmls.delete(targetSheet.value.name);
         return this;
     }
 
@@ -150,24 +152,20 @@ class SheetHelper{
             if (this.sharedstrings) {
                 sharedstringsObj.sst.si = _.deleteProperties(this.sharedstrings, ['sharedIndex', 'usingCells']);
                 sharedstringsObj.sst['$'].uniqueCount = this.sharedstrings.length;
-                sharedstringsObj.sst['$'].count = this.stringCount();
+                sharedstringsObj.sst['$'].count = this.sheetXmls.stringCount();
 
                 this.excel.setSharedStrings(sharedstringsObj);
             }
             this.excel.setWorkbookRels(this.relationship.value());
             this.excel.setWorkbook(this.workbookxml.value());
 
-            _.each(this.sheetXmls, (sheet)=>{
-                if(sheet.name){
-                    var sheetObj = {};
-                    sheetObj.worksheet = {};
-                    _.extend(sheetObj.worksheet, sheet.worksheet);
-                    this.excel.setWorksheet(sheet.name, sheetObj);
-                }
-            });
+            this.excel.setWorksheets(this.sheetXmls.value());
+
             if(this.templateSheetRelsData.value && this.templateSheetRelsData.value.Relationships){
-                _.each(this.sheetXmls, (sheet)=>{
-                    if(sheet.name) this.excel.setWorksheetRel(sheet.name, { Relationships: this.templateSheetRelsData.value.Relationships });
+                _.each(this.sheetXmls.value(), ({name, data})=>{
+                    if(name){
+                        this.excel.setWorksheetRel(name, { Relationships: this.templateSheetRelsData.value.Relationships });
+                    }
                 });
             }
 
@@ -232,7 +230,7 @@ class SheetHelper{
         }
         let targetFilePath = this.relationship.findSheetPath(sheetid);
         let targetFileName = _.last(targetFilePath.split('/'));
-        return {path: targetFilePath, value: _.find(this.sheetXmls, (e)=>(e.name === targetFileName))};
+        return {path: targetFilePath, value: this.sheetXmls.find(targetFileName)};
     }
 
     sheetRelsByName(sheetname){
@@ -245,21 +243,6 @@ class SheetHelper{
         return this.sheetRelsByName(this.workbookxml.firstSheetName());
     }
 
-    stringCount(){
-        let stringCount = 0;
-        _.each(this.sheetXmls, (sheet)=>{
-            if(sheet.worksheet){
-                _.each(sheet.worksheet.sheetData[0].row, (row)=>{
-                    _.each(row.c, (cell)=>{
-                        if(cell['$'].t){
-                            stringCount++;
-                        }
-                    });
-                });
-            }
-        });
-        return stringCount;
-    }
 }
 
 module.exports = SheetHelper;

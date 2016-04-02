@@ -62,6 +62,12 @@ _.extend(Excel.prototype, {
         this.file(`${config.DIR_WORKSHEETS}/${sheetName}`, _.xml(obj));
     },
 
+    setWorksheets: function(files) {
+        _.each(files, ({name, data}) => {
+            this.setWorksheet(name, data);
+        });
+    },
+
     removeWorksheet: function(sheetName){
         this.remove(`${config.DIR_WORKSHEETS}/${sheetName}`);
     },
