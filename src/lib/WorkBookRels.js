@@ -46,7 +46,9 @@ class WorkBookRels {
     }
 
     nextRelationshipId(){
-        return _.max(this.sheetRelationships, (e)=> Number(e['$'].Id.replace('rId','')));
+        let maxRel =  _.max(this.sheetRelationships, (e)=> Number(e['$'].Id.replace('rId','')));
+        let nextId = 'rId' + ('00' + (((maxRel['$'].Id.replace('rId','') >> 0))+1)).slice(-3);
+        return nextId;
     }
 
 }

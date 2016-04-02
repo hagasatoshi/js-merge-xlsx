@@ -72,7 +72,7 @@ class SheetHelper{
         if((!destSheetName) || !(data)) {
             throw new Error('addSheetBindingData() needs to have 2 paramter.');
         }
-        let nextId = this.availableSheetid();
+        let nextId = this.relationship.nextRelationshipId();
         this.relationship.add(nextId);
         this.workbookxml.add(destSheetName, nextId);
 
@@ -233,12 +233,6 @@ class SheetHelper{
             });
         });
         return addedSheet;
-    }
-
-    availableSheetid(){
-        let maxRel = this.relationship.nextRelationshipId();
-        let nextId = 'rId' + ('00' + (((maxRel['$'].Id.replace('rId','') >> 0))+1)).slice(-3);
-        return nextId;
     }
 
     sheetByName(sheetname){
