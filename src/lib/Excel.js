@@ -10,6 +10,7 @@ const Promise = require('bluebird');
 const xml2js = require('xml2js');
 const parseString = Promise.promisify(xml2js.parseString);
 const _ = require('underscore');
+require('./underscore_mixin');
 
 const config = {
     FILE_SHARED_STRINGS: 'xl/sharedStrings.xml',
@@ -33,32 +34,32 @@ _.extend(Excel.prototype, {
         return (this.sharedStrings().indexOf(targetStr) !== -1);
     },
 
-    setSharedStrings: function(str){
-        this.file(config.FILE_SHARED_STRINGS, str);
+    setSharedStrings: function(obj){
+        this.file(config.FILE_SHARED_STRINGS, _.xml(obj));
     },
 
     parseWorkbookRels: function(){
         return this.parseFile(config.FILE_WORKBOOK_RELS);
     },
 
-    setWorkbookRels: function(str){
-        this.file(config.FILE_WORKBOOK_RELS, str);
+    setWorkbookRels: function(obj){
+        this.file(config.FILE_WORKBOOK_RELS, _.xml(obj));
     },
 
     parseWorkbook: function(){
         return this.parseFile(config.FILE_WORKBOOK);
     },
 
-    setWorkbook: function(str){
-        this.file(config.FILE_WORKBOOK, str);
+    setWorkbook: function(obj){
+        this.file(config.FILE_WORKBOOK, _.xml(obj));
     },
 
     parseWorksheetsDir: function(){
         return this.parseDir(config.DIR_WORKSHEETS);
     },
 
-    setWorksheet: function(sheetName, str){
-        this.file(`${config.DIR_WORKSHEETS}/${sheetName}`, str);
+    setWorksheet: function(sheetName, obj){
+        this.file(`${config.DIR_WORKSHEETS}/${sheetName}`, _.xml(obj));
     },
 
     removeWorksheet: function(sheetName){
@@ -69,8 +70,8 @@ _.extend(Excel.prototype, {
         return this.parseDir(config.DIR_WORKSHEETS_RELS);
     },
 
-    setWorksheetRel: function(sheetName, str){
-        this.file(`${config.DIR_WORKSHEETS_RELS}/${sheetName}.rels`, str);
+    setWorksheetRel: function(sheetName, obj){
+        this.file(`${config.DIR_WORKSHEETS_RELS}/${sheetName}.rels`, _.xml(obj));
     },
 
     removeWorksheetRel: function(sheetName){
