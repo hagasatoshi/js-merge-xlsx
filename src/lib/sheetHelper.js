@@ -79,7 +79,7 @@ class SheetHelper{
         this.workbookxml.add(destSheetName, nextId);
 
         let mergedStrings;
-        if(this.sharedstrings && this.sharedstrings.hasString()){
+        if(this.sharedstrings.hasString()){
 
             mergedStrings = _.deepCopy(this.commonStringsWithVariable);
             _.each(mergedStrings,(e)=>e.t[0] = Mustache.render(_.stringValue(e.t), data));
@@ -146,13 +146,11 @@ class SheetHelper{
         return this.excel.parseSharedStrings()
         .then((sharedstringsObj)=> {
 
-            if (this.sharedstrings && this.sharedstrings.hasString()) {
-                this.excel.setSharedStrings(this.sharedstrings.value());
-            }
-            this.excel.setWorkbookRels(this.relationship.value());
-            this.excel.setWorkbook(this.workbookxml.value());
-
-            this.excel.setWorksheets(this.sheetXmls.value());
+            this.excel
+            .setSharedStrings(this.sharedstrings.value())
+            .setWorkbookRels(this.relationship.value())
+            .setWorkbook(this.workbookxml.value())
+            .setWorksheets(this.sheetXmls.value());
 
             if(this.templateSheetRelsData.value && this.templateSheetRelsData.value.Relationships){
                 _.each(this.sheetXmls.value(), ({name, data})=>{

@@ -35,7 +35,10 @@ _.extend(Excel.prototype, {
     },
 
     setSharedStrings: function(obj){
-        this.file(config.FILE_SHARED_STRINGS, _.xml(obj));
+        if(obj){
+            this.file(config.FILE_SHARED_STRINGS, _.xml(obj));
+        }
+        return this;
     },
 
     parseWorkbookRels: function(){
@@ -44,6 +47,7 @@ _.extend(Excel.prototype, {
 
     setWorkbookRels: function(obj){
         this.file(config.FILE_WORKBOOK_RELS, _.xml(obj));
+        return this;
     },
 
     parseWorkbook: function(){
@@ -52,6 +56,7 @@ _.extend(Excel.prototype, {
 
     setWorkbook: function(obj){
         this.file(config.FILE_WORKBOOK, _.xml(obj));
+        return this;
     },
 
     parseWorksheetsDir: function(){
@@ -60,16 +65,19 @@ _.extend(Excel.prototype, {
 
     setWorksheet: function(sheetName, obj){
         this.file(`${config.DIR_WORKSHEETS}/${sheetName}`, _.xml(obj));
+        return this;
     },
 
     setWorksheets: function(files) {
         _.each(files, ({name, data}) => {
             this.setWorksheet(name, data);
         });
+        return this;
     },
 
     removeWorksheet: function(sheetName){
         this.remove(`${config.DIR_WORKSHEETS}/${sheetName}`);
+        return this;
     },
 
     parseWorksheetRelsDir: function(){
@@ -78,10 +86,12 @@ _.extend(Excel.prototype, {
 
     setWorksheetRel: function(sheetName, obj){
         this.file(`${config.DIR_WORKSHEETS_RELS}/${sheetName}.rels`, _.xml(obj));
+        return this;
     },
 
     removeWorksheetRel: function(sheetName){
         this.remove(`${config.DIR_WORKSHEETS_RELS}/${sheetName}.rels`);
+        return this;
     },
 
     parseFile: function(filePath){
