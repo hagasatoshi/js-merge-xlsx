@@ -43,13 +43,7 @@ _.extend(Excel.prototype, {
     },
 
     setWorkbookRels: function(obj){
-        let workbookxmlRels = {
-            Relationships: {
-                $: { xmlns: 'http://schemas.openxmlformats.org/package/2006/relationships' }
-            }
-        };
-        workbookxmlRels.Relationships.Relationship = obj;
-        this.file(config.FILE_WORKBOOK_RELS, _.xml(workbookxmlRels));
+        this.file(config.FILE_WORKBOOK_RELS, _.xml(obj));
     },
 
     parseWorkbook: function(){

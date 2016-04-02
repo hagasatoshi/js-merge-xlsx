@@ -1,21 +1,22 @@
 /**
- * WorkBookXml
+ * WorkBookXml.js
+ * Manage 'xl/workbook.xml'
  * @author Satoshi Haga
- * @date 2016/03/27
+ * @date 2016/04/02
  */
 
 const _ = require('underscore');
 
 class WorkBookXml {
 
-    constructor(workbookxml) {
-        this.workbookxml = workbookxml;
-        this.sheetDefinitions = workbookxml.workbook.sheets[0].sheet;
+    constructor(workBookXml) {
+        this.workBookXml = workBookXml;
+        this.sheetDefinitions = workBookXml.workbook.sheets[0].sheet;
     }
 
-    valueWorkbookxml() {
-        this.workbookxml.workbook.sheets[0].sheet = this.sheetDefinitions;
-        return this.workbookxml;
+    valueWorkBookXml() {
+        this.workBookXml.workbook.sheets[0].sheet = this.sheetDefinitions;
+        return this.workBookXml;
     }
 
     addSheetDefinition(sheetName, sheetId) {
