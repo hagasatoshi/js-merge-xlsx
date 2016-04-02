@@ -33,7 +33,7 @@ class SheetHelper{
             sheetXmlsRels: excel.parseWorksheetRelsDir()
         }).then(({sharedstringsObj, workbookxmlRels,workbookxml,sheetXmls,sheetXmlsRels})=>{
             this.sharedstrings = sharedstringsObj.sst.si;
-            this.workbookxmlRels = workbookxmlRels;
+            this.relationship = workbookxmlRels.Relationships.Relationship;
             this.workbookxml = workbookxml;
             this.sheetXmls = sheetXmls;
             this.sheetXmlsRels = sheetXmlsRels;
@@ -72,7 +72,7 @@ class SheetHelper{
             throw new Error('addSheetBindingData() needs to have 2 paramter.');
         }
         let nextId = this.availableSheetid();
-        this.workbookxmlRels.Relationships.Relationship.push({ '$': { Id: nextId, Type: OPEN_XML_SCHEMA_DEFINITION, Target: `worksheets/sheet${nextId}.xml`}});
+        this.relationship.push({ '$': { Id: nextId, Type: OPEN_XML_SCHEMA_DEFINITION, Target: `worksheets/sheet${nextId}.xml`}});
         this.workbookxml.workbook.sheets[0].sheet.push({ '$': { name: destSheetName, sheetId: nextId.replace('rId',''), 'r:id': nextId } });
 
         let mergedStrings;
@@ -132,8 +132,8 @@ class SheetHelper{
         if(!targetSheet){
             throw new Error(`Invalid sheet name '${sheetname}'.`);
         }
-        _.each(this.workbookxmlRels.Relationships.Relationship, (sheet,index)=>{
-            if(sheet && (sheet['$'].Target === targetSheet.path)) this.workbookxmlRels.Relationships.Relationship.splice(index,1);
+        _.each(this.relationship, (sheet,index)=>{
+            if(sheet && (sheet['$'].Target === targetSheet.path)) this.relationship.splice(index,1);
         });
         _.each(this.workbookxml.workbook.sheets[0].sheet, (sheet,index)=>{
             if(sheet && (sheet['$'].name === sheetname))this.workbookxml.workbook.sheets[0].sheet.splice(index,1);
@@ -165,23 +165,22 @@ class SheetHelper{
                 sharedstringsObj.sst['$'].uniqueCount = this.sharedstrings.length;
                 sharedstringsObj.sst['$'].count = this.stringCount();
 
-                this.excel.setSharedStrings(_.xml(sharedstringsObj));
+                this.excel.setSharedStrings(sharedstringsObj);
             }
-            this.excel.setWorkbookRels(_.xml(this.workbookxmlRels));
-            this.excel.setWorkbook(_.xml(this.workbookxml));
+            this.excel.setWorkbookRels(this.relationship);
+            this.excel.setWorkbook(this.workbookxml);
 
             _.each(this.sheetXmls, (sheet)=>{
                 if(sheet.name){
                     var sheetObj = {};
                     sheetObj.worksheet = {};
                     _.extend(sheetObj.worksheet, sheet.worksheet);
-                    this.excel.setWorksheet(sheet.name, _.xml(sheetObj));
+                    this.excel.setWorksheet(sheet.name, sheetObj);
                 }
             });
             if(this.templateSheetRelsData.value && this.templateSheetRelsData.value.Relationships){
-                let strTemplateSheetRels = _.xml({ Relationships: this.templateSheetRelsData.value.Relationships });
                 _.each(this.sheetXmls, (sheet)=>{
-                    if(sheet.name) this.excel.setWorksheetRel(sheet.name, strTemplateSheetRels);
+                    if(sheet.name) this.excel.setWorksheetRel(sheet.name, { Relationships: this.templateSheetRelsData.value.Relationships });
                 });
             }
 
@@ -240,7 +239,7 @@ class SheetHelper{
     }
 
     availableSheetid(){
-        let maxRel = _.max(this.workbookxmlRels.Relationships.Relationship, (e)=> Number(e['$'].Id.replace('rId','')));
+        let maxRel = _.max(this.relationship, (e)=> Number(e['$'].Id.replace('rId','')));
         let nextId = 'rId' + ('00' + (((maxRel['$'].Id.replace('rId','') >> 0))+1)).slice(-3);
         return nextId;
     }
@@ -250,7 +249,7 @@ class SheetHelper{
         if(!targetSheet) return null;  //invalid sheet name
 
         let sheetid = targetSheet['$']['r:id'];
-        let targetFilePath = _.max(this.workbookxmlRels.Relationships.Relationship, (e)=>(e['$'].Id === sheetid))['$'].Target;
+        let targetFilePath = _.max(this.relationship, (e)=>(e['$'].Id === sheetid))['$'].Target;
         let targetFileName = _.last(targetFilePath.split('/'));
         return {path: targetFilePath, value: _.find(this.sheetXmls, (e)=>(e.name === targetFileName))};
     }
