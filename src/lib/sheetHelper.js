@@ -12,6 +12,7 @@ const Excel = require('./Excel');
 const WorkBookXml = require('./WorkBookXml');
 const WorkBookRels = require('./WorkBookRels');
 const SheetXmls = require('./SheetXmls');
+const SharedStrings = require('./SharedStrings');
 const isNode = require('detect-node');
 const outputBuffer = {type: (isNode?'nodebuffer':'blob'), compression:"DEFLATE"};
 const jszipBuffer = {type: (isNode?'nodebuffer':'arraybuffer'), compression:"DEFLATE"};
@@ -35,7 +36,7 @@ class SheetHelper{
             sheetXmls: excel.parseWorksheetsDir(),
             sheetXmlsRels: excel.parseWorksheetRelsDir()
         }).then(({sharedstringsObj, workbookxmlRels,workbookxml,sheetXmls,sheetXmlsRels})=>{
-            this.sharedstrings = sharedstringsObj.sst.si;
+            this.sharedstrings = new SharedStrings(sharedstringsObj);
             this.relationship = new WorkBookRels(workbookxmlRels);
             this.workbookxml = new WorkBookXml(workbookxml);
             this.sheetXmls = new SheetXmls(sheetXmls);
@@ -78,16 +79,12 @@ class SheetHelper{
         this.workbookxml.add(destSheetName, nextId);
 
         let mergedStrings;
-        if(this.sharedstrings){
+        if(this.sharedstrings && this.sharedstrings.hasString()){
 
             mergedStrings = _.deepCopy(this.commonStringsWithVariable);
             _.each(mergedStrings,(e)=>e.t[0] = Mustache.render(_.stringValue(e.t), data));
 
-            let currentCount = this.sharedstrings.length;
-            _.each(mergedStrings,(e,index)=>{
-                e.sharedIndex = currentCount + index;
-                this.sharedstrings.push(e);
-            });
+            this.sharedstrings.add(mergedStrings);
         }
 
         let sourceSheet = this.sheetByName(this.workbookxml.firstSheetName()).value;
@@ -149,12 +146,8 @@ class SheetHelper{
         return this.excel.parseSharedStrings()
         .then((sharedstringsObj)=> {
 
-            if (this.sharedstrings) {
-                sharedstringsObj.sst.si = _.deleteProperties(this.sharedstrings, ['sharedIndex', 'usingCells']);
-                sharedstringsObj.sst['$'].uniqueCount = this.sharedstrings.length;
-                sharedstringsObj.sst['$'].count = this.sheetXmls.stringCount();
-
-                this.excel.setSharedStrings(sharedstringsObj);
+            if (this.sharedstrings && this.sharedstrings.hasString()) {
+                this.excel.setSharedStrings(this.sharedstrings.value());
             }
             this.excel.setWorkbookRels(this.relationship.value());
             this.excel.setWorkbook(this.workbookxml.value());
@@ -181,13 +174,8 @@ class SheetHelper{
     }
 
     parseCommonStringWithVariable(){
-        let commonStringsWithVariable = [];
-        _.each(this.sharedstrings,(stringObj, index)=>{
-            if(_.stringValue(stringObj.t) && _.hasVariable(_.stringValue(stringObj.t))){
-                stringObj.sharedIndex = index;
-                commonStringsWithVariable.push(stringObj);
-            }
-        });
+        let commonStringsWithVariable = this.sharedstrings.filterWithVariable();
+
         _.each(commonStringsWithVariable, (commonStringWithVariable)=>{
             commonStringWithVariable.usingCells = [];
             _.each(this.templateSheetData,(row)=>{
