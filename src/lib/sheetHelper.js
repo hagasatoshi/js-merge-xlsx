@@ -103,16 +103,6 @@ class SheetHelper{
         return !!this.sheetByName(sheetname);
     }
 
-    focusOnFirstSheet(){
-        let targetSheetName = this.sheetByName(this.workbookxml.firstSheetName());
-        _.each(this.sheet_xmls, (sheet)=>{
-            if(!sheet.worksheet) return;
-            sheet.worksheet.sheetViews[0].sheetView[0]['$'].tabSelected = (sheet.name === targetSheetName.value.worksheet.name) ? '1' : '0';
-        });
-        return this;
-
-    }
-
     isFocused(sheetname){
         if(!sheetname){
             throw new Error('isFocused() needs to have 1 paramter.');

@@ -22,7 +22,6 @@ describe('Test for spreadsheet.js : ', function () {
 
     //Validation
     it('validation / load() / no parameter / error', test_spreadsheet.checkLoadWithNoParameterShouldReturnError);
-    it('validation / simpleMerge() / no parameter / error', test_spreadsheet.simpleMergeWithNoParameterShouldReturnError);
     it('validation / bulkMergeMultiFile() / no parameter / error', test_spreadsheet.bulkMergeMultiFileNoParameterShouldReturnError);
     it('validation / bulkMergeMultiFile() / object / error', test_spreadsheet.bulkMergeMultiFileMustHaveArrayAsParameter);
     it('validation / bulkMergeMultiFile() / object / error', test_spreadsheet.bulkMergeMultiFileMustHaveNameAndData);
@@ -39,7 +38,6 @@ describe('Test for spreadsheet.js : ', function () {
     it('logic / addSheetBindingData() / works correctly', test_spreadsheet.checkIfAddSheetBindingDataCorrectly);
     it('logic / deleteTemplateSheet() / works correctly', test_spreadsheet.checkIfDeleteTemplateSheetWorksCorrectly);
     it('logic / deleteSheet() / works correctly', test_spreadsheet.checkIfDeleteSheetWorksCorrectly);
-    it('logic / focusOnFirstSheet() / works correctly', test_spreadsheet.checkIfFocusOnFirstSheetWorksCorrectly);
     it('logic / templateVariablesWorkCorrectly() / works correctly', test_spreadsheet.checkTemplateVariablesWorkCorrectly);
 });
 

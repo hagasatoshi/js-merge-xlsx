@@ -62,7 +62,6 @@ class ExcelMerge{
 
         _.each(bindDataArray, ({name,data})=>this.sheetHelper.addSheetBindingData(name,data));
         return this.sheetHelper.deleteTemplateSheet()
-            .focusOnFirstSheet()
             .generate(output_buffer);
     }
 

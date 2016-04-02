@@ -254,20 +254,5 @@ module.exports = {
             assert(!spreadsheet.hasSheet('sample2'), "deleteTemplateSheet() doesn't work correctly");
             assert(spreadsheet.hasSheet('sample3'), "deleteTemplateSheet() doesn't work correctly");
         });
-    },
-
-    checkIfFocusOnFirstSheetWorksCorrectly: function checkIfFocusOnFirstSheetWorksCorrectly() {
-        return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (validTemplate) {
-            return new SpreadSheet().load(new Excel(validTemplate));
-        }).then(function (spreadsheet) {
-            return spreadsheet.addSheetBindingData('sample1', { AccountName__c: 'hoge account1', AccountAddress__c: 'hoge street1' }).addSheetBindingData('sample2', { AccountName__c: 'hoge account1', AccountAddress__c: 'hoge street1' }).addSheetBindingData('sample3', { AccountName__c: 'hoge account1', AccountAddress__c: 'hoge street1' }).focusOnFirstSheet().generate(output_buffer);
-        }).then(function (excelData) {
-            return new SpreadSheet().load(new Excel(excelData));
-        }).then(function (spreadsheet) {
-            assert(spreadsheet.isFocused('Sheet1'), "focusOnFirstSheet() doesn't work correctly");
-            assert(!spreadsheet.isFocused('sample1'), "focusOnFirstSheet() doesn't work correctly");
-            assert(!spreadsheet.isFocused('sample2'), "focusOnFirstSheet() doesn't work correctly");
-            assert(!spreadsheet.isFocused('sample3'), "focusOnFirstSheet() doesn't work correctly");
-        });
     }
 };
