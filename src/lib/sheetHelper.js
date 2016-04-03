@@ -11,6 +11,8 @@ require('./underscore_mixin');
 const Excel = require('./Excel');
 const WorkBookXml = require('./WorkBookXml');
 const WorkBookRels = require('./WorkBookRels');
+const SheetXmls = require('./SheetXmls');
+const SharedStrings = require('./SharedStrings');
 const isNode = require('detect-node');
 const outputBuffer = {type: (isNode?'nodebuffer':'blob'), compression:"DEFLATE"};
 const jszipBuffer = {type: (isNode?'nodebuffer':'arraybuffer'), compression:"DEFLATE"};
@@ -34,10 +36,10 @@ class SheetHelper{
             sheetXmls: excel.parseWorksheetsDir(),
             sheetXmlsRels: excel.parseWorksheetRelsDir()
         }).then(({sharedstringsObj, workbookxmlRels,workbookxml,sheetXmls,sheetXmlsRels})=>{
-            this.sharedstrings = sharedstringsObj.sst.si;
+            this.sharedstrings = new SharedStrings(sharedstringsObj);
             this.relationship = new WorkBookRels(workbookxmlRels);
             this.workbookxml = new WorkBookXml(workbookxml);
-            this.sheetXmls = sheetXmls;
+            this.sheetXmls = new SheetXmls(sheetXmls);
             this.sheetXmlsRels = sheetXmlsRels;
             this.templateSheetData = _.find(sheetXmls,(e)=>(e.name.indexOf('.rels') === -1)).worksheet.sheetData[0].row;
             this.templateSheetRelsData = _.deepCopy(this.templateSheetRels());
@@ -77,16 +79,12 @@ class SheetHelper{
         this.workbookxml.add(destSheetName, nextId);
 
         let mergedStrings;
-        if(this.sharedstrings){
+        if(this.sharedstrings.hasString()){
 
             mergedStrings = _.deepCopy(this.commonStringsWithVariable);
             _.each(mergedStrings,(e)=>e.t[0] = Mustache.render(_.stringValue(e.t), data));
 
-            let currentCount = this.sharedstrings.length;
-            _.each(mergedStrings,(e,index)=>{
-                e.sharedIndex = currentCount + index;
-                this.sharedstrings.push(e);
-            });
+            this.sharedstrings.add(mergedStrings);
         }
 
         let sourceSheet = this.sheetByName(this.workbookxml.firstSheetName()).value;
@@ -94,23 +92,13 @@ class SheetHelper{
 
         addedSheet.name = `sheet${nextId}.xml`;
 
-        this.sheetXmls.push(addedSheet);
+        this.sheetXmls.add(addedSheet);
 
         return this;
     }
 
     hasSheet(sheetname){
         return !!this.sheetByName(sheetname);
-    }
-
-    focusOnFirstSheet(){
-        let targetSheetName = this.sheetByName(this.workbookxml.firstSheetName());
-        _.each(this.sheet_xmls, (sheet)=>{
-            if(!sheet.worksheet) return;
-            sheet.worksheet.sheetViews[0].sheetView[0]['$'].tabSelected = (sheet.name === targetSheetName.value.worksheet.name) ? '1' : '0';
-        });
-        return this;
-
     }
 
     isFocused(sheetname){
@@ -135,13 +123,14 @@ class SheetHelper{
         }
         this.relationship.delete(targetSheet.path);
         this.workbookxml.delete(sheetname);
-        _.each(this.sheetXmls, (sheetXml,index)=>{
-            if(sheetXml && (sheetXml.name === targetSheet.value.name)) {
-                this.sheetXmls.splice(index,1);
+
+        _.each(this.sheetXmls.value(), ({name, data})=>{
+            if((name === targetSheet.value.name)) {
                 this.excel.removeWorksheet(targetSheet.value.name);
                 this.excel.removeWorksheetRel(targetSheet.value.name);
             }
         });
+        this.sheetXmls.delete(targetSheet.value.name);
         return this;
     }
 
@@ -157,27 +146,17 @@ class SheetHelper{
         return this.excel.parseSharedStrings()
         .then((sharedstringsObj)=> {
 
-            if (this.sharedstrings) {
-                sharedstringsObj.sst.si = _.deleteProperties(this.sharedstrings, ['sharedIndex', 'usingCells']);
-                sharedstringsObj.sst['$'].uniqueCount = this.sharedstrings.length;
-                sharedstringsObj.sst['$'].count = this.stringCount();
+            this.excel
+            .setSharedStrings(this.sharedstrings.value())
+            .setWorkbookRels(this.relationship.value())
+            .setWorkbook(this.workbookxml.value())
+            .setWorksheets(this.sheetXmls.value());
 
-                this.excel.setSharedStrings(sharedstringsObj);
-            }
-            this.excel.setWorkbookRels(this.relationship.value());
-            this.excel.setWorkbook(this.workbookxml.value());
-
-            _.each(this.sheetXmls, (sheet)=>{
-                if(sheet.name){
-                    var sheetObj = {};
-                    sheetObj.worksheet = {};
-                    _.extend(sheetObj.worksheet, sheet.worksheet);
-                    this.excel.setWorksheet(sheet.name, sheetObj);
-                }
-            });
             if(this.templateSheetRelsData.value && this.templateSheetRelsData.value.Relationships){
-                _.each(this.sheetXmls, (sheet)=>{
-                    if(sheet.name) this.excel.setWorksheetRel(sheet.name, { Relationships: this.templateSheetRelsData.value.Relationships });
+                _.each(this.sheetXmls.value(), ({name, data})=>{
+                    if(name){
+                        this.excel.setWorksheetRel(name, { Relationships: this.templateSheetRelsData.value.Relationships });
+                    }
                 });
             }
 
@@ -193,13 +172,8 @@ class SheetHelper{
     }
 
     parseCommonStringWithVariable(){
-        let commonStringsWithVariable = [];
-        _.each(this.sharedstrings,(stringObj, index)=>{
-            if(_.stringValue(stringObj.t) && _.hasVariable(_.stringValue(stringObj.t))){
-                stringObj.sharedIndex = index;
-                commonStringsWithVariable.push(stringObj);
-            }
-        });
+        let commonStringsWithVariable = this.sharedstrings.filterWithVariable();
+
         _.each(commonStringsWithVariable, (commonStringWithVariable)=>{
             commonStringWithVariable.usingCells = [];
             _.each(this.templateSheetData,(row)=>{
@@ -242,7 +216,7 @@ class SheetHelper{
         }
         let targetFilePath = this.relationship.findSheetPath(sheetid);
         let targetFileName = _.last(targetFilePath.split('/'));
-        return {path: targetFilePath, value: _.find(this.sheetXmls, (e)=>(e.name === targetFileName))};
+        return {path: targetFilePath, value: this.sheetXmls.find(targetFileName)};
     }
 
     sheetRelsByName(sheetname){
@@ -255,21 +229,6 @@ class SheetHelper{
         return this.sheetRelsByName(this.workbookxml.firstSheetName());
     }
 
-    stringCount(){
-        let stringCount = 0;
-        _.each(this.sheetXmls, (sheet)=>{
-            if(sheet.worksheet){
-                _.each(sheet.worksheet.sheetData[0].row, (row)=>{
-                    _.each(row.c, (cell)=>{
-                        if(cell['$'].t){
-                            stringCount++;
-                        }
-                    });
-                });
-            }
-        });
-        return stringCount;
-    }
 }
 
 module.exports = SheetHelper;
