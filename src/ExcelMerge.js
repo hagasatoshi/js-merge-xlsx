@@ -59,14 +59,11 @@ class ExcelMerge{
         if(!bindDataArray || !_.isArray(bindDataArray)) {
             return Promise.reject('bulkMergeMultiSheet() must has array as parameter');
         }
-
-        _.each(bindDataArray, ({name,data})=>this.sheetHelper.addSheetBindingData(name,data));
-        return this.sheetHelper.deleteTemplateSheet()
-            .generate(output_buffer);
+        return this.sheetHelper.bulkMergeMultiSheet(bindDataArray);
     }
 
     variables(){
-        return this.sheetHelper.templateVariables();
+        return this.sheetHelper.excel.variables();
     }
 }
 

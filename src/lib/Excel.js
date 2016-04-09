@@ -5,12 +5,15 @@
  * @date 2016/03/27
  */
 
+const Mustache = require('mustache');
 let Excel = require('jszip');
 const Promise = require('bluebird');
 const xml2js = require('xml2js');
 const parseString = Promise.promisify(xml2js.parseString);
 const _ = require('underscore');
 require('./underscore_mixin');
+const isNode = require('detect-node');
+const jszipBuffer = {type: (isNode?'nodebuffer':'arraybuffer'), compression:"DEFLATE"};
 
 const config = {
     FILE_SHARED_STRINGS: 'xl/sharedStrings.xml',
@@ -24,6 +27,10 @@ _.extend(Excel.prototype, {
 
     sharedStrings: function(){
         return this.file(config.FILE_SHARED_STRINGS).asText();
+    },
+
+    variables: function() {
+        return _.variables(this.sharedStrings());
     },
 
     parseSharedStrings: function(){
@@ -115,6 +122,7 @@ _.extend(Excel.prototype, {
     parseFile: function(filePath){
         return parseString(this.file(filePath).asText());
     },
+
     parseDir: function(dir){
         let files = this.folder(dir).file(/.xml/);
         let fileXmls = [];
@@ -131,7 +139,16 @@ _.extend(Excel.prototype, {
             ,
             Promise.resolve()
         );
+    },
+
+    merge: function(mergedData) {
+        return this.file('xl/sharedStrings.xml', Mustache.render(this.sharedStrings(), mergedData))
     }
 });
+
+Excel.instanceOf = function(excel) {
+    return new Excel(excel.generate(jszipBuffer));
+};
+
 
 module.exports = Excel;

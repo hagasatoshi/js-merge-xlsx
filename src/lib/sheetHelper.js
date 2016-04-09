@@ -17,18 +17,11 @@ const isNode = require('detect-node');
 const outputBuffer = {type: (isNode?'nodebuffer':'blob'), compression:"DEFLATE"};
 const jszipBuffer = {type: (isNode?'nodebuffer':'arraybuffer'), compression:"DEFLATE"};
 
-const OPEN_XML_SCHEMA_DEFINITION = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet';
-
 class SheetHelper{
 
     load(excel){
-        if(!(excel instanceof Excel)){
-            return Promise.reject('First parameter must be Excel instance including MS-Excel data');
-        }
         this.excel = excel;
-        this.variables = _.variables(excel.sharedStrings());
         this.commonStringsWithVariable = [];
-
         return Promise.props({
             sharedstringsObj: excel.parseSharedStrings(),
             workbookxmlRels: excel.parseWorkbookRels(),
@@ -48,31 +41,26 @@ class SheetHelper{
         });
     }
 
-    simpleMerge(bindData){
-        if(!bindData){
-            throw new Error('simpleMerge() must has parameter');
-        }
-
-        return Promise.resolve().then(()=>this.simpleMerge(bindData, outputBuffer));
+    simpleMerge(mergedData, option=outputBuffer){
+        return Excel.instanceOf(this.excel)
+            .merge(mergedData)
+            .generate(option);
     }
 
-    bulkMergeMultiFile(bindDataArray){
-        if(!_.isArray(bindDataArray)){
-            throw new Error('bulkMergeMultiFile() has only array object');
-        }
-        if(_.find(bindDataArray,(e)=>!(e.name && e.data))){
-            throw new Error('bulkMergeMultiFile() is called with invalid parameter');
-        }
-
-        var allExcels = new Excel();
-        _.each(bindDataArray, ({name,data})=>allExcels.file(name, this.simpleMerge(data, jszipBuffer)));
-        return Promise.resolve().then(()=> allExcels.generate(outputBuffer));
+    bulkMergeMultiFile(mergedDataArray){
+        return _.reduce(mergedDataArray, (excel, {name, data}) => {
+            excel.file(name, this.simpleMerge(data, jszipBuffer));
+            return excel;
+        }, new Excel()).generate(outputBuffer);
     }
+
+    bulkMergeMultiSheet(mergedDataArray){
+        _.each(mergedDataArray, ({name,data})=>this.addSheetBindingData(name,data));
+        return this.generate(outputBuffer);
+    }
+
 
     addSheetBindingData(destSheetName, data){
-        if((!destSheetName) || !(data)) {
-            throw new Error('addSheetBindingData() needs to have 2 paramter.');
-        }
         let nextId = this.relationship.nextRelationshipId();
         this.relationship.add(nextId);
         this.workbookxml.add(destSheetName, nextId);
@@ -101,25 +89,13 @@ class SheetHelper{
     }
 
     isFocused(sheetname){
-        if(!sheetname){
-            throw new Error('isFocused() needs to have 1 paramter.');
-        }
-        if(!this.hasSheet(sheetname)){
-            throw new Error(`Invalid sheet name '${sheetname}'.`);
-        }
-
         let targetSheetName = this.sheetByName(sheetname);
         return (targetSheetName.value.worksheet.sheetViews[0].sheetView[0]['$'].tabSelected === '1');
     }
 
-    deleteSheet(sheetname){
-        if(!sheetname){
-            throw new Error('deleteSheet() needs to have 1 paramter.');
-        }
+    deleteTemplateSheet(){
+        let sheetname = this.workbookxml.firstSheetName();
         let targetSheet = this.sheetByName(sheetname);
-        if(!targetSheet){
-            throw new Error(`Invalid sheet name '${sheetname}'.`);
-        }
         this.relationship.delete(targetSheet.path);
         this.workbookxml.delete(sheetname);
 
@@ -130,18 +106,10 @@ class SheetHelper{
             }
         });
         this.sheetXmls.delete(targetSheet.value.name);
-        return this;
-    }
-
-    deleteTemplateSheet(){
-        return this.deleteSheet(this.workbookxml.firstSheetName());
-    }
-
-    templateVariables(){
-        return this.variables;
     }
 
     generate(option){
+        this.deleteTemplateSheet();
         return this.excel
         .setSharedStrings(this.sharedstrings.value())
         .setWorkbookRels(this.relationship.value())
@@ -151,11 +119,6 @@ class SheetHelper{
         .generate(option);
     }
 
-    simpleMerge(bindData, option=outputBuffer){
-        return new Excel(this.excel.generate(jszipBuffer))
-            .file('xl/sharedStrings.xml', Mustache.render(this.excel.sharedStrings(), bindData))
-            .generate(option);
-    }
 
     parseCommonStringWithVariable(){
         let commonStringsWithVariable = this.sharedstrings.filterWithVariable();
