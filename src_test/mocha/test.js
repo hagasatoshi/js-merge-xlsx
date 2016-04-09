@@ -23,7 +23,6 @@ describe('Test for spreadsheet.js : ',  ()=>{
     it('logic / bulkMergeMultiFile() / renders correctly', test_spreadsheet.checkIfBulkMergeMultiFileRendersCorrectly);
     it('logic / addSheetBindingData() / works correctly', test_spreadsheet.checkIfAddSheetBindingDataCorrectly);
     it('logic / deleteTemplateSheet() / works correctly', test_spreadsheet.checkIfDeleteTemplateSheetWorksCorrectly);
-    it('logic / deleteSheet() / works correctly', test_spreadsheet.checkIfDeleteSheetWorksCorrectly);
     it('logic / templateVariablesWorkCorrectly() / works correctly', test_spreadsheet.checkTemplateVariablesWorkCorrectly);
 
 });

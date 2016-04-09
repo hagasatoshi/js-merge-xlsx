@@ -41,11 +41,23 @@ class SheetHelper{
         });
     }
 
+    simpleMerge(bindData, option=outputBuffer){
+        return new Excel(this.excel.generate(jszipBuffer))
+            .file('xl/sharedStrings.xml', Mustache.render(this.excel.sharedStrings(), bindData))
+            .generate(option);
+    }
+
     bulkMergeMultiFile(bindDataArray){
         var allExcels = new Excel();
         _.each(bindDataArray, ({name,data})=>allExcels.file(name, this.simpleMerge(data, jszipBuffer)));
-        return Promise.resolve().then(()=> allExcels.generate(outputBuffer));
+        return allExcels.generate(outputBuffer);
     }
+
+    bulkMergeMultiSheet(bindDataArray){
+        _.each(bindDataArray, ({name,data})=>this.addSheetBindingData(name,data));
+        return this.generate(outputBuffer);
+    }
+
 
     addSheetBindingData(destSheetName, data){
         let nextId = this.relationship.nextRelationshipId();
@@ -80,11 +92,9 @@ class SheetHelper{
         return (targetSheetName.value.worksheet.sheetViews[0].sheetView[0]['$'].tabSelected === '1');
     }
 
-    deleteSheet(sheetname){
+    deleteTemplateSheet(){
+        let sheetname = this.workbookxml.firstSheetName();
         let targetSheet = this.sheetByName(sheetname);
-        if(!targetSheet){
-            throw new Error(`Invalid sheet name '${sheetname}'.`);
-        }
         this.relationship.delete(targetSheet.path);
         this.workbookxml.delete(sheetname);
 
@@ -95,14 +105,10 @@ class SheetHelper{
             }
         });
         this.sheetXmls.delete(targetSheet.value.name);
-        return this;
-    }
-
-    deleteTemplateSheet(){
-        return this.deleteSheet(this.workbookxml.firstSheetName());
     }
 
     generate(option){
+        this.deleteTemplateSheet();
         return this.excel
         .setSharedStrings(this.sharedstrings.value())
         .setWorkbookRels(this.relationship.value())
@@ -112,11 +118,6 @@ class SheetHelper{
         .generate(option);
     }
 
-    simpleMerge(bindData, option=outputBuffer){
-        return new Excel(this.excel.generate(jszipBuffer))
-            .file('xl/sharedStrings.xml', Mustache.render(this.excel.sharedStrings(), bindData))
-            .generate(option);
-    }
 
     parseCommonStringWithVariable(){
         let commonStringsWithVariable = this.sharedstrings.filterWithVariable();

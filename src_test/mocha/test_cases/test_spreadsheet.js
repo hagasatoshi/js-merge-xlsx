@@ -144,7 +144,6 @@ module.exports = {
             }).then((spreadsheet)=>{
                 return spreadsheet
                     .addSheetBindingData('sample', {AccountName__c:'hoge account1',AccountAddress__c:'hoge street1'})
-                    .deleteTemplateSheet()
                     .generate(output_buffer);
             }).then((excelData)=>{
                 return new SpreadSheet().load(new Excel(excelData));
@@ -161,34 +160,12 @@ module.exports = {
             }).then((spreadsheet)=>{
                 return spreadsheet
                     .addSheetBindingData('sample', {AccountName__c:'hoge account1',AccountAddress__c:'hoge street1'})
-                    .deleteTemplateSheet()
                     .generate(output_buffer);
             }).then((excelData)=>{
                 return new SpreadSheet().load(new Excel(excelData));
             }).then((spreadsheet)=>{
                 assert(!spreadsheet.hasSheet('Sheet1'),"deleteTemplateSheet() doesn't work correctly");
                 assert(spreadsheet.hasSheet('sample'),"deleteTemplateSheet() doesn't work correctly");
-            });
-    },
-
-    checkIfDeleteSheetWorksCorrectly: ()=>{
-        return fs.readFileAsync(`${__dirname}/../templates/Template.xlsx`)
-            .then((validTemplate)=>{
-                return new SpreadSheet().load(new Excel(validTemplate));
-            }).then((spreadsheet)=>{
-                return spreadsheet
-                    .addSheetBindingData('sample1', {AccountName__c:'hoge account1',AccountAddress__c:'hoge street1'})
-                    .addSheetBindingData('sample2', {AccountName__c:'hoge account1',AccountAddress__c:'hoge street1'})
-                    .addSheetBindingData('sample3', {AccountName__c:'hoge account1',AccountAddress__c:'hoge street1'})
-                    .deleteSheet('sample2')
-                    .generate(output_buffer);
-            }).then((excelData)=>{
-                return new SpreadSheet().load(new Excel(excelData));
-            }).then((spreadsheet)=>{
-                assert(spreadsheet.hasSheet('Sheet1'),"deleteTemplateSheet() doesn't work correctly");
-                assert(spreadsheet.hasSheet('sample1'),"deleteTemplateSheet() doesn't work correctly");
-                assert(!spreadsheet.hasSheet('sample2'),"deleteTemplateSheet() doesn't work correctly");
-                assert(spreadsheet.hasSheet('sample3'),"deleteTemplateSheet() doesn't work correctly");
             });
     }
 };
