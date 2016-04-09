@@ -17,8 +17,6 @@ const isNode = require('detect-node');
 const outputBuffer = {type: (isNode?'nodebuffer':'blob'), compression:"DEFLATE"};
 const jszipBuffer = {type: (isNode?'nodebuffer':'arraybuffer'), compression:"DEFLATE"};
 
-const OPEN_XML_SCHEMA_DEFINITION = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet';
-
 class SheetHelper{
 
     load(excel){
@@ -43,10 +41,6 @@ class SheetHelper{
             //return this for chaining
             return this;
         });
-    }
-
-    simpleMerge(bindData){
-        return Promise.resolve().then(()=>this.simpleMerge(bindData, outputBuffer));
     }
 
     bulkMergeMultiFile(bindDataArray){
