@@ -34,15 +34,14 @@ class SheetHelper{
             workbookxmlRels: excel.parseWorkbookRels(),
             workbookxml: excel.parseWorkbook(),
             sheetXmls: excel.parseWorksheetsDir(),
-            sheetXmlsRels: excel.parseWorksheetRelsDir()
-        }).then(({sharedstringsObj, workbookxmlRels,workbookxml,sheetXmls,sheetXmlsRels})=>{
+            templateSheetRel: excel.templateSheetRel()
+        }).then(({sharedstringsObj, workbookxmlRels,workbookxml,sheetXmls,templateSheetRel})=>{
             this.sharedstrings = new SharedStrings(sharedstringsObj);
             this.relationship = new WorkBookRels(workbookxmlRels);
             this.workbookxml = new WorkBookXml(workbookxml);
             this.sheetXmls = new SheetXmls(sheetXmls);
-            this.sheetXmlsRels = sheetXmlsRels;
+            this.templateSheetRel = templateSheetRel;
             this.templateSheetData = _.find(sheetXmls,(e)=>(e.name.indexOf('.rels') === -1)).worksheet.sheetData[0].row;
-            this.templateSheetRelsData = _.deepCopy(this.templateSheetRels());
             this.commonStringsWithVariable = this.parseCommonStringWithVariable();
             //return this for chaining
             return this;
@@ -143,26 +142,13 @@ class SheetHelper{
     }
 
     generate(option){
-        return this.excel.parseSharedStrings()
-        .then((sharedstringsObj)=> {
-
-            this.excel
-            .setSharedStrings(this.sharedstrings.value())
-            .setWorkbookRels(this.relationship.value())
-            .setWorkbook(this.workbookxml.value())
-            .setWorksheets(this.sheetXmls.value());
-
-            if(this.templateSheetRelsData.value && this.templateSheetRelsData.value.Relationships){
-                _.each(this.sheetXmls.value(), ({name, data})=>{
-                    if(name){
-                        this.excel.setWorksheetRel(name, { Relationships: this.templateSheetRelsData.value.Relationships });
-                    }
-                });
-            }
-
-            return this.excel.generate(option);
-        })
-
+        return this.excel
+        .setSharedStrings(this.sharedstrings.value())
+        .setWorkbookRels(this.relationship.value())
+        .setWorkbook(this.workbookxml.value())
+        .setWorksheets(this.sheetXmls.value())
+        .setWorksheetRels(this.sheetXmls.names(), this.templateSheetRel)
+        .generate(option);
     }
 
     simpleMerge(bindData, option=outputBuffer){
@@ -217,16 +203,6 @@ class SheetHelper{
         let targetFilePath = this.relationship.findSheetPath(sheetid);
         let targetFileName = _.last(targetFilePath.split('/'));
         return {path: targetFilePath, value: this.sheetXmls.find(targetFileName)};
-    }
-
-    sheetRelsByName(sheetname){
-        let targetFilePath = this.sheetByName(sheetname).path;
-        let targetName = `${_.last(targetFilePath.split('/'))}.rels`;
-        return {name: targetName, value: _.find(this.sheetXmlsRels, e=>(e.name === targetName))};
-    }
-
-    templateSheetRels(){
-        return this.sheetRelsByName(this.workbookxml.firstSheetName());
     }
 
 }
