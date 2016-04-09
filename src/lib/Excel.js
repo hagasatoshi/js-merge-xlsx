@@ -84,8 +84,26 @@ _.extend(Excel.prototype, {
         return this.parseDir(config.DIR_WORKSHEETS_RELS);
     },
 
+    templateSheetRel: function() {
+        return this.parseWorksheetRelsDir()
+        .then(function(sheetXmlsRels) {
+            return sheetXmlsRels ? { Relationships: sheetXmlsRels[0].Relationships } : null;
+        });
+    },
+
     setWorksheetRel: function(sheetName, obj){
         this.file(`${config.DIR_WORKSHEETS_RELS}/${sheetName}.rels`, _.xml(obj));
+        return this;
+    },
+
+    setWorksheetRels: function(sheetNames, value){
+        if(!value){
+            return this;
+        }
+        let valueString = _.xml(value);
+        _.each(sheetNames, (sheetName) => {
+            this.file(`${config.DIR_WORKSHEETS_RELS}/${sheetName}.rels`, valueString);
+        });
         return this;
     },
 

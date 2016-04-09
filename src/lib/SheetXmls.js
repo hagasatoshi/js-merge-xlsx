@@ -25,6 +25,10 @@ class SheetXmls {
         });
     }
 
+    names() {
+        return _.map(this.files, (file) => file.name);
+    }
+
     add(file) {
         this.files.push(file);
     }
