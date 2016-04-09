@@ -21,9 +21,7 @@ class SheetHelper{
 
     load(excel){
         this.excel = excel;
-        this.variables = _.variables(excel.sharedStrings());
         this.commonStringsWithVariable = [];
-
         return Promise.props({
             sharedstringsObj: excel.parseSharedStrings(),
             workbookxmlRels: excel.parseWorkbookRels(),
@@ -102,10 +100,6 @@ class SheetHelper{
 
     deleteTemplateSheet(){
         return this.deleteSheet(this.workbookxml.firstSheetName());
-    }
-
-    templateVariables(){
-        return this.variables;
     }
 
     generate(option){

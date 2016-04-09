@@ -66,7 +66,7 @@ class ExcelMerge{
     }
 
     variables(){
-        return this.sheetHelper.templateVariables();
+        return this.sheetHelper.excel.variables();
     }
 }
 

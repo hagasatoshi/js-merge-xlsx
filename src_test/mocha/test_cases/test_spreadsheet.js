@@ -46,7 +46,7 @@ module.exports = {
                 var chkCommonStringsWithVariable = _.map(spreadsheet.commonStringsWithVariable,(e)=>_(e.t).stringValue());
                 _.each(variables, (e)=>{
                     //variables
-                    assert(_.contains(spreadsheet.variables, e), `SpreadSheet#load() doesn't set up ${e} as variable correctly`);
+                    assert(_.contains(spreadsheet.excel.variables(), e), `SpreadSheet#load() doesn't set up ${e} as variable correctly`);
                     assert(_.find(chkCommonStringsWithVariable, (v)=>(v.indexOf(`{{${e}}}`) !== -1)), `SpreadSheet#load() doesn't set up ${e} as variable correctly`);
                 });
 
@@ -62,7 +62,7 @@ module.exports = {
                     'AccountName__c', 'StartDateFormat__c', 'EndDateFormat__c', 'Address__c', 'JobDescription__c', 'StartTime__c', 'EndTime__c',
                     'hasOverTime__c', 'HoliDayType__c', 'Salary__c', 'DueDate__c', 'SalaryDate__c', 'AccountName__c', 'AccountAddress__c'
                 ];
-                let parsedVariables = spreadsheet.templateVariables();
+                let parsedVariables = spreadsheet.excel.variables();
                 _.each(variables, (e)=>{
                     assert(_.contains(parsedVariables,e), `${e} is not parsed correctly by variables()`);
                 });
@@ -78,7 +78,7 @@ module.exports = {
             }).then((excelData)=>{
                 return new SpreadSheet().load(new Excel(excelData));
             }).then((spreadsheet)=>{
-                assert(spreadsheet.variables.length === 0, "SpreadSheet#simpleMerge() doesn't work correctly");
+                assert(spreadsheet.excel.variables().length === 0, "SpreadSheet#simpleMerge() doesn't work correctly");
                 assert(spreadsheet.excel.hasAsSharedString('hoge account'), "'hoge account' is not rendered by SpreadSheet#simpleMerge()");
                 assert(spreadsheet.excel.hasAsSharedString('hoge street'), "'hoge street' is not rendered by SpreadSheet#simpleMerge()");
             });

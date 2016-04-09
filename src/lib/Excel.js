@@ -26,6 +26,10 @@ _.extend(Excel.prototype, {
         return this.file(config.FILE_SHARED_STRINGS).asText();
     },
 
+    variables: function() {
+        return _.variables(this.sharedStrings());
+    },
+
     parseSharedStrings: function(){
         return this.parseFile(config.FILE_SHARED_STRINGS);
     },
