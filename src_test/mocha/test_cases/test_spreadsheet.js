@@ -18,14 +18,6 @@ var isNode = require('detect-node');
 const output_buffer = {type: (isNode?'nodebuffer':'blob'), compression:"DEFLATE"};
 
 module.exports = {
-    checkLoadWithNoParameterShouldReturnError: ()=>{
-        return new SpreadSheet().load()
-            .then(()=>{
-                throw new Error('test_load_with_no_parameter_should_return_error failed ');
-            }).catch((err)=>{
-                assert.equal(err,'First parameter must be Excel instance including MS-Excel data');
-            });
-    },
 
     checkLoadShouldReturnThisInstance: ()=>{
         return fs.readFileAsync(`${__dirname}/../templates/Template.xlsx`)
@@ -92,45 +84,6 @@ module.exports = {
             });
     },
 
-    bulkMergeMultiFileNoParameterShouldReturnError: ()=> {
-        return fs.readFileAsync(`${__dirname}/../templates/Template.xlsx`)
-            .then((validTemplate)=>{
-                return new SpreadSheet().load(new Excel(validTemplate));
-            }).then((spreadsheet)=>{
-                return spreadsheet.bulkMergeMultiFile();
-            }).then(()=>{
-                throw new Error('bulkMergeMultiFile_no_parameter_should_return_error failed ');
-            }).catch((err)=>{
-                assert.equal(err.message,'bulkMergeMultiFile() has only array object');
-            });
-    },
-
-    bulkMergeMultiFileMustHaveArrayAsParameter: ()=> {
-        return fs.readFileAsync(`${__dirname}/../templates/Template.xlsx`)
-            .then((validTemplate)=>{
-                return new SpreadSheet().load(new Excel(validTemplate));
-            }).then((spreadsheet)=>{
-                return spreadsheet.bulkMergeMultiFile({name:'hogehoge'});
-            }).then(()=>{
-                throw new Error('bulkMergeMultiFile_must_have_array_as_parameter failed ');
-            }).catch((err)=>{
-                assert.equal(err.message,'bulkMergeMultiFile() has only array object');
-            });
-    },
-
-    bulkMergeMultiFileMustHaveNameAndData: ()=> {
-        return fs.readFileAsync(`${__dirname}/../templates/Template.xlsx`)
-            .then((validTemplate)=>{
-                return new SpreadSheet().load(new Excel(validTemplate));
-            }).then((spreadsheet)=>{
-                return spreadsheet.bulkMergeMultiFile([{name:'hogehoge'}]);
-            }).then(()=>{
-                throw new Error('bulkMergeMultiFile_must_have_name_and_data failed ');
-            }).catch((err)=>{
-                assert.equal(err.message,'bulkMergeMultiFile() is called with invalid parameter');
-            });
-    },
-
     checkIfBulkMergeMultiFileRendersCorrectly: ()=>{
         return fs.readFileAsync(`${__dirname}/../templates/Template.xlsx`)
             .then((validTemplate)=>{
@@ -181,58 +134,6 @@ module.exports = {
                 assert(spreadsheet.excel.hasAsSharedString('hoge street2'),"'hoge street2' is missing in excel file");
                 assert(spreadsheet.excel.hasAsSharedString('hoge account3'),"'hoge account3' is missing in excel file");
                 assert(spreadsheet.excel.hasAsSharedString('hoge street3'),"'hoge street3' is missing in excel file");
-            });
-    },
-
-    addSheetBindingDataWithNoParameterShouldReturnError: ()=>{
-        return fs.readFileAsync(`${__dirname}/../templates/Template.xlsx`)
-            .then((validTemplate)=>{
-                return new SpreadSheet().load(new Excel(validTemplate));
-            }).then((spreadsheet)=>{
-                return spreadsheet.addSheetBindingData();
-            }).then(()=>{
-                throw new Error('addSheetBindingData_with_no_parameter_should_return_error failed ');
-            }).catch((err)=>{
-                assert.equal(err.message,'addSheetBindingData() needs to have 2 paramter.');
-            });
-    },
-
-    addSheetBindingDataWith1ParameterShouldReturnError: ()=>{
-        return fs.readFileAsync(`${__dirname}/../templates/Template.xlsx`)
-            .then((validTemplate)=>{
-                return new SpreadSheet().load(new Excel(validTemplate));
-            }).then((spreadsheet)=>{
-                return spreadsheet.addSheetBindingData('hoge');
-            }).then(()=>{
-                throw new Error('addSheetBindingData_with_no_parameter_should_return_error failed ');
-            }).catch((err)=>{
-                assert.equal(err.message,'addSheetBindingData() needs to have 2 paramter.');
-            });
-    },
-
-    deleteSheetWithNoParameterShouldReturnError: ()=>{
-        return fs.readFileAsync(`${__dirname}/../templates/Template.xlsx`)
-            .then((valid_template)=>{
-                return new SpreadSheet().load(new Excel(valid_template));
-            }).then((spreadsheet)=>{
-                return spreadsheet.deleteSheet();
-            }).then(()=>{
-                throw new Error('deleteSheet_with_no_parameter_should_return_error failed ');
-            }).catch((err)=>{
-                assert.equal(err.message,'deleteSheet() needs to have 1 paramter.');
-            });
-    },
-
-    deleteSheetWithInvalidSheetnameShouldReturnError: ()=>{
-        return fs.readFileAsync(`${__dirname}/../templates/Template.xlsx`)
-            .then((valid_template)=>{
-                return new SpreadSheet().load(new Excel(valid_template));
-            }).then((spreadsheet)=>{
-                return spreadsheet.deleteSheet('hoge');
-            }).then(()=>{
-                throw new Error('deleteSheet_with_invalid_sheetname_should_return_error failed ');
-            }).catch((err)=>{
-                assert.equal(err.message,"Invalid sheet name 'hoge'.");
             });
     },
 

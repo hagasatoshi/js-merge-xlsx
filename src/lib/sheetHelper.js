@@ -22,9 +22,6 @@ const OPEN_XML_SCHEMA_DEFINITION = 'http://schemas.openxmlformats.org/officeDocu
 class SheetHelper{
 
     load(excel){
-        if(!(excel instanceof Excel)){
-            return Promise.reject('First parameter must be Excel instance including MS-Excel data');
-        }
         this.excel = excel;
         this.variables = _.variables(excel.sharedStrings());
         this.commonStringsWithVariable = [];
@@ -49,30 +46,16 @@ class SheetHelper{
     }
 
     simpleMerge(bindData){
-        if(!bindData){
-            throw new Error('simpleMerge() must has parameter');
-        }
-
         return Promise.resolve().then(()=>this.simpleMerge(bindData, outputBuffer));
     }
 
     bulkMergeMultiFile(bindDataArray){
-        if(!_.isArray(bindDataArray)){
-            throw new Error('bulkMergeMultiFile() has only array object');
-        }
-        if(_.find(bindDataArray,(e)=>!(e.name && e.data))){
-            throw new Error('bulkMergeMultiFile() is called with invalid parameter');
-        }
-
         var allExcels = new Excel();
         _.each(bindDataArray, ({name,data})=>allExcels.file(name, this.simpleMerge(data, jszipBuffer)));
         return Promise.resolve().then(()=> allExcels.generate(outputBuffer));
     }
 
     addSheetBindingData(destSheetName, data){
-        if((!destSheetName) || !(data)) {
-            throw new Error('addSheetBindingData() needs to have 2 paramter.');
-        }
         let nextId = this.relationship.nextRelationshipId();
         this.relationship.add(nextId);
         this.workbookxml.add(destSheetName, nextId);
@@ -101,21 +84,11 @@ class SheetHelper{
     }
 
     isFocused(sheetname){
-        if(!sheetname){
-            throw new Error('isFocused() needs to have 1 paramter.');
-        }
-        if(!this.hasSheet(sheetname)){
-            throw new Error(`Invalid sheet name '${sheetname}'.`);
-        }
-
         let targetSheetName = this.sheetByName(sheetname);
         return (targetSheetName.value.worksheet.sheetViews[0].sheetView[0]['$'].tabSelected === '1');
     }
 
     deleteSheet(sheetname){
-        if(!sheetname){
-            throw new Error('deleteSheet() needs to have 1 paramter.');
-        }
         let targetSheet = this.sheetByName(sheetname);
         if(!targetSheet){
             throw new Error(`Invalid sheet name '${sheetname}'.`);
