@@ -41,20 +41,21 @@ class SheetHelper{
         });
     }
 
-    simpleMerge(bindData, option=outputBuffer){
-        return new Excel(this.excel.generate(jszipBuffer))
-            .file('xl/sharedStrings.xml', Mustache.render(this.excel.sharedStrings(), bindData))
+    simpleMerge(mergedData, option=outputBuffer){
+        return Excel.instanceOf(this.excel)
+            .merge(mergedData)
             .generate(option);
     }
 
-    bulkMergeMultiFile(bindDataArray){
-        var allExcels = new Excel();
-        _.each(bindDataArray, ({name,data})=>allExcels.file(name, this.simpleMerge(data, jszipBuffer)));
-        return allExcels.generate(outputBuffer);
+    bulkMergeMultiFile(mergedDataArray){
+        return _.reduce(mergedDataArray, (excel, {name, data}) => {
+            excel.file(name, this.simpleMerge(data, jszipBuffer));
+            return excel;
+        }, new Excel()).generate(outputBuffer);
     }
 
-    bulkMergeMultiSheet(bindDataArray){
-        _.each(bindDataArray, ({name,data})=>this.addSheetBindingData(name,data));
+    bulkMergeMultiSheet(mergedDataArray){
+        _.each(mergedDataArray, ({name,data})=>this.addSheetBindingData(name,data));
         return this.generate(outputBuffer);
     }
 
