@@ -135,18 +135,5 @@ module.exports = {
             assert(spreadsheet.excel.hasAsSharedString('hoge account1'), "'hoge account1' is missing in excel file");
             assert(spreadsheet.excel.hasAsSharedString('hoge street1'), "'hoge street1' is missing in excel file");
         });
-    },
-
-    checkIfDeleteTemplateSheetWorksCorrectly: function checkIfDeleteTemplateSheetWorksCorrectly() {
-        return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (validTemplate) {
-            return new SpreadSheet().load(new Excel(validTemplate));
-        }).then(function (spreadsheet) {
-            return spreadsheet.addSheetBindingData('sample', { AccountName__c: 'hoge account1', AccountAddress__c: 'hoge street1' }).generate(output_buffer);
-        }).then(function (excelData) {
-            return new SpreadSheet().load(new Excel(excelData));
-        }).then(function (spreadsheet) {
-            assert(!spreadsheet.hasSheet('Sheet1'), "deleteTemplateSheet() doesn't work correctly");
-            assert(spreadsheet.hasSheet('sample'), "deleteTemplateSheet() doesn't work correctly");
-        });
     }
 };

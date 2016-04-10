@@ -24,7 +24,6 @@ describe('Test for spreadsheet.js : ', function () {
     it('logic / simpleMerge() / renders correctly', test_spreadsheet.checkIfSimpleMergeRendersCorrectly);
     it('logic / bulkMergeMultiFile() / renders correctly', test_spreadsheet.checkIfBulkMergeMultiFileRendersCorrectly);
     it('logic / addSheetBindingData() / works correctly', test_spreadsheet.checkIfAddSheetBindingDataCorrectly);
-    it('logic / deleteTemplateSheet() / works correctly', test_spreadsheet.checkIfDeleteTemplateSheetWorksCorrectly);
     it('logic / templateVariablesWorkCorrectly() / works correctly', test_spreadsheet.checkTemplateVariablesWorkCorrectly);
 });
 
