@@ -10,9 +10,26 @@ require('./underscore_mixin');
 
 class SharedStrings {
 
-    constructor(sharedstringsObj) {
+    constructor(sharedstringsObj, templateSheetData) {
         this.rawData = sharedstringsObj;
         this.strings = sharedstringsObj.sst.si;
+
+        this.setUsingCells(this.getOnlyHavingVariable(), templateSheetData);
+    }
+
+    setUsingCells(sharedStrings, templateSheetData) {
+        _.each(sharedStrings, (str)=>{
+            str.usingCells = [];
+            _.each(templateSheetData, (row)=>{
+                _.each(row.c,(cell)=>{
+                    if(cell['$'].t === 's'){
+                        if(str.sharedIndex === (cell.v[0] >> 0)){
+                            str.usingCells.push(cell['$'].r);
+                        }
+                    }
+                });
+            });
+        });
     }
 
     add(newStrings) {
@@ -33,7 +50,7 @@ class SharedStrings {
         return this.rawData;
     }
 
-    filterWithVariable() {
+    getOnlyHavingVariable() {
         let ret = [];
         _.each(this.strings, (stringObj, index)=>{
             if(_.stringValue(stringObj.t) && _.hasVariable(_.stringValue(stringObj.t))){

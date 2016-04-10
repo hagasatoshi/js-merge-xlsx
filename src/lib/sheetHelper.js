@@ -28,10 +28,10 @@ class SheetHelper{
             sheetXmls: excel.parseWorksheetsDir(),
             templateSheetRel: excel.templateSheetRel()
         }).then(({sharedstrings, workbookxmlRels,workbookxml,sheetXmls,templateSheetRel})=>{
-            this.sharedstrings = new SharedStrings(sharedstrings);
             this.relationship = new WorkBookRels(workbookxmlRels);
             this.workbookxml = new WorkBookXml(workbookxml);
             this.sheetXmls = new SheetXmls(sheetXmls);
+            this.sharedstrings = new SharedStrings(sharedstrings, this.sheetXmls.templateSheetData());
             return this;
         });
     }
@@ -101,23 +101,10 @@ class SheetHelper{
     }
 
     parseCommonStringWithVariable(data){
-        let commonStringsWithVariable = this.sharedstrings.filterWithVariable();
-
-        _.each(commonStringsWithVariable, (commonStringWithVariable)=>{
-            commonStringWithVariable.usingCells = [];
-            _.each(this.sheetXmls.templateSheetData(),(row)=>{
-                _.each(row.c,(cell)=>{
-                    if(cell['$'].t === 's'){
-                        if(commonStringWithVariable.sharedIndex === (cell.v[0] >> 0)){
-                            commonStringWithVariable.usingCells.push(cell['$'].r);
-                        }
-                    }
-                });
-            });
-        });
-        commonStringsWithVariable = _.deepCopy(commonStringsWithVariable);
-        _.each(commonStringsWithVariable,(e)=>e.t[0] = Mustache.render(_.stringValue(e.t), data));
-        return commonStringsWithVariable;
+        let commonStrings = this.sharedstrings.getOnlyHavingVariable();
+        commonStrings = _.deepCopy(commonStrings);
+        _.each(commonStrings,(e)=>e.t[0] = Mustache.render(_.stringValue(e.t), data));
+        return commonStrings;
     }
 
     buildNewSheet(sourceSheet, commonStringsWithVariable){
