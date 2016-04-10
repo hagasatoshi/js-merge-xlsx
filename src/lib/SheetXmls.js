@@ -29,7 +29,8 @@ class SheetXmls {
         return _.map(this.files, (file) => file.name);
     }
 
-    add(file) {
+    add(sheetId, file) {
+        file.name = `sheet${sheetId}.xml`;
         this.files.push(file);
     }
 

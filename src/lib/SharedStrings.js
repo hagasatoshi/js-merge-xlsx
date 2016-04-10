@@ -7,6 +7,7 @@
 
 const _ = require('underscore');
 require('./underscore_mixin');
+const Mustache = require('mustache');
 
 class SharedStrings {
 
@@ -65,6 +66,22 @@ class SharedStrings {
         return !!this.strings;
     }
 
+    buildNewSharedStrings(mergedData) {
+        return _.reduce(_.deepCopy(this.getOnlyHavingVariable()), (newSharedStrings, templateString)=>{
+            templateString.t[0] = Mustache.render(_.stringValue(templateString.t), mergedData);
+            newSharedStrings.push(templateString);
+            return newSharedStrings;
+        }, []);
+    }
+
+    addMergedStrings(mergedData) {
+        if(!this.hasString()){
+            return;
+        }
+        this.add(
+            this.buildNewSharedStrings(mergedData)
+        );
+    }
 }
 
 module.exports = SharedStrings;

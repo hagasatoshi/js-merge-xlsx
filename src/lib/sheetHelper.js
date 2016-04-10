@@ -4,18 +4,22 @@
  * @author Satoshi Haga
  * @date 2015/10/03
  */
-const Mustache = require('mustache');
 const Promise = require('bluebird');
 const _ = require('underscore');
 require('./underscore_mixin');
+
 const Excel = require('./Excel');
 const WorkBookXml = require('./WorkBookXml');
 const WorkBookRels = require('./WorkBookRels');
 const SheetXmls = require('./SheetXmls');
 const SharedStrings = require('./SharedStrings');
+
 const isNode = require('detect-node');
-const outputBuffer = {type: (isNode?'nodebuffer':'blob'), compression:"DEFLATE"};
-const jszipBuffer = {type: (isNode?'nodebuffer':'arraybuffer'), compression:"DEFLATE"};
+const config = {
+    compression: "DEFLATE",
+    buffer_type_output: (isNode ? 'nodebuffer' : 'blob'),
+    buffer_type_jszip: (isNode ? 'nodebuffer' : 'arraybuffer')
+};
 
 class SheetHelper{
 
@@ -36,7 +40,7 @@ class SheetHelper{
         });
     }
 
-    simpleMerge(mergedData, option=outputBuffer){
+    simpleMerge(mergedData, option = {type: config.buffer_type_output, compression: config.compression}){
         return Excel.instanceOf(this.excel)
             .merge(mergedData)
             .generate(option);
@@ -44,14 +48,14 @@ class SheetHelper{
 
     bulkMergeMultiFile(mergedDataArray){
         return _.reduce(mergedDataArray, (excel, {name, data}) => {
-            excel.file(name, this.simpleMerge(data, jszipBuffer));
+            excel.file(name, this.simpleMerge(data, {type: config.buffer_type_jszip, compression: config.compression}));
             return excel;
-        }, new Excel()).generate(outputBuffer);
+        }, new Excel()).generate({type: config.buffer_type_output, compression: config.compression});
     }
 
     bulkMergeMultiSheet(mergedDataArray){
         _.each(mergedDataArray, ({name,data})=>this.addSheetBindingData(name,data));
-        return this.generate(outputBuffer);
+        return this.generate({type: config.buffer_type_output, compression: config.compression});
     }
 
     generate(option){
@@ -65,22 +69,16 @@ class SheetHelper{
         .generate(option);
     }
 
-    addSheetBindingData(destSheetName, data){
+    addSheetBindingData(destSheetName, mergedData){
         let nextId = this.relationship.nextRelationshipId();
         this.relationship.add(nextId);
         this.workbookxml.add(destSheetName, nextId);
-
-        let mergedStrings;
-        if(this.sharedstrings.hasString()){
-            mergedStrings = this.parseCommonStringWithVariable(data);
-            this.sharedstrings.add(mergedStrings);
-        }
+        this.sharedstrings.addMergedStrings(mergedData);
 
         let sourceSheet = this.findSheetByName(this.workbookxml.firstSheetName()).value;
-        let addedSheet = this.buildNewSheet(sourceSheet, mergedStrings);
-        addedSheet.name = `sheet${nextId}.xml`;
+        let addedSheet = this.buildNewSheet(sourceSheet, mergedData);
 
-        this.sheetXmls.add(addedSheet);
+        this.sheetXmls.add(nextId, addedSheet);
 
         return this;
     }
@@ -100,30 +98,27 @@ class SheetHelper{
         this.sheetXmls.delete(targetSheet.value.name);
     }
 
-    parseCommonStringWithVariable(data){
-        let commonStrings = this.sharedstrings.getOnlyHavingVariable();
-        commonStrings = _.deepCopy(commonStrings);
-        _.each(commonStrings,(e)=>e.t[0] = Mustache.render(_.stringValue(e.t), data));
-        return commonStrings;
-    }
-
-    buildNewSheet(sourceSheet, commonStringsWithVariable){
+    buildNewSheet(sourceSheet, mergedData){
         let addedSheet = _.deepCopy(sourceSheet);
         addedSheet.worksheet.sheetViews[0].sheetView[0]['$'].tabSelected = '0';
-        if(!commonStringsWithVariable) return addedSheet;
+        this.setCellIndexes(addedSheet, mergedData);
+        return addedSheet;
+    }
 
-        _.each(commonStringsWithVariable,(e,index)=>{
-            _.each(e.usingCells, (cellAddress)=>{
-                _.each(addedSheet.worksheet.sheetData[0].row,(row)=>{
+    //TODO このメソッドはsheetXmlsのメソッドにうつす予定
+    setCellIndexes(sheet, mergedData) {
+        let mergedStrings = this.sharedstrings.buildNewSharedStrings(mergedData);
+        _.each(mergedStrings,(string)=>{
+            _.each(string.usingCells, (cellAddress)=>{
+                _.each(sheet.worksheet.sheetData[0].row,(row)=>{
                     _.each(row.c,(cell)=>{
                         if(cell['$'].r === cellAddress){
-                            cell.v[0] = e.sharedIndex;
+                            cell.v[0] = string.sharedIndex;
                         }
                     });
                 });
             });
         });
-        return addedSheet;
     }
 
     findSheetByName(sheetname){
