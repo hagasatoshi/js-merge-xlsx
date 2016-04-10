@@ -21,7 +21,6 @@ class SheetHelper{
 
     load(excel){
         this.excel = excel;
-        this.commonStringsWithVariable = [];
         return Promise.props({
             sharedstrings: excel.parseSharedStrings(),
             workbookxmlRels: excel.parseWorkbookRels(),
@@ -34,7 +33,6 @@ class SheetHelper{
             this.workbookxml = new WorkBookXml(workbookxml);
             this.sheetXmls = new SheetXmls(sheetXmls);
             this.templateSheetRel = templateSheetRel;
-            this.templateSheetData = _.find(sheetXmls,(e)=>(e.name.indexOf('.rels') === -1)).worksheet.sheetData[0].row;
             this.commonStringsWithVariable = this.parseCommonStringWithVariable();
             return this;
         });
@@ -61,12 +59,12 @@ class SheetHelper{
     generate(option){
         this.deleteTemplateSheet();
         return this.excel
-            .setSharedStrings(this.sharedstrings.value())
-            .setWorkbookRels(this.relationship.value())
-            .setWorkbook(this.workbookxml.value())
-            .setWorksheets(this.sheetXmls.value())
-            .setWorksheetRels(this.sheetXmls.names(), this.templateSheetRel)
-            .generate(option);
+        .setSharedStrings(this.sharedstrings.value())
+        .setWorkbookRels(this.relationship.value())
+        .setWorkbook(this.workbookxml.value())
+        .setWorksheets(this.sheetXmls.value())
+        .setWorksheetRels(this.sheetXmls.names(), this.templateSheetRel)
+        .generate(option);
     }
 
     addSheetBindingData(destSheetName, data){
@@ -76,16 +74,13 @@ class SheetHelper{
 
         let mergedStrings;
         if(this.sharedstrings.hasString()){
-
             mergedStrings = _.deepCopy(this.commonStringsWithVariable);
             _.each(mergedStrings,(e)=>e.t[0] = Mustache.render(_.stringValue(e.t), data));
-
             this.sharedstrings.add(mergedStrings);
         }
 
         let sourceSheet = this.findSheetByName(this.workbookxml.firstSheetName()).value;
         let addedSheet = this.buildNewSheet(sourceSheet, mergedStrings);
-
         addedSheet.name = `sheet${nextId}.xml`;
 
         this.sheetXmls.add(addedSheet);
@@ -113,7 +108,7 @@ class SheetHelper{
 
         _.each(commonStringsWithVariable, (commonStringWithVariable)=>{
             commonStringWithVariable.usingCells = [];
-            _.each(this.templateSheetData,(row)=>{
+            _.each(this.sheetXmls.templateSheetData(),(row)=>{
                 _.each(row.c,(cell)=>{
                     if(cell['$'].t === 's'){
                         if(commonStringWithVariable.sharedIndex === (cell.v[0] >> 0)){

@@ -60,6 +60,10 @@ class SheetXmls {
         });
         return stringCount;
     }
+
+    templateSheetData() {
+        return _.find(this.files,(e)=>(e.name.indexOf('.rels') === -1)).worksheet.sheetData[0].row;
+    }
 }
 
 module.exports = SheetXmls;
