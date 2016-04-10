@@ -28,31 +28,6 @@ module.exports = {
             });
     },
 
-    checkLoadEachMemberFromValidTemplate: ()=>{
-        return fs.readFileAsync(__dirname + '/../templates/Template.xlsx')
-            .then((validTemplate)=>{
-                return new SpreadSheet().load(new Excel(validTemplate));
-            }).then((spreadsheet)=>{
-
-                //excel
-                assert(spreadsheet.excel instanceof Excel, 'SpreadSheet#excel is not assigned correctly');
-
-                //check if each variables is parsed or not.
-                let variables = [
-                    'AccountName__c','StartDateFormat__c','EndDateFormat__c','JobDescription__c','StartTime__c',
-                    'EndTime__c','hasOverTime__c','HoliDayType__c','Salary__c','DueDate__c','SalaryDate__c',
-                    'AccountName__c','AccountAddress__c'
-                ];
-                var chkCommonStringsWithVariable = _.map(spreadsheet.commonStringsWithVariable,(e)=>_(e.t).stringValue());
-                _.each(variables, (e)=>{
-                    //variables
-                    assert(_.contains(spreadsheet.excel.variables(), e), `SpreadSheet#load() doesn't set up ${e} as variable correctly`);
-                    assert(_.find(chkCommonStringsWithVariable, (v)=>(v.indexOf(`{{${e}}}`) !== -1)), `SpreadSheet#load() doesn't set up ${e} as variable correctly`);
-                });
-
-            });
-    },
-
     checkTemplateVariablesWorkCorrectly: ()=>{
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx')
             .then((validTemplate)=>{

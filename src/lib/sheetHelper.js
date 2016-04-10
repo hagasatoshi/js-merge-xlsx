@@ -32,8 +32,6 @@ class SheetHelper{
             this.relationship = new WorkBookRels(workbookxmlRels);
             this.workbookxml = new WorkBookXml(workbookxml);
             this.sheetXmls = new SheetXmls(sheetXmls);
-            this.templateSheetRel = templateSheetRel;
-            this.commonStringsWithVariable = this.parseCommonStringWithVariable();
             return this;
         });
     }
@@ -63,7 +61,7 @@ class SheetHelper{
         .setWorkbookRels(this.relationship.value())
         .setWorkbook(this.workbookxml.value())
         .setWorksheets(this.sheetXmls.value())
-        .setWorksheetRels(this.sheetXmls.names(), this.templateSheetRel)
+        .setWorksheetRels(this.sheetXmls.names())
         .generate(option);
     }
 
@@ -74,8 +72,7 @@ class SheetHelper{
 
         let mergedStrings;
         if(this.sharedstrings.hasString()){
-            mergedStrings = _.deepCopy(this.commonStringsWithVariable);
-            _.each(mergedStrings,(e)=>e.t[0] = Mustache.render(_.stringValue(e.t), data));
+            mergedStrings = this.parseCommonStringWithVariable(data);
             this.sharedstrings.add(mergedStrings);
         }
 
@@ -103,7 +100,7 @@ class SheetHelper{
         this.sheetXmls.delete(targetSheet.value.name);
     }
 
-    parseCommonStringWithVariable(){
+    parseCommonStringWithVariable(data){
         let commonStringsWithVariable = this.sharedstrings.filterWithVariable();
 
         _.each(commonStringsWithVariable, (commonStringWithVariable)=>{
@@ -118,7 +115,8 @@ class SheetHelper{
                 });
             });
         });
-
+        commonStringsWithVariable = _.deepCopy(commonStringsWithVariable);
+        _.each(commonStringsWithVariable,(e)=>e.t[0] = Mustache.render(_.stringValue(e.t), data));
         return commonStringsWithVariable;
     }
 

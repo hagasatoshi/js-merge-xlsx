@@ -86,29 +86,6 @@ module.exports = {
         });
     },
 
-    checkLoadEachMemberFromValidTemplate: function checkLoadEachMemberFromValidTemplate() {
-        return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (validTemplate) {
-            return new ExcelMerge().load(new Excel(validTemplate));
-        }).then(function (excelMerge) {
-
-            //excel
-            assert(excelMerge.sheetHelper.excel instanceof Excel, 'SpreadSheet#excel is not assigned correctly');
-
-            //check if each variables is parsed or not.
-            var variables = ['AccountName__c', 'StartDateFormat__c', 'EndDateFormat__c', 'JobDescription__c', 'StartTime__c', 'EndTime__c', 'hasOverTime__c', 'HoliDayType__c', 'Salary__c', 'DueDate__c', 'SalaryDate__c', 'AccountName__c', 'AccountAddress__c'];
-            var chkCommonStringsWithVariable = _.map(excelMerge.sheetHelper.commonStringsWithVariable, function (e) {
-                return _.stringValue(e.t);
-            });
-            _.each(variables, function (e) {
-                //variables
-                assert(_.contains(excelMerge.sheetHelper.excel.variables(), e), 'ExcelMerge#load() doesn\'t set up ' + e + ' as variable correctly');
-                assert(_.find(chkCommonStringsWithVariable, function (v) {
-                    return v.indexOf('{{' + e + '}}') !== -1;
-                }), 'ExcelMerge#load() doesn\'t set up ' + e + ' as variable correctly');
-            });
-        });
-    },
-
     checkIfMergeRendersCorrectly: function checkIfMergeRendersCorrectly() {
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (validTemplate) {
             return new ExcelMerge().load(new Excel(validTemplate));

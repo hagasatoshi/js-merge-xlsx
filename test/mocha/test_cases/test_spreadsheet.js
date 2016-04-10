@@ -29,29 +29,6 @@ module.exports = {
         });
     },
 
-    checkLoadEachMemberFromValidTemplate: function checkLoadEachMemberFromValidTemplate() {
-        return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (validTemplate) {
-            return new SpreadSheet().load(new Excel(validTemplate));
-        }).then(function (spreadsheet) {
-
-            //excel
-            assert(spreadsheet.excel instanceof Excel, 'SpreadSheet#excel is not assigned correctly');
-
-            //check if each variables is parsed or not.
-            var variables = ['AccountName__c', 'StartDateFormat__c', 'EndDateFormat__c', 'JobDescription__c', 'StartTime__c', 'EndTime__c', 'hasOverTime__c', 'HoliDayType__c', 'Salary__c', 'DueDate__c', 'SalaryDate__c', 'AccountName__c', 'AccountAddress__c'];
-            var chkCommonStringsWithVariable = _.map(spreadsheet.commonStringsWithVariable, function (e) {
-                return _(e.t).stringValue();
-            });
-            _.each(variables, function (e) {
-                //variables
-                assert(_.contains(spreadsheet.excel.variables(), e), 'SpreadSheet#load() doesn\'t set up ' + e + ' as variable correctly');
-                assert(_.find(chkCommonStringsWithVariable, function (v) {
-                    return v.indexOf('{{' + e + '}}') !== -1;
-                }), 'SpreadSheet#load() doesn\'t set up ' + e + ' as variable correctly');
-            });
-        });
-    },
-
     checkTemplateVariablesWorkCorrectly: function checkTemplateVariablesWorkCorrectly() {
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (validTemplate) {
             return new SpreadSheet().load(new Excel(validTemplate));
