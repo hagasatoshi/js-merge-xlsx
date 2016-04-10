@@ -7,12 +7,30 @@
 
 const _ = require('underscore');
 require('./underscore_mixin');
+const Mustache = require('mustache');
 
 class SharedStrings {
 
-    constructor(sharedstringsObj) {
+    constructor(sharedstringsObj, templateSheetData) {
         this.rawData = sharedstringsObj;
         this.strings = sharedstringsObj.sst.si;
+
+        this.setUsingCells(this.getOnlyHavingVariable(), templateSheetData);
+    }
+
+    setUsingCells(sharedStrings, templateSheetData) {
+        _.each(sharedStrings, (str)=>{
+            str.usingCells = [];
+            _.each(templateSheetData, (row)=>{
+                _.each(row.c,(cell)=>{
+                    if(cell['$'].t === 's'){
+                        if(str.sharedIndex === (cell.v[0] >> 0)){
+                            str.usingCells.push(cell['$'].r);
+                        }
+                    }
+                });
+            });
+        });
     }
 
     add(newStrings) {
@@ -33,7 +51,7 @@ class SharedStrings {
         return this.rawData;
     }
 
-    filterWithVariable() {
+    getOnlyHavingVariable() {
         let ret = [];
         _.each(this.strings, (stringObj, index)=>{
             if(_.stringValue(stringObj.t) && _.hasVariable(_.stringValue(stringObj.t))){
@@ -48,6 +66,22 @@ class SharedStrings {
         return !!this.strings;
     }
 
+    buildNewSharedStrings(mergedData) {
+        return _.reduce(_.deepCopy(this.getOnlyHavingVariable()), (newSharedStrings, templateString)=>{
+            templateString.t[0] = Mustache.render(_.stringValue(templateString.t), mergedData);
+            newSharedStrings.push(templateString);
+            return newSharedStrings;
+        }, []);
+    }
+
+    addMergedStrings(mergedData) {
+        if(!this.hasString()){
+            return;
+        }
+        this.add(
+            this.buildNewSharedStrings(mergedData)
+        );
+    }
 }
 
 module.exports = SharedStrings;

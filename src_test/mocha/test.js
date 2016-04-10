@@ -17,12 +17,10 @@ var EXCEL_OUTPUT_TYPE = {
 
 /** SpreadSheet */
 describe('Test for spreadsheet.js : ',  ()=>{
-    it('logic / load() / load each member from valid template', test_spreadsheet.checkLoadEachMemberFromValidTemplate);
     it('logic / load() / should return this instance', test_spreadsheet.checkLoadShouldReturnThisInstance);
     it('logic / simpleMerge() / renders correctly', test_spreadsheet.checkIfSimpleMergeRendersCorrectly);
     it('logic / bulkMergeMultiFile() / renders correctly', test_spreadsheet.checkIfBulkMergeMultiFileRendersCorrectly);
     it('logic / addSheetBindingData() / works correctly', test_spreadsheet.checkIfAddSheetBindingDataCorrectly);
-    it('logic / deleteTemplateSheet() / works correctly', test_spreadsheet.checkIfDeleteTemplateSheetWorksCorrectly);
     it('logic / templateVariablesWorkCorrectly() / works correctly', test_spreadsheet.checkTemplateVariablesWorkCorrectly);
 
 });
@@ -37,7 +35,6 @@ describe('Test for ExcelMerge.js : ',  ()=>{
     it('logic / bulkMergeMultiSheet() with no parameter / should return error', test_excelmerge.checkIfBulkMergeMultiSheetWithNoParameterShouldReturnError);
 
     //Core
-    it('logic / load() / load each member from valid template', test_excelmerge.checkLoadEachMemberFromValidTemplate);
     it('logic / load() / should return this instance', test_excelmerge.checkLoadShouldReturnThisInstance);
     it('logic / merge() / renders correctly', test_excelmerge.checkIfMergeRendersCorrectly);
     it('logic / mergeByType(SINGLE_DATA) / renders correctly', test_excelmerge.checkIfMergeByTypeRendersCorrectly1);

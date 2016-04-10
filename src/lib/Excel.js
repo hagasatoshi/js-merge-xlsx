@@ -93,8 +93,9 @@ _.extend(Excel.prototype, {
 
     templateSheetRel: function() {
         return this.parseWorksheetRelsDir()
-        .then(function(sheetXmlsRels) {
-            return sheetXmlsRels ? { Relationships: sheetXmlsRels[0].Relationships } : null;
+        .then((sheetXmlsRels) => {
+            //return sheetXmlsRels ? { Relationships: sheetXmlsRels[0].Relationships } : null;
+            this.templateSheetRel = sheetXmlsRels ? { Relationships: sheetXmlsRels[0].Relationships } : null;
         });
     },
 
@@ -103,11 +104,11 @@ _.extend(Excel.prototype, {
         return this;
     },
 
-    setWorksheetRels: function(sheetNames, value){
-        if(!value){
+    setWorksheetRels: function(sheetNames){
+        if(!this.templateSheetRel){
             return this;
         }
-        let valueString = _.xml(value);
+        let valueString = _.xml(this.templateSheetRel);
         _.each(sheetNames, (sheetName) => {
             this.file(`${config.DIR_WORKSHEETS_RELS}/${sheetName}.rels`, valueString);
         });

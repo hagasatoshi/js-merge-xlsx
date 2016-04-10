@@ -29,7 +29,8 @@ class SheetXmls {
         return _.map(this.files, (file) => file.name);
     }
 
-    add(file) {
+    add(sheetId, file) {
+        file.name = `sheet${sheetId}.xml`;
         this.files.push(file);
     }
 
@@ -59,6 +60,10 @@ class SheetXmls {
             }
         });
         return stringCount;
+    }
+
+    templateSheetData() {
+        return _.find(this.files,(e)=>(e.name.indexOf('.rels') === -1)).worksheet.sheetData[0].row;
     }
 }
 
