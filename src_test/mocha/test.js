@@ -20,13 +20,9 @@ describe('Test for ExcelMerge.js : ',  ()=>{
     //Core
     it('logic / load() / should return this instance', test_excelmerge.checkLoadShouldReturnThisInstance);
     it('logic / merge() / renders correctly', test_excelmerge.checkIfMergeRendersCorrectly);
-    it('logic / mergeByType(SINGLE_DATA) / renders correctly', test_excelmerge.checkIfMergeByTypeRendersCorrectly1);
     it('logic / bulkMergeMultiFile() / renders correctly', test_excelmerge.checkIfBulkMergeMultiFileRendersCorrectly);
-    it('logic / mergeByType(MULTI_FILE) / renders correctly', test_excelmerge.checkIfMergeByTypeRendersCorrectly2);
     it('logic / bulkMergeMultiSheet() / renders correctly', test_excelmerge.checkIfBulkMergeMultiSheetRendersCorrectly);
-    it('logic / mergeByType(MULTI_SHEET) / renders correctly', test_excelmerge.checkIfMergeByTypeRendersCorrectly3);
     it('logic / variables() / parse correctly', test_excelmerge.checkVariablesWorkCorrectly);
-    it('logic / mergeByType() / throw error with invalid parameter', test_excelmerge.checkIfMergeByTypeThrowErrorWithInvalidType);
 
 });
 
