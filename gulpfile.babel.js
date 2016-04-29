@@ -54,6 +54,12 @@ gulp.task('mocha', ()=>{
         .pipe($.mocha());
 });
 
+gulp.task('lint', ()=>{
+    return gulp.src(config.js.src)
+        .pipe($.eslint({useEslintrc: true}))
+        .pipe($.eslint.format())
+        .pipe($.eslint.failAfterError());
+});
 gulp.task('default',(cb)=>{
     runSequence(
         ['compile','test-setup'], 'compress', 'mocha', cb
