@@ -60,23 +60,6 @@ module.exports = {
         });
     },
 
-    checkIfMergeByTypeRendersCorrectly3: function checkIfMergeByTypeRendersCorrectly3() {
-        return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (validTemplate) {
-            return new ExcelMerge().load(new Excel(validTemplate));
-        }).then(function (excelMerge) {
-            return excelMerge.mergeByType(MULTI_SHEET, [{ name: 'sheet1', data: { AccountName__c: 'hoge account1', AccountAddress__c: 'hoge street1' } }, { name: 'sheet2', data: { AccountName__c: 'hoge account2', AccountAddress__c: 'hoge street2' } }, { name: 'sheet3', data: { AccountName__c: 'hoge account3', AccountAddress__c: 'hoge street3' } }]);
-        }).then(function (excelData) {
-            return new ExcelMerge().load(new Excel(excelData));
-        }).then(function (excelMerge) {
-            assert(excelMerge.excel.hasAsSharedString('hoge account1'), "'hoge account1' is missing in excel file");
-            assert(excelMerge.excel.hasAsSharedString('hoge street1'), "'hoge street1' is missing in excel file");
-            assert(excelMerge.excel.hasAsSharedString('hoge account2'), "'hoge account2' is missing in excel file");
-            assert(excelMerge.excel.hasAsSharedString('hoge street2'), "'hoge street2' is missing in excel file");
-            assert(excelMerge.excel.hasAsSharedString('hoge account3'), "'hoge account3' is missing in excel file");
-            assert(excelMerge.excel.hasAsSharedString('hoge street3'), "'hoge street3' is missing in excel file");
-        });
-    },
-
     checkIfMergeRendersCorrectly: function checkIfMergeRendersCorrectly() {
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (validTemplate) {
             return new ExcelMerge().load(new Excel(validTemplate));
@@ -88,20 +71,6 @@ module.exports = {
             assert(excelMerge.excel.variables().length === 0, "ExcelMerge#merge() doesn't work correctly");
             assert(excelMerge.excel.hasAsSharedString('hoge account'), "'hoge account' is not rendered by ExcelMerge#simpleMerge()");
             assert(excelMerge.excel.hasAsSharedString('hoge street'), "'hoge street' is not rendered by ExcelMerge#simpleMerge()");
-        });
-    },
-
-    checkIfMergeByTypeRendersCorrectly1: function checkIfMergeByTypeRendersCorrectly1() {
-        return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (validTemplate) {
-            return new ExcelMerge().load(new Excel(validTemplate));
-        }).then(function (excelMerge) {
-            return excelMerge.mergeByType(SINGLE_DATA, { AccountName__c: 'hoge account', AccountAddress__c: 'hoge street' });
-        }).then(function (excelData) {
-            return new ExcelMerge().load(new Excel(excelData));
-        }).then(function (excelData) {
-            assert(excelData.excel.variables().length === 0, "ExcelMerge#merge() doesn't work correctly");
-            assert(excelData.excel.hasAsSharedString('hoge account'), "'hoge account' is not rendered by ExcelMerge#simpleMerge()");
-            assert(excelData.excel.hasAsSharedString('hoge street'), "'hoge street' is not rendered by ExcelMerge#simpleMerge()");
         });
     },
 
@@ -132,46 +101,5 @@ module.exports = {
                 assert(excelMerge3.excel.hasAsSharedString('hoge street3'), "'hoge street3' is missing in excel file");
             });
         });
-    },
-    checkIfMergeByTypeRendersCorrectly2: function checkIfMergeByTypeRendersCorrectly2() {
-        return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (validTemplate) {
-            return new ExcelMerge().load(new Excel(validTemplate));
-        }).then(function (excelMerge) {
-            return excelMerge.mergeByType(MULTI_FILE, [{ name: 'file1.xlsx', data: { AccountName__c: 'hoge account1', AccountAddress__c: 'hoge street1' } }, { name: 'file2.xlsx', data: { AccountName__c: 'hoge account2', AccountAddress__c: 'hoge street2' } }, { name: 'file3.xlsx', data: { AccountName__c: 'hoge account3', AccountAddress__c: 'hoge street3' } }]);
-        }).then(function (zipData) {
-            var zip = new Excel(zipData);
-            var excel1 = zip.file('file1.xlsx').asArrayBuffer();
-            var excel2 = zip.file('file2.xlsx').asArrayBuffer();
-            var excel3 = zip.file('file3.xlsx').asArrayBuffer();
-            return Promise.props({
-                excelMerge1: new ExcelMerge().load(new Excel(excel1)),
-                excelMerge2: new ExcelMerge().load(new Excel(excel2)),
-                excelMerge3: new ExcelMerge().load(new Excel(excel3))
-            }).then(function (_ref2) {
-                var excelMerge1 = _ref2.excelMerge1;
-                var excelMerge2 = _ref2.excelMerge2;
-                var excelMerge3 = _ref2.excelMerge3;
-
-                assert(excelMerge1.excel.hasAsSharedString('hoge account1'), "'hoge account1' is missing in excel file");
-                assert(excelMerge1.excel.hasAsSharedString('hoge street1'), "'hoge street1' is missing in excel file");
-                assert(excelMerge2.excel.hasAsSharedString('hoge account2'), "'hoge account2' is missing in excel file");
-                assert(excelMerge2.excel.hasAsSharedString('hoge street2'), "'hoge street2' is missing in excel file");
-                assert(excelMerge3.excel.hasAsSharedString('hoge account3'), "'hoge account3' is missing in excel file");
-                assert(excelMerge3.excel.hasAsSharedString('hoge street3'), "'hoge street3' is missing in excel file");
-            });
-        });
-    },
-
-    checkIfMergeByTypeThrowErrorWithInvalidType: function checkIfMergeByTypeThrowErrorWithInvalidType() {
-        return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (validTemplate) {
-            return new ExcelMerge().load(new Excel(validTemplate));
-        }).then(function (excelMerge) {
-            return excelMerge.mergeByType('hoge', [{ name: 'file1.xlsx', data: { AccountName__c: 'hoge account1', AccountAddress__c: 'hoge street1' } }, { name: 'file2.xlsx', data: { AccountName__c: 'hoge account2', AccountAddress__c: 'hoge street2' } }, { name: 'file3.xlsx', data: { AccountName__c: 'hoge account3', AccountAddress__c: 'hoge street3' } }]);
-        }).then(function () {
-            throw new Error('checkIfMergeByTypeThrowErrorWithInvalidType failed');
-        })['catch'](function (err) {
-            assert.equal(err, 'Invalid parameter : mergeType');
-        });
     }
-
 };

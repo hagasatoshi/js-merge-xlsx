@@ -1,7 +1,3 @@
-const SINGLE_DATA = 'SINGLE_DATA';
-const MULTI_FILE = 'MULTI_FILE';
-const MULTI_SHEET = 'MULTI_SHEET';
-
 const Promise = require('bluebird');
 const _ = require('underscore');
 require('./lib/underscore_mixin');
@@ -76,25 +72,6 @@ class ExcelMerge{
     bulkMergeMultiSheet(bindingDataArray){
         _.each(bindingDataArray, ({name,data})=>this.addSheetBindingData(name,data));
         return this.generate({type: config.buffer_type_output, compression: config.compression});
-    }
-
-    /**
-     * mergeByType
-     * @param {String} mergeType
-     * @param {Object} bindingData {key1:value, key2:value, key3:value ~}
-     * @return {Object} excel data. Blob if on browser. Node-buffer if on Node.js.
-     */
-    mergeByType(mergeType, bindData){
-        switch (mergeType){
-            case SINGLE_DATA :
-                return this.merge(bindData);
-            case MULTI_FILE :
-                return this.bulkMergeMultiFile(bindData);
-            case MULTI_SHEET :
-                return this.bulkMergeMultiSheet(bindData);
-            default :
-                return Promise.reject('Invalid parameter : mergeType');
-        }
     }
 
     /**
