@@ -94,8 +94,8 @@ _.extend(Excel.prototype, {
     templateSheetRel: function() {
         return this.parseWorksheetRelsDir()
         .then((sheetXmlsRels) => {
-            //return sheetXmlsRels ? { Relationships: sheetXmlsRels[0].Relationships } : null;
-            this.templateSheetRel = sheetXmlsRels ? { Relationships: sheetXmlsRels[0].Relationships } : null;
+            this.templateSheetRel = sheetXmlsRels ?
+                { Relationships: sheetXmlsRels[0].Relationships } : null;
         });
     },
 

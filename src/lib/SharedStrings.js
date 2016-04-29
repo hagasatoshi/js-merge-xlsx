@@ -65,11 +65,14 @@ class SharedStrings {
     }
 
     buildNewSharedStrings(mergedData) {
-        return _.reduce(_.deepCopy(this.getOnlyHavingVariable()), (newSharedStrings, templateString)=>{
-            templateString.t[0] = Mustache.render(_.stringValue(templateString.t), mergedData);
-            newSharedStrings.push(templateString);
-            return newSharedStrings;
-        }, []);
+        return _.reduce(
+            _.deepCopy(this.getOnlyHavingVariable()),
+            (newSharedStrings, templateString)=>{
+                templateString.t[0] = Mustache.render(_.stringValue(templateString.t), mergedData);
+                newSharedStrings.push(templateString);
+                return newSharedStrings;
+            }
+        ,[]);
     }
 
     addMergedStrings(mergedData) {

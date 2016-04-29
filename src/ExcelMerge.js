@@ -30,11 +30,14 @@ class ExcelMerge{
             workbookxml: excel.parseWorkbook(),
             sheetXmls: excel.parseWorksheetsDir(),
             templateSheetRel: excel.templateSheetRel()
-        }).then(({sharedstrings, workbookxmlRels,workbookxml,sheetXmls,templateSheetRel})=>{
+        }).then(
+            ({sharedstrings, workbookxmlRels,workbookxml,sheetXmls,templateSheetRel})=>{
             this.relationship = new WorkBookRels(workbookxmlRels);
             this.workbookxml = new WorkBookXml(workbookxml);
             this.sheetXmls = new SheetXmls(sheetXmls);
-            this.sharedstrings = new SharedStrings(sharedstrings, this.sheetXmls.templateSheetData());
+            this.sharedstrings = new SharedStrings(
+                sharedstrings, this.sheetXmls.templateSheetData()
+            );
             return this;
         });
     }
@@ -58,7 +61,12 @@ class ExcelMerge{
      */
     bulkMergeMultiFile(bindingDataArray){
         return _.reduce(bindingDataArray, (excel, {name, data}) => {
-            excel.file(name, this.merge(data, {type: config.buffer_type_jszip, compression: config.compression}));
+            excel.file(
+                name,
+                this.merge(
+                    data, {type: config.buffer_type_jszip, compression: config.compression}
+                )
+            );
             return excel;
         }, new Excel())
         .generate({type: config.buffer_type_output, compression: config.compression});
