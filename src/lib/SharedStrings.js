@@ -23,10 +23,8 @@ class SharedStrings {
             str.usingCells = [];
             _.each(templateSheetData, (row)=>{
                 _.each(row.c,(cell)=>{
-                    if(cell['$'].t === 's'){
-                        if(str.sharedIndex === (cell.v[0] >> 0)){
-                            str.usingCells.push(cell['$'].r);
-                        }
+                    if(cell['$'].t === 's' && str.sharedIndex === (cell.v[0] >> 0)){
+                        str.usingCells.push(cell['$'].r);
                     }
                 });
             });
