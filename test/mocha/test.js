@@ -7,7 +7,6 @@
 'use strict';
 
 var assert = require('assert');
-var test_spreadsheet = require('./test_cases/test_spreadsheet');
 var test_excelmerge = require('./test_cases/test_excelmerge');
 var Utilitly = require('./test_cases/test_output_excel_file');
 
@@ -17,23 +16,8 @@ var EXCEL_OUTPUT_TYPE = {
     BULK_MULTIPLE_SHEET: 2
 };
 
-/** SpreadSheet */
-describe('Test for spreadsheet.js : ', function () {
-    it('logic / load() / should return this instance', test_spreadsheet.checkLoadShouldReturnThisInstance);
-    it('logic / simpleMerge() / renders correctly', test_spreadsheet.checkIfSimpleMergeRendersCorrectly);
-    it('logic / bulkMergeMultiFile() / renders correctly', test_spreadsheet.checkIfBulkMergeMultiFileRendersCorrectly);
-    it('logic / addSheetBindingData() / works correctly', test_spreadsheet.checkIfAddSheetBindingDataCorrectly);
-    it('logic / templateVariablesWorkCorrectly() / works correctly', test_spreadsheet.checkTemplateVariablesWorkCorrectly);
-});
-
 /** ExcelMerge */
 describe('Test for ExcelMerge.js : ', function () {
-
-    //Validation
-    it('validation / load() / no parameter / error', test_excelmerge.checkLoadWithNoParameterShouldReturnError);
-    it('logic / merge() with no parameter / should return error', test_excelmerge.checkIfMergeWithNoParameterRendersCorrectly);
-    it('logic / bulkMergeMultiFile() with no parameter / should return error', test_excelmerge.checkIfBulkMergeMultiFileWithNoParameterShouldReturnError);
-    it('logic / bulkMergeMultiSheet() with no parameter / should return error', test_excelmerge.checkIfBulkMergeMultiSheetWithNoParameterShouldReturnError);
 
     //Core
     it('logic / load() / should return this instance', test_excelmerge.checkLoadShouldReturnThisInstance);
