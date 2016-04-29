@@ -23,7 +23,7 @@ class SharedStrings {
             str.usingCells = [];
             _.each(templateSheetData, (row)=>{
                 _.each(row.c,(cell)=>{
-                    if(cell['$'].t === 's' && str.sharedIndex === (cell.v[0] >> 0)){
+                    if(cell['$'].t === 's' && str.sharedIndex === (cell.v[0] >> 0)) {
                         str.usingCells.push(cell['$'].r);
                     }
                 });
@@ -40,7 +40,7 @@ class SharedStrings {
     }
 
     value() {
-        if(!this.strings){
+        if(!this.strings) {
             return null;
         }
         this.rawData.sst.si = _.deleteProperties(this.strings, ['sharedIndex', 'usingCells']);
@@ -52,7 +52,7 @@ class SharedStrings {
     getOnlyHavingVariable() {
         let ret = [];
         _.each(this.strings, (stringObj, index)=>{
-            if(_.stringValue(stringObj.t) && _.hasVariable(_.stringValue(stringObj.t))){
+            if(_.stringValue(stringObj.t) && _.hasVariable(_.stringValue(stringObj.t))) {
                 stringObj.sharedIndex = index;
                 ret.push(stringObj);
             }
@@ -60,7 +60,7 @@ class SharedStrings {
         return ret;
     }
 
-    hasString(){
+    hasString() {
         return !!this.strings;
     }
 
@@ -76,7 +76,7 @@ class SharedStrings {
     }
 
     addMergedStrings(mergedData) {
-        if(!this.hasString()){
+        if(!this.hasString()) {
             return;
         }
         this.add(

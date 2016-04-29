@@ -16,16 +16,16 @@ _.mixin({
         return (typeof arg === 'string');
     },
     stringValue: (xml2jsElement)=>{
-        if(!_.isArray(xml2jsElement)){
+        if(!_.isArray(xml2jsElement)) {
             return xml2jsElement;
         }
-        if(xml2jsElement[0]._){
+        if(xml2jsElement[0]._) {
             return xml2jsElement[0]._;
         }
         return xml2jsElement[0];
     },
     variables: (template)=>{
-        if(!_(template).isString()){
+        if(!_(template).isString()) {
             return null;
         }
         return _.map( _.filter(Mustache.parse(template),(e)=>(e[0] === 'name')), (e)=> e[1]);

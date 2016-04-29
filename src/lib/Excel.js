@@ -25,7 +25,7 @@ const config = {
 
 _.extend(Excel.prototype, {
 
-    sharedStrings: function(){
+    sharedStrings: function() {
         return this.file(config.FILE_SHARED_STRINGS).asText();
     },
 
@@ -33,44 +33,44 @@ _.extend(Excel.prototype, {
         return _.variables(this.sharedStrings());
     },
 
-    parseSharedStrings: function(){
+    parseSharedStrings: function() {
         return this.parseFile(config.FILE_SHARED_STRINGS);
     },
 
-    hasAsSharedString: function(targetStr){
+    hasAsSharedString: function(targetStr) {
         return (this.sharedStrings().indexOf(targetStr) !== -1);
     },
 
-    setSharedStrings: function(obj){
-        if(obj){
+    setSharedStrings: function(obj) {
+        if(obj) {
             this.file(config.FILE_SHARED_STRINGS, _.xml(obj));
         }
         return this;
     },
 
-    parseWorkbookRels: function(){
+    parseWorkbookRels: function() {
         return this.parseFile(config.FILE_WORKBOOK_RELS);
     },
 
-    setWorkbookRels: function(obj){
+    setWorkbookRels: function(obj) {
         this.file(config.FILE_WORKBOOK_RELS, _.xml(obj));
         return this;
     },
 
-    parseWorkbook: function(){
+    parseWorkbook: function() {
         return this.parseFile(config.FILE_WORKBOOK);
     },
 
-    setWorkbook: function(obj){
+    setWorkbook: function(obj) {
         this.file(config.FILE_WORKBOOK, _.xml(obj));
         return this;
     },
 
-    parseWorksheetsDir: function(){
+    parseWorksheetsDir: function() {
         return this.parseDir(config.DIR_WORKSHEETS);
     },
 
-    setWorksheet: function(sheetName, obj){
+    setWorksheet: function(sheetName, obj) {
         this.file(`${config.DIR_WORKSHEETS}/${sheetName}`, _.xml(obj));
         return this;
     },
@@ -82,12 +82,12 @@ _.extend(Excel.prototype, {
         return this;
     },
 
-    removeWorksheet: function(sheetName){
+    removeWorksheet: function(sheetName) {
         this.remove(`${config.DIR_WORKSHEETS}/${sheetName}`);
         return this;
     },
 
-    parseWorksheetRelsDir: function(){
+    parseWorksheetRelsDir: function() {
         return this.parseDir(config.DIR_WORKSHEETS_RELS);
     },
 
@@ -99,13 +99,13 @@ _.extend(Excel.prototype, {
         });
     },
 
-    setWorksheetRel: function(sheetName, obj){
+    setWorksheetRel: function(sheetName, obj) {
         this.file(`${config.DIR_WORKSHEETS_RELS}/${sheetName}.rels`, _.xml(obj));
         return this;
     },
 
-    setWorksheetRels: function(sheetNames){
-        if(!this.templateSheetRel){
+    setWorksheetRels: function(sheetNames) {
+        if(!this.templateSheetRel) {
             return this;
         }
         let valueString = _.xml(this.templateSheetRel);
@@ -115,16 +115,16 @@ _.extend(Excel.prototype, {
         return this;
     },
 
-    removeWorksheetRel: function(sheetName){
+    removeWorksheetRel: function(sheetName) {
         this.remove(`${config.DIR_WORKSHEETS_RELS}/${sheetName}.rels`);
         return this;
     },
 
-    parseFile: function(filePath){
+    parseFile: function(filePath) {
         return parseString(this.file(filePath).asText());
     },
 
-    parseDir: function(dir){
+    parseDir: function(dir) {
         let files = this.folder(dir).file(/.xml/);
         let fileXmls = [];
         return files.reduce(

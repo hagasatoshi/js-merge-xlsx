@@ -46,13 +46,13 @@ class SheetXmls {
         return _.find(this.files, (e)=>(e.name === fileName));
     }
 
-    stringCount(){
+    stringCount() {
         let stringCount = 0;
         _.each(this.files, (sheet)=>{
-            if(sheet.worksheet){
+            if(sheet.worksheet) {
                 _.each(sheet.worksheet.sheetData[0].row, (row)=>{
                     _.each(row.c, (cell)=>{
-                        if(cell['$'].t){
+                        if(cell['$'].t) {
                             stringCount++;
                         }
                     });

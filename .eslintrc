@@ -28,7 +28,7 @@
     "computed-property-spacing": ["error", "never"],
     "array-bracket-spacing": ["error", "never"],
     "space-before-function-paren": [2, "never"],
-    "space-before-blocks": [2, "always"],
+    "space-before-blocks": ["error", "always"],
     "space-after-keywords": [2, "always"],
 
     "no-var": 2,

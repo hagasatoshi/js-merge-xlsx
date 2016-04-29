@@ -15,14 +15,14 @@ const config = {
     buffer_type_jszip: (isNode ? 'nodebuffer' : 'arraybuffer')
 };
 
-class ExcelMerge{
+class ExcelMerge {
 
     /**
      * load
      * @param {Excel} excel
      * @return {Promise} this
      */
-    load(excel){
+    load(excel) {
         this.excel = excel;
         return Promise.props({
             sharedstrings: excel.parseSharedStrings(),
@@ -49,7 +49,9 @@ class ExcelMerge{
      * @param {Object} option
      * @return {Object} excel data. Blob if on browser. Node-buffer if on Node.js.
      */
-    merge(bindingData, option = {type: config.buffer_type_output, compression: config.compression}){
+    merge(
+        bindingData, option = {type: config.buffer_type_output, compression: config.compression}
+    ) {
         return Excel.instanceOf(this.excel)
             .merge(bindingData)
             .generate(option);
@@ -60,7 +62,7 @@ class ExcelMerge{
      * @param {Array} bindingDataArray [{name:fileName, data:bindingData},,,,,]
      * @return {Object} excel data. Blob if on browser. Node-buffer if on Node.js.
      */
-    bulkMergeMultiFile(bindingDataArray){
+    bulkMergeMultiFile(bindingDataArray) {
         return _.reduce(bindingDataArray, (excel, {name, data}) => {
             excel.file(
                 name,
@@ -78,7 +80,7 @@ class ExcelMerge{
      * @param {Array} bindingDataArray [{name:sheetName, data:bindingData},,,,,]
      * @return {Object} excel data. Blob if on browser. Node-buffer if on Node.js.
      */
-    bulkMergeMultiSheet(bindingDataArray){
+    bulkMergeMultiSheet(bindingDataArray) {
         _.each(bindingDataArray, ({name,data})=>this.addSheetBindingData(name,data));
         return this.generate({type: config.buffer_type_output, compression: config.compression});
     }
@@ -89,7 +91,7 @@ class ExcelMerge{
      * @return {Object} excel data. Blob if on browser. Node-buffer if on Node.js.
      * @private
      */
-    generate(option){
+    generate(option) {
         this.deleteTemplateSheet();
         return this.excel
             .setSharedStrings(this.sharedstrings.value())
@@ -107,7 +109,7 @@ class ExcelMerge{
      * @return {Object} this
      * @private
      */
-    addSheetBindingData(destSheetName, bindingData){
+    addSheetBindingData(destSheetName, bindingData) {
         let nextId = this.relationship.nextRelationshipId();
         this.relationship.add(nextId);
         this.workbookxml.add(destSheetName, nextId);
@@ -125,7 +127,7 @@ class ExcelMerge{
      * deleteTemplateSheet
      * @private
      */
-    deleteTemplateSheet(){
+    deleteTemplateSheet() {
         let sheetname = this.workbookxml.firstSheetName();
         let targetSheet = this.findSheetByName(sheetname);
         this.relationship.delete(targetSheet.path);
@@ -147,7 +149,7 @@ class ExcelMerge{
      * @return {SheetXmls}
      * @private
      */
-    buildNewSheet(sourceSheet, bindingData){
+    buildNewSheet(sourceSheet, bindingData) {
         let addedSheet = _.deepCopy(sourceSheet);
         addedSheet.worksheet.sheetViews[0].sheetView[0]['$'].tabSelected = '0';
         this.setCellIndexes(addedSheet, bindingData);
@@ -162,11 +164,11 @@ class ExcelMerge{
      */
     setCellIndexes(sheet, bindingData) {
         let mergedStrings = this.sharedstrings.buildNewSharedStrings(bindingData);
-        _.each(mergedStrings,(string)=>{
-            _.each(string.usingCells, (cellAddress)=>{
-                _.each(sheet.worksheet.sheetData[0].row,(row)=>{
-                    _.each(row.c,(cell)=>{
-                        if(cell['$'].r === cellAddress){
+        _.each(mergedStrings,(string) => {
+            _.each(string.usingCells, (cellAddress) => {
+                _.each(sheet.worksheet.sheetData[0].row,(row) => {
+                    _.each(row.c,(cell) => {
+                        if(cell['$'].r === cellAddress) {
                             cell.v[0] = string.sharedIndex;
                         }
                     });
@@ -180,9 +182,9 @@ class ExcelMerge{
      * @param {String} sheetname
      * @param {Object}
      */
-    findSheetByName(sheetname){
+    findSheetByName(sheetname) {
         let sheetid = this.workbookxml.findSheetId(sheetname);
-        if(!sheetid){
+        if(!sheetid) {
             return null;
         }
         let targetFilePath = this.relationship.findSheetPath(sheetid);
@@ -194,7 +196,7 @@ class ExcelMerge{
      * variables
      * @param {Object}
      */
-    variables(){
+    variables() {
         return this.excel.variables();
     }
 }
