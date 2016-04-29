@@ -32,14 +32,15 @@ class ExcelMerge{
             templateSheetRel: excel.templateSheetRel()
         }).then(
             ({sharedstrings, workbookxmlRels,workbookxml,sheetXmls,templateSheetRel})=>{
-            this.relationship = new WorkBookRels(workbookxmlRels);
-            this.workbookxml = new WorkBookXml(workbookxml);
-            this.sheetXmls = new SheetXmls(sheetXmls);
-            this.sharedstrings = new SharedStrings(
-                sharedstrings, this.sheetXmls.templateSheetData()
-            );
-            return this;
-        });
+                this.relationship = new WorkBookRels(workbookxmlRels);
+                this.workbookxml = new WorkBookXml(workbookxml);
+                this.sheetXmls = new SheetXmls(sheetXmls);
+                this.sharedstrings = new SharedStrings(
+                    sharedstrings, this.sheetXmls.templateSheetData()
+                );
+                return this;
+            }
+        );
     }
 
     /**
