@@ -10,7 +10,6 @@ const cwd = path.resolve('');
 const assert = require('assert');
 const Excel = require(cwd + '/lib/Excel');
 const ExcelMerge = require(cwd + '/excelmerge');
-const SpreadSheet = require(cwd + '/lib/sheetHelper');
 require(cwd + '/lib/underscore_mixin');
 const Promise = require('bluebird');
 const readYamlAsync = Promise.promisify(require('read-yaml'));
@@ -58,14 +57,14 @@ module.exports = {
                     { name: 'sheet3', data: { AccountName__c: 'hoge account3', AccountAddress__c: 'hoge street3' } }
                 ]);
             }).then((excelData)=>{
-                return new SpreadSheet().load(new Excel(excelData));
-            }).then((spreadsheet)=>{
-                assert(spreadsheet.excel.hasAsSharedString('hoge account1'), "'hoge account1' is missing in excel file");
-                assert(spreadsheet.excel.hasAsSharedString('hoge street1'), "'hoge street1' is missing in excel file");
-                assert(spreadsheet.excel.hasAsSharedString('hoge account2'), "'hoge account2' is missing in excel file");
-                assert(spreadsheet.excel.hasAsSharedString('hoge street2'), "'hoge street2' is missing in excel file");
-                assert(spreadsheet.excel.hasAsSharedString('hoge account3'), "'hoge account3' is missing in excel file");
-                assert(spreadsheet.excel.hasAsSharedString('hoge street3'), "'hoge street3' is missing in excel file");
+                return new ExcelMerge().load(new Excel(excelData));
+            }).then((excelMerge)=>{
+                assert(excelMerge.excel.hasAsSharedString('hoge account1'), "'hoge account1' is missing in excel file");
+                assert(excelMerge.excel.hasAsSharedString('hoge street1'), "'hoge street1' is missing in excel file");
+                assert(excelMerge.excel.hasAsSharedString('hoge account2'), "'hoge account2' is missing in excel file");
+                assert(excelMerge.excel.hasAsSharedString('hoge street2'), "'hoge street2' is missing in excel file");
+                assert(excelMerge.excel.hasAsSharedString('hoge account3'), "'hoge account3' is missing in excel file");
+                assert(excelMerge.excel.hasAsSharedString('hoge street3'), "'hoge street3' is missing in excel file");
             });
     },
 
@@ -80,14 +79,14 @@ module.exports = {
                     { name: 'sheet3', data: { AccountName__c: 'hoge account3', AccountAddress__c: 'hoge street3' } }
                 ]);
             }).then((excelData)=>{
-                return new SpreadSheet().load(new Excel(excelData));
-            }).then((spreadsheet)=>{
-                assert(spreadsheet.excel.hasAsSharedString('hoge account1'), "'hoge account1' is missing in excel file");
-                assert(spreadsheet.excel.hasAsSharedString('hoge street1'), "'hoge street1' is missing in excel file");
-                assert(spreadsheet.excel.hasAsSharedString('hoge account2'), "'hoge account2' is missing in excel file");
-                assert(spreadsheet.excel.hasAsSharedString('hoge street2'), "'hoge street2' is missing in excel file");
-                assert(spreadsheet.excel.hasAsSharedString('hoge account3'), "'hoge account3' is missing in excel file");
-                assert(spreadsheet.excel.hasAsSharedString('hoge street3'), "'hoge street3' is missing in excel file");
+                return new ExcelMerge().load(new Excel(excelData));
+            }).then((excelMerge)=>{
+                assert(excelMerge.excel.hasAsSharedString('hoge account1'), "'hoge account1' is missing in excel file");
+                assert(excelMerge.excel.hasAsSharedString('hoge street1'), "'hoge street1' is missing in excel file");
+                assert(excelMerge.excel.hasAsSharedString('hoge account2'), "'hoge account2' is missing in excel file");
+                assert(excelMerge.excel.hasAsSharedString('hoge street2'), "'hoge street2' is missing in excel file");
+                assert(excelMerge.excel.hasAsSharedString('hoge account3'), "'hoge account3' is missing in excel file");
+                assert(excelMerge.excel.hasAsSharedString('hoge street3'), "'hoge street3' is missing in excel file");
             });
     },
 
@@ -98,11 +97,11 @@ module.exports = {
             }).then((excelMerge)=>{
                 return excelMerge.merge({ AccountName__c: 'hoge account', AccountAddress__c: 'hoge street' });
             }).then((excelData)=>{
-                return new SpreadSheet().load(new Excel(excelData));
-            }).then(function (spreadsheet) {
-                assert(spreadsheet.excel.variables().length === 0, "ExcelMerge#merge() doesn't work correctly");
-                assert(spreadsheet.excel.hasAsSharedString('hoge account'), "'hoge account' is not rendered by SpreadSheet#simpleMerge()");
-                assert(spreadsheet.excel.hasAsSharedString('hoge street'), "'hoge street' is not rendered by SpreadSheet#simpleMerge()");
+                return new ExcelMerge().load(new Excel(excelData));
+            }).then(function (excelMerge) {
+                assert(excelMerge.excel.variables().length === 0, "ExcelMerge#merge() doesn't work correctly");
+                assert(excelMerge.excel.hasAsSharedString('hoge account'), "'hoge account' is not rendered by ExcelMerge#simpleMerge()");
+                assert(excelMerge.excel.hasAsSharedString('hoge street'), "'hoge street' is not rendered by ExcelMerge#simpleMerge()");
             });
     },
 
@@ -113,11 +112,11 @@ module.exports = {
             }).then((excelMerge)=>{
                 return excelMerge.mergeByType(SINGLE_DATA, { AccountName__c: 'hoge account', AccountAddress__c: 'hoge street' });
             }).then((excelData)=>{
-                return new SpreadSheet().load(new Excel(excelData));
-            }).then(function (spreadsheet) {
-                assert(spreadsheet.excel.variables().length === 0, "ExcelMerge#merge() doesn't work correctly");
-                assert(spreadsheet.excel.hasAsSharedString('hoge account'), "'hoge account' is not rendered by SpreadSheet#simpleMerge()");
-                assert(spreadsheet.excel.hasAsSharedString('hoge street'), "'hoge street' is not rendered by SpreadSheet#simpleMerge()");
+                return new ExcelMerge().load(new Excel(excelData));
+            }).then(function (excelData) {
+                assert(excelData.excel.variables().length === 0, "ExcelMerge#merge() doesn't work correctly");
+                assert(excelData.excel.hasAsSharedString('hoge account'), "'hoge account' is not rendered by ExcelMerge#simpleMerge()");
+                assert(excelData.excel.hasAsSharedString('hoge street'), "'hoge street' is not rendered by ExcelMerge#simpleMerge()");
             });
     },
 
@@ -137,17 +136,17 @@ module.exports = {
                 var excel2 = zip.file('file2.xlsx').asArrayBuffer();
                 var excel3 = zip.file('file3.xlsx').asArrayBuffer();
                 return Promise.props({
-                    sp1: new SpreadSheet().load(new Excel(excel1)),
-                    sp2: new SpreadSheet().load(new Excel(excel2)),
-                    sp3: new SpreadSheet().load(new Excel(excel3))
-                }).then(({sp1,sp2,sp3})=>{
+                    excelMerge1: new ExcelMerge().load(new Excel(excel1)),
+                    excelMerge2: new ExcelMerge().load(new Excel(excel2)),
+                    excelMerge3: new ExcelMerge().load(new Excel(excel3))
+                }).then(({excelMerge1,excelMerge2,excelMerge3})=>{
 
-                    assert(sp1.excel.hasAsSharedString('hoge account1'), "'hoge account1' is missing in excel file");
-                    assert(sp1.excel.hasAsSharedString('hoge street1'), "'hoge street1' is missing in excel file");
-                    assert(sp2.excel.hasAsSharedString('hoge account2'), "'hoge account2' is missing in excel file");
-                    assert(sp2.excel.hasAsSharedString('hoge street2'), "'hoge street2' is missing in excel file");
-                    assert(sp3.excel.hasAsSharedString('hoge account3'), "'hoge account3' is missing in excel file");
-                    assert(sp3.excel.hasAsSharedString('hoge street3'), "'hoge street3' is missing in excel file");
+                    assert(excelMerge1.excel.hasAsSharedString('hoge account1'), "'hoge account1' is missing in excel file");
+                    assert(excelMerge1.excel.hasAsSharedString('hoge street1'), "'hoge street1' is missing in excel file");
+                    assert(excelMerge2.excel.hasAsSharedString('hoge account2'), "'hoge account2' is missing in excel file");
+                    assert(excelMerge2.excel.hasAsSharedString('hoge street2'), "'hoge street2' is missing in excel file");
+                    assert(excelMerge3.excel.hasAsSharedString('hoge account3'), "'hoge account3' is missing in excel file");
+                    assert(excelMerge3.excel.hasAsSharedString('hoge street3'), "'hoge street3' is missing in excel file");
                 });
             });
     },
@@ -167,17 +166,17 @@ module.exports = {
                 var excel2 = zip.file('file2.xlsx').asArrayBuffer();
                 var excel3 = zip.file('file3.xlsx').asArrayBuffer();
                 return Promise.props({
-                    sp1: new SpreadSheet().load(new Excel(excel1)),
-                    sp2: new SpreadSheet().load(new Excel(excel2)),
-                    sp3: new SpreadSheet().load(new Excel(excel3))
-                }).then(({sp1,sp2,sp3})=>{
+                    excelMerge1: new ExcelMerge().load(new Excel(excel1)),
+                    excelMerge2: new ExcelMerge().load(new Excel(excel2)),
+                    excelMerge3: new ExcelMerge().load(new Excel(excel3))
+                }).then(({excelMerge1,excelMerge2,excelMerge3})=>{
 
-                    assert(sp1.excel.hasAsSharedString('hoge account1'), "'hoge account1' is missing in excel file");
-                    assert(sp1.excel.hasAsSharedString('hoge street1'), "'hoge street1' is missing in excel file");
-                    assert(sp2.excel.hasAsSharedString('hoge account2'), "'hoge account2' is missing in excel file");
-                    assert(sp2.excel.hasAsSharedString('hoge street2'), "'hoge street2' is missing in excel file");
-                    assert(sp3.excel.hasAsSharedString('hoge account3'), "'hoge account3' is missing in excel file");
-                    assert(sp3.excel.hasAsSharedString('hoge street3'), "'hoge street3' is missing in excel file");
+                    assert(excelMerge1.excel.hasAsSharedString('hoge account1'), "'hoge account1' is missing in excel file");
+                    assert(excelMerge1.excel.hasAsSharedString('hoge street1'), "'hoge street1' is missing in excel file");
+                    assert(excelMerge2.excel.hasAsSharedString('hoge account2'), "'hoge account2' is missing in excel file");
+                    assert(excelMerge2.excel.hasAsSharedString('hoge street2'), "'hoge street2' is missing in excel file");
+                    assert(excelMerge3.excel.hasAsSharedString('hoge account3'), "'hoge account3' is missing in excel file");
+                    assert(excelMerge3.excel.hasAsSharedString('hoge street3'), "'hoge street3' is missing in excel file");
                 });
             });
     },

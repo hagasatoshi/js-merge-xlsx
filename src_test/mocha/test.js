@@ -5,7 +5,6 @@
  * @date 2015/09/30
  */
 var assert = require('assert');
-var test_spreadsheet = require('./test_cases/test_spreadsheet');
 var test_excelmerge = require('./test_cases/test_excelmerge');
 var Utilitly = require('./test_cases/test_output_excel_file');
 
@@ -14,16 +13,6 @@ var EXCEL_OUTPUT_TYPE = {
     BULK_MULTIPLE_FILE : 1,
     BULK_MULTIPLE_SHEET : 2
 };
-
-/** SpreadSheet */
-describe('Test for spreadsheet.js : ',  ()=>{
-    it('logic / load() / should return this instance', test_spreadsheet.checkLoadShouldReturnThisInstance);
-    it('logic / simpleMerge() / renders correctly', test_spreadsheet.checkIfSimpleMergeRendersCorrectly);
-    it('logic / bulkMergeMultiFile() / renders correctly', test_spreadsheet.checkIfBulkMergeMultiFileRendersCorrectly);
-    it('logic / addSheetBindingData() / works correctly', test_spreadsheet.checkIfAddSheetBindingDataCorrectly);
-    it('logic / templateVariablesWorkCorrectly() / works correctly', test_spreadsheet.checkTemplateVariablesWorkCorrectly);
-
-});
 
 /** ExcelMerge */
 describe('Test for ExcelMerge.js : ',  ()=>{

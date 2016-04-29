@@ -5,24 +5,64 @@
  * @date 2015/09/30
  */
 
-const Promise = require('bluebird');
-const _ = require('underscore');
-const Excel = require('./lib/Excel');
-const SheetHelper = require('./lib/sheetHelper');
-const isNode = require('detect-node');
-const output_buffer = {type: (isNode?'nodebuffer':'blob'), compression:"DEFLATE"};
 const SINGLE_DATA = 'SINGLE_DATA';
 const MULTI_FILE = 'MULTI_FILE';
 const MULTI_SHEET = 'MULTI_SHEET';
 
+const Promise = require('bluebird');
+const _ = require('underscore');
+require('./lib/underscore_mixin');
+
+const Excel = require('./lib/Excel');
+const WorkBookXml = require('./lib/WorkBookXml');
+const WorkBookRels = require('./lib/WorkBookRels');
+const SheetXmls = require('./lib/SheetXmls');
+const SharedStrings = require('./lib/SharedStrings');
+
+const isNode = require('detect-node');
+const config = {
+    compression: "DEFLATE",
+    buffer_type_output: (isNode ? 'nodebuffer' : 'blob'),
+    buffer_type_jszip: (isNode ? 'nodebuffer' : 'arraybuffer')
+};
+
 class ExcelMerge{
 
-    constructor(){
-        this.sheetHelper = new SheetHelper();
+    load(excel){
+        this.excel = excel;
+        return Promise.props({
+            sharedstrings: excel.parseSharedStrings(),
+            workbookxmlRels: excel.parseWorkbookRels(),
+            workbookxml: excel.parseWorkbook(),
+            sheetXmls: excel.parseWorksheetsDir(),
+            templateSheetRel: excel.templateSheetRel()
+        }).then(({sharedstrings, workbookxmlRels,workbookxml,sheetXmls,templateSheetRel})=>{
+            this.relationship = new WorkBookRels(workbookxmlRels);
+            this.workbookxml = new WorkBookXml(workbookxml);
+            this.sheetXmls = new SheetXmls(sheetXmls);
+            this.sharedstrings = new SharedStrings(sharedstrings, this.sheetXmls.templateSheetData());
+            return this;
+        });
     }
 
-    load(excel){
-        return this.sheetHelper.load(excel).then(()=>this);
+    merge(mergedData, option = {type: config.buffer_type_output, compression: config.compression}){
+        return Excel.instanceOf(this.excel)
+            .merge(mergedData)
+            .generate(option);
+    }
+
+
+    bulkMergeMultiFile(mergedDataArray){
+        return _.reduce(mergedDataArray, (excel, {name, data}) => {
+            excel.file(name, this.merge(data, {type: config.buffer_type_jszip, compression: config.compression}));
+            return excel;
+        }, new Excel())
+        .generate({type: config.buffer_type_output, compression: config.compression});
+    }
+
+    bulkMergeMultiSheet(mergedDataArray){
+        _.each(mergedDataArray, ({name,data})=>this.addSheetBindingData(name,data));
+        return this.generate({type: config.buffer_type_output, compression: config.compression});
     }
 
     mergeByType(mergeType, bindData){
@@ -38,20 +78,81 @@ class ExcelMerge{
         }
     }
 
-    merge(bindData){
-        return this.sheetHelper.simpleMerge(bindData);
+    generate(option){
+        this.deleteTemplateSheet();
+        return this.excel
+            .setSharedStrings(this.sharedstrings.value())
+            .setWorkbookRels(this.relationship.value())
+            .setWorkbook(this.workbookxml.value())
+            .setWorksheets(this.sheetXmls.value())
+            .setWorksheetRels(this.sheetXmls.names())
+            .generate(option);
     }
 
-    bulkMergeMultiFile(bindDataArray){
-        return this.sheetHelper.bulkMergeMultiFile(bindDataArray);
+    addSheetBindingData(destSheetName, mergedData){
+        let nextId = this.relationship.nextRelationshipId();
+        this.relationship.add(nextId);
+        this.workbookxml.add(destSheetName, nextId);
+        this.sharedstrings.addMergedStrings(mergedData);
+
+        let sourceSheet = this.findSheetByName(this.workbookxml.firstSheetName()).value;
+        let addedSheet = this.buildNewSheet(sourceSheet, mergedData);
+
+        this.sheetXmls.add(nextId, addedSheet);
+
+        return this;
     }
 
-    bulkMergeMultiSheet(bindDataArray){
-        return this.sheetHelper.bulkMergeMultiSheet(bindDataArray);
+    deleteTemplateSheet(){
+        let sheetname = this.workbookxml.firstSheetName();
+        let targetSheet = this.findSheetByName(sheetname);
+        this.relationship.delete(targetSheet.path);
+        this.workbookxml.delete(sheetname);
+
+        _.each(this.sheetXmls.value(), ({name, data})=>{
+            if((name === targetSheet.value.name)) {
+                this.excel.removeWorksheet(targetSheet.value.name);
+                this.excel.removeWorksheetRel(targetSheet.value.name);
+            }
+        });
+        this.sheetXmls.delete(targetSheet.value.name);
+    }
+
+    buildNewSheet(sourceSheet, mergedData){
+        let addedSheet = _.deepCopy(sourceSheet);
+        addedSheet.worksheet.sheetViews[0].sheetView[0]['$'].tabSelected = '0';
+        this.setCellIndexes(addedSheet, mergedData);
+        return addedSheet;
+    }
+
+    //TODO このメソッドはsheetXmlsのメソッドにうつす予定
+    setCellIndexes(sheet, mergedData) {
+        let mergedStrings = this.sharedstrings.buildNewSharedStrings(mergedData);
+        _.each(mergedStrings,(string)=>{
+            _.each(string.usingCells, (cellAddress)=>{
+                _.each(sheet.worksheet.sheetData[0].row,(row)=>{
+                    _.each(row.c,(cell)=>{
+                        if(cell['$'].r === cellAddress){
+                            cell.v[0] = string.sharedIndex;
+                        }
+                    });
+                });
+            });
+        });
+    }
+
+    findSheetByName(sheetname){
+        let sheetid = this.workbookxml.findSheetId(sheetname);
+        if(!sheetid){
+            return null;
+        }
+        let targetFilePath = this.relationship.findSheetPath(sheetid);
+        let targetFileName = _.last(targetFilePath.split('/'));
+        return {path: targetFilePath, value: this.sheetXmls.find(targetFileName)};
     }
 
     variables(){
-        return this.sheetHelper.excel.variables();
+        return this.excel.variables();
     }
 }
 
