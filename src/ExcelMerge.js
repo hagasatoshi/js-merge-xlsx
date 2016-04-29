@@ -1,10 +1,3 @@
-/**
- * ExcelMerge
- * top level api class for js-merge-xlsx
- * @author Satoshi Haga
- * @date 2015/09/30
- */
-
 const SINGLE_DATA = 'SINGLE_DATA';
 const MULTI_FILE = 'MULTI_FILE';
 const MULTI_SHEET = 'MULTI_SHEET';
@@ -28,6 +21,11 @@ const config = {
 
 class ExcelMerge{
 
+    /**
+     * load
+     * @param {Excel} excel
+     * @return {Promise} this
+     */
     load(excel){
         this.excel = excel;
         return Promise.props({
@@ -45,26 +43,47 @@ class ExcelMerge{
         });
     }
 
-    merge(mergedData, option = {type: config.buffer_type_output, compression: config.compression}){
+    /**
+     * merge
+     * @param {Object} bindingData {key1:value, key2:value, key3:value ~}
+     * @param {Object} option
+     * @return {Object} excel data. Blob if on browser. Node-buffer if on Node.js.
+     */
+    merge(bindingData, option = {type: config.buffer_type_output, compression: config.compression}){
         return Excel.instanceOf(this.excel)
-            .merge(mergedData)
+            .merge(bindingData)
             .generate(option);
     }
 
-
-    bulkMergeMultiFile(mergedDataArray){
-        return _.reduce(mergedDataArray, (excel, {name, data}) => {
+    /**
+     * bulkMergeMultiFile
+     * @param {Array} bindingDataArray [{name:fileName, data:bindingData},,,,,]
+     * @return {Object} excel data. Blob if on browser. Node-buffer if on Node.js.
+     */
+    bulkMergeMultiFile(bindingDataArray){
+        return _.reduce(bindingDataArray, (excel, {name, data}) => {
             excel.file(name, this.merge(data, {type: config.buffer_type_jszip, compression: config.compression}));
             return excel;
         }, new Excel())
         .generate({type: config.buffer_type_output, compression: config.compression});
     }
 
-    bulkMergeMultiSheet(mergedDataArray){
-        _.each(mergedDataArray, ({name,data})=>this.addSheetBindingData(name,data));
+    /**
+     * bulkMergeMultiSheet
+     * @param {Array} bindingDataArray [{name:sheetName, data:bindingData},,,,,]
+     * @return {Object} excel data. Blob if on browser. Node-buffer if on Node.js.
+     */
+    bulkMergeMultiSheet(bindingDataArray){
+        _.each(bindingDataArray, ({name,data})=>this.addSheetBindingData(name,data));
         return this.generate({type: config.buffer_type_output, compression: config.compression});
     }
 
+    /**
+     * mergeByType
+     * @param {String} mergeType
+     * @param {Object} bindingData {key1:value, key2:value, key3:value ~}
+     * @return {Object} excel data. Blob if on browser. Node-buffer if on Node.js.
+     */
     mergeByType(mergeType, bindData){
         switch (mergeType){
             case SINGLE_DATA :
@@ -78,6 +97,12 @@ class ExcelMerge{
         }
     }
 
+    /**
+     * generate
+     * @param {Object} option
+     * @return {Object} excel data. Blob if on browser. Node-buffer if on Node.js.
+     * @private
+     */
     generate(option){
         this.deleteTemplateSheet();
         return this.excel
@@ -89,20 +114,31 @@ class ExcelMerge{
             .generate(option);
     }
 
-    addSheetBindingData(destSheetName, mergedData){
+    /**
+     * addSheetBindingData
+     * @param {String} destSheetName
+     * @param {Object} bindingData {key1:value, key2:value, key3:value ~}
+     * @return {Object} this
+     * @private
+     */
+    addSheetBindingData(destSheetName, bindingData){
         let nextId = this.relationship.nextRelationshipId();
         this.relationship.add(nextId);
         this.workbookxml.add(destSheetName, nextId);
-        this.sharedstrings.addMergedStrings(mergedData);
+        this.sharedstrings.addMergedStrings(bindingData);
 
         let sourceSheet = this.findSheetByName(this.workbookxml.firstSheetName()).value;
-        let addedSheet = this.buildNewSheet(sourceSheet, mergedData);
+        let addedSheet = this.buildNewSheet(sourceSheet, bindingData);
 
         this.sheetXmls.add(nextId, addedSheet);
 
         return this;
     }
 
+    /**
+     * deleteTemplateSheet
+     * @private
+     */
     deleteTemplateSheet(){
         let sheetname = this.workbookxml.firstSheetName();
         let targetSheet = this.findSheetByName(sheetname);
@@ -118,16 +154,28 @@ class ExcelMerge{
         this.sheetXmls.delete(targetSheet.value.name);
     }
 
-    buildNewSheet(sourceSheet, mergedData){
+    /**
+     * buildNewSheet
+     * @param {Object} sourceSheet
+     * @param {Object} bindingData {key1:value, key2:value, key3:value ~}
+     * @return {SheetXmls}
+     * @private
+     */
+    buildNewSheet(sourceSheet, bindingData){
         let addedSheet = _.deepCopy(sourceSheet);
         addedSheet.worksheet.sheetViews[0].sheetView[0]['$'].tabSelected = '0';
-        this.setCellIndexes(addedSheet, mergedData);
+        this.setCellIndexes(addedSheet, bindingData);
         return addedSheet;
     }
 
     //TODO このメソッドはsheetXmlsのメソッドにうつす予定
-    setCellIndexes(sheet, mergedData) {
-        let mergedStrings = this.sharedstrings.buildNewSharedStrings(mergedData);
+    /**
+     * setCellIndexes
+     * @param {Object} sheet
+     * @param {Object} bindingData {key1:value, key2:value, key3:value ~}
+     */
+    setCellIndexes(sheet, bindingData) {
+        let mergedStrings = this.sharedstrings.buildNewSharedStrings(bindingData);
         _.each(mergedStrings,(string)=>{
             _.each(string.usingCells, (cellAddress)=>{
                 _.each(sheet.worksheet.sheetData[0].row,(row)=>{
@@ -141,6 +189,11 @@ class ExcelMerge{
         });
     }
 
+    /**
+     * findSheetByName
+     * @param {String} sheetname
+     * @param {Object}
+     */
     findSheetByName(sheetname){
         let sheetid = this.workbookxml.findSheetId(sheetname);
         if(!sheetid){
@@ -151,6 +204,10 @@ class ExcelMerge{
         return {path: targetFilePath, value: this.sheetXmls.find(targetFileName)};
     }
 
+    /**
+     * variables
+     * @param {Object}
+     */
     variables(){
         return this.excel.variables();
     }
