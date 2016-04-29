@@ -24,7 +24,9 @@
     "brace-style": [2, "1tbs", { "allowSingleLine": false }],
     "consistent-this": [2, "DO NOT USE"],
 
-    "space-in-brackets": [2, "never"],
+    "object-curly-spacing": ["error", "never"],
+    "computed-property-spacing": ["error", "never"],
+    "array-bracket-spacing": ["error", "never"],
     "space-before-function-parentheses": [2, "never"],
     "space-before-blocks": [2, "always"],
     "space-after-keywords": [2, "always"],

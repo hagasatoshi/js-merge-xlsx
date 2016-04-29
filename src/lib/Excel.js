@@ -95,7 +95,7 @@ _.extend(Excel.prototype, {
         return this.parseWorksheetRelsDir()
         .then((sheetXmlsRels) => {
             this.templateSheetRel = sheetXmlsRels ?
-                { Relationships: sheetXmlsRels[0].Relationships } : null;
+                {Relationships: sheetXmlsRels[0].Relationships} : null;
         });
     },
 

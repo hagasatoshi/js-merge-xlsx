@@ -21,8 +21,8 @@ class WorkBookXml {
 
     add(sheetName, sheetId) {
         this.sheetDefinitions.push(
-            { '$':
-                { name: sheetName,
+            {'$':
+                {name: sheetName,
                     sheetId: sheetId.replace('rId',''),
                     'r:id': sheetId
                 }
