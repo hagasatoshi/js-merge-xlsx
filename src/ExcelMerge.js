@@ -22,9 +22,6 @@ class ExcelMerge{
     }
 
     load(excel){
-        if(!(excel instanceof Excel)){
-            return Promise.reject('First parameter must be Excel instance including MS-Excel data');
-        }
         return this.sheetHelper.load(excel).then(()=>this);
     }
 
@@ -42,23 +39,14 @@ class ExcelMerge{
     }
 
     merge(bindData){
-        if(!bindData){
-            return Promise.reject('merge() must has parameter');
-        }
         return this.sheetHelper.simpleMerge(bindData);
     }
 
     bulkMergeMultiFile(bindDataArray){
-        if(!bindDataArray){
-            return Promise.reject('bulkMergeMultiFile() must has parameter');
-        }
         return this.sheetHelper.bulkMergeMultiFile(bindDataArray);
     }
 
     bulkMergeMultiSheet(bindDataArray){
-        if(!bindDataArray || !_.isArray(bindDataArray)) {
-            return Promise.reject('bulkMergeMultiSheet() must has array as parameter');
-        }
         return this.sheetHelper.bulkMergeMultiSheet(bindDataArray);
     }
 

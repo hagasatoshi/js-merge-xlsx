@@ -24,14 +24,6 @@ var MULTI_FILE = 'MULTI_FILE';
 var MULTI_SHEET = 'MULTI_SHEET';
 
 module.exports = {
-    checkLoadWithNoParameterShouldReturnError: function checkLoadWithNoParameterShouldReturnError() {
-        return new ExcelMerge().load().then(function () {
-            throw new Error('checkLoadWithNoParameterShouldReturnError failed ');
-        })['catch'](function (err) {
-            assert.equal(err, 'First parameter must be Excel instance including MS-Excel data');
-        });
-    },
-
     checkLoadShouldReturnThisInstance: function checkLoadShouldReturnThisInstance() {
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (validTemplate) {
             return new ExcelMerge().load(new Excel(validTemplate));
@@ -113,17 +105,6 @@ module.exports = {
             assert(spreadsheet.excel.hasAsSharedString('hoge street'), "'hoge street' is not rendered by SpreadSheet#simpleMerge()");
         });
     },
-    checkIfMergeWithNoParameterRendersCorrectly: function checkIfMergeWithNoParameterRendersCorrectly() {
-        return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (validTemplate) {
-            return new ExcelMerge().load(new Excel(validTemplate));
-        }).then(function (excelMerge) {
-            return excelMerge.merge();
-        }).then(function () {
-            throw new Error('checkIfMergeWithNoParameterRendersCorrectly failed');
-        })['catch'](function (err) {
-            assert.equal(err, 'merge() must has parameter');
-        });
-    },
 
     checkIfBulkMergeMultiFileRendersCorrectly: function checkIfBulkMergeMultiFileRendersCorrectly() {
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (validTemplate) {
@@ -179,29 +160,6 @@ module.exports = {
                 assert(sp3.excel.hasAsSharedString('hoge account3'), "'hoge account3' is missing in excel file");
                 assert(sp3.excel.hasAsSharedString('hoge street3'), "'hoge street3' is missing in excel file");
             });
-        });
-    },
-    checkIfBulkMergeMultiFileWithNoParameterShouldReturnError: function checkIfBulkMergeMultiFileWithNoParameterShouldReturnError() {
-        return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (validTemplate) {
-            return new ExcelMerge().load(new Excel(validTemplate));
-        }).then(function (excelMerge) {
-            return excelMerge.bulkMergeMultiFile();
-        }).then(function () {
-            throw new Error('checkIfBulkMergeMultiFileWithNoParameterShouldReturnError failed');
-        })['catch'](function (err) {
-            assert.equal(err, 'bulkMergeMultiFile() must has parameter');
-        });
-    },
-
-    checkIfBulkMergeMultiSheetWithNoParameterShouldReturnError: function checkIfBulkMergeMultiSheetWithNoParameterShouldReturnError() {
-        return fs.readFileAsync(__dirname + '/../templates/Template.xlsx').then(function (validTemplate) {
-            return new ExcelMerge().load(new Excel(validTemplate));
-        }).then(function (excelMerge) {
-            return excelMerge.bulkMergeMultiSheet();
-        }).then(function () {
-            throw new Error('checkIfBulkMergeMultiSheetWithNoParameterShouldReturnError failed');
-        })['catch'](function (err) {
-            assert.equal(err, 'bulkMergeMultiSheet() must has array as parameter');
         });
     },
 

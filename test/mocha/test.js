@@ -29,12 +29,6 @@ describe('Test for spreadsheet.js : ', function () {
 /** ExcelMerge */
 describe('Test for ExcelMerge.js : ', function () {
 
-    //Validation
-    it('validation / load() / no parameter / error', test_excelmerge.checkLoadWithNoParameterShouldReturnError);
-    it('logic / merge() with no parameter / should return error', test_excelmerge.checkIfMergeWithNoParameterRendersCorrectly);
-    it('logic / bulkMergeMultiFile() with no parameter / should return error', test_excelmerge.checkIfBulkMergeMultiFileWithNoParameterShouldReturnError);
-    it('logic / bulkMergeMultiSheet() with no parameter / should return error', test_excelmerge.checkIfBulkMergeMultiSheetWithNoParameterShouldReturnError);
-
     //Core
     it('logic / load() / should return this instance', test_excelmerge.checkLoadShouldReturnThisInstance);
     it('logic / merge() / renders correctly', test_excelmerge.checkIfMergeRendersCorrectly);

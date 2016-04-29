@@ -22,15 +22,6 @@ const MULTI_FILE = 'MULTI_FILE';
 const MULTI_SHEET = 'MULTI_SHEET';
 
 module.exports = {
-    checkLoadWithNoParameterShouldReturnError: ()=>{
-        return new ExcelMerge().load()
-            .then(()=>{
-                throw new Error('checkLoadWithNoParameterShouldReturnError failed ');
-            }).catch((err)=>{
-                assert.equal(err, 'First parameter must be Excel instance including MS-Excel data');
-            });
-    },
-
     checkLoadShouldReturnThisInstance: ()=>{
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx')
             .then((validTemplate)=>{
@@ -129,18 +120,6 @@ module.exports = {
                 assert(spreadsheet.excel.hasAsSharedString('hoge street'), "'hoge street' is not rendered by SpreadSheet#simpleMerge()");
             });
     },
-    checkIfMergeWithNoParameterRendersCorrectly: ()=>{
-        return fs.readFileAsync(__dirname + '/../templates/Template.xlsx')
-            .then((validTemplate)=>{
-                return new ExcelMerge().load(new Excel(validTemplate));
-            }).then((excelMerge)=>{
-                return excelMerge.merge();
-            }).then(()=>{
-                throw new Error('checkIfMergeWithNoParameterRendersCorrectly failed');
-            }).catch((err)=>{
-                assert.equal(err, 'merge() must has parameter');
-            });
-    },
 
     checkIfBulkMergeMultiFileRendersCorrectly: ()=>{
         return fs.readFileAsync(__dirname + '/../templates/Template.xlsx')
@@ -200,31 +179,6 @@ module.exports = {
                     assert(sp3.excel.hasAsSharedString('hoge account3'), "'hoge account3' is missing in excel file");
                     assert(sp3.excel.hasAsSharedString('hoge street3'), "'hoge street3' is missing in excel file");
                 });
-            });
-    },
-    checkIfBulkMergeMultiFileWithNoParameterShouldReturnError: ()=>{
-        return fs.readFileAsync(__dirname + '/../templates/Template.xlsx')
-            .then((validTemplate)=>{
-                return new ExcelMerge().load(new Excel(validTemplate));
-            }).then((excelMerge)=>{
-                return excelMerge.bulkMergeMultiFile();
-            }).then(()=>{
-                throw new Error('checkIfBulkMergeMultiFileWithNoParameterShouldReturnError failed');
-            }).catch((err)=>{
-                assert.equal(err, 'bulkMergeMultiFile() must has parameter');
-            });
-    },
-
-    checkIfBulkMergeMultiSheetWithNoParameterShouldReturnError: ()=>{
-        return fs.readFileAsync(__dirname + '/../templates/Template.xlsx')
-            .then((validTemplate)=>{
-                return new ExcelMerge().load(new Excel(validTemplate));
-            }).then((excelMerge)=>{
-                return excelMerge.bulkMergeMultiSheet();
-            }).then(()=>{
-                throw new Error('checkIfBulkMergeMultiSheetWithNoParameterShouldReturnError failed');
-            }).catch((err)=>{
-                assert.equal(err, 'bulkMergeMultiSheet() must has array as parameter');
             });
     },
 
