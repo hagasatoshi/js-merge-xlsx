@@ -38,7 +38,7 @@ class WorkBookXml {
     }
 
     findSheetId(sheetName) {
-        let sheet = _.find(this.sheetDefinitions, (e)=> (e['$'].name === sheetName));
+        let sheet = _.find(this.sheetDefinitions, (e) => (e['$'].name === sheetName));
         if(!sheet) {
             return null;
         }

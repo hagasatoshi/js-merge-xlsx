@@ -128,10 +128,10 @@ _.extend(Excel.prototype, {
         let files = this.folder(dir).file(/.xml/);
         let fileXmls = [];
         return files.reduce(
-            (promise, file)=>
-                promise.then((prior_file)=>
+            (promise, file) =>
+                promise.then((prior_file) =>
                     parseString(this.file(file.name).asText())
-                        .then((file_xml)=>{
+                        .then((file_xml) => {
                             file_xml.name = _.last(file.name.split('/'));
                             fileXmls.push(file_xml);
                             return fileXmls;

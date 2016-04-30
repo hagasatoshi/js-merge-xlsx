@@ -19,10 +19,10 @@ class SharedStrings {
     }
 
     setUsingCells(sharedStrings, templateSheetData) {
-        _.each(sharedStrings, (str)=>{
+        _.each(sharedStrings, (str) => {
             str.usingCells = [];
-            _.each(templateSheetData, (row)=>{
-                _.each(row.c,(cell)=>{
+            _.each(templateSheetData, (row) => {
+                _.each(row.c,(cell) => {
                     if(cell['$'].t === 's' && str.sharedIndex === (cell.v[0] >> 0)) {
                         str.usingCells.push(cell['$'].r);
                     }
@@ -51,7 +51,7 @@ class SharedStrings {
 
     getOnlyHavingVariable() {
         let ret = [];
-        _.each(this.strings, (stringObj, index)=>{
+        _.each(this.strings, (stringObj, index) => {
             if(_.stringValue(stringObj.t) && _.hasVariable(_.stringValue(stringObj.t))) {
                 stringObj.sharedIndex = index;
                 ret.push(stringObj);
@@ -67,7 +67,7 @@ class SharedStrings {
     buildNewSharedStrings(mergedData) {
         return _.reduce(
             _.deepCopy(this.getOnlyHavingVariable()),
-            (newSharedStrings, templateString)=>{
+            (newSharedStrings, templateString) => {
                 templateString.t[0] = Mustache.render(_.stringValue(templateString.t), mergedData);
                 newSharedStrings.push(templateString);
                 return newSharedStrings;

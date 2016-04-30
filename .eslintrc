@@ -48,6 +48,7 @@
         "AssignmentExpression": true
       }
     }],
-    "key-spacing": ["error", {"align": "value"}]
+    "key-spacing": ["error", {"align": "value"}],
+    "arrow-spacing": ["error", { "before": true, "after": true }]
   }
 }

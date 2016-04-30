@@ -31,7 +31,7 @@ class ExcelMerge {
             sheetXmls:        excel.parseWorksheetsDir(),
             templateSheetRel: excel.templateSheetRel()
         }).then(
-            ({sharedstrings, workbookxmlRels,workbookxml,sheetXmls,templateSheetRel})=>{
+            ({sharedstrings, workbookxmlRels,workbookxml,sheetXmls,templateSheetRel}) => {
                 this.relationship = new WorkBookRels(workbookxmlRels);
                 this.workbookxml = new WorkBookXml(workbookxml);
                 this.sheetXmls = new SheetXmls(sheetXmls);
@@ -81,7 +81,7 @@ class ExcelMerge {
      * @return {Object} excel data. Blob if on browser. Node-buffer if on Node.js.
      */
     bulkMergeMultiSheet(bindingDataArray) {
-        _.each(bindingDataArray, ({name,data})=>this.addSheetBindingData(name,data));
+        _.each(bindingDataArray, ({name,data}) => this.addSheetBindingData(name,data));
         return this.generate({type: config.buffer_type_output, compression: config.compression});
     }
 
@@ -133,7 +133,7 @@ class ExcelMerge {
         this.relationship.delete(targetSheet.path);
         this.workbookxml.delete(sheetname);
 
-        _.each(this.sheetXmls.value(), ({name, data})=>{
+        _.each(this.sheetXmls.value(), ({name, data}) => {
             if((name === targetSheet.value.name)) {
                 this.excel.removeWorksheet(targetSheet.value.name);
                 this.excel.removeWorksheetRel(targetSheet.value.name);

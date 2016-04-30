@@ -14,7 +14,7 @@ class SheetXmls {
     }
 
     value() {
-        return _.map(this.files, (file)=>{
+        return _.map(this.files, (file) => {
             if(!file.name) {
                 return null;
             }
@@ -35,7 +35,7 @@ class SheetXmls {
     }
 
     delete(fileName) {
-        _.each(this.files, (file, index)=>{
+        _.each(this.files, (file, index) => {
             if(file && (file.name === fileName)) {
                 this.files.splice(index, 1);
             }
@@ -43,15 +43,15 @@ class SheetXmls {
     }
 
     find(fileName) {
-        return _.find(this.files, (e)=>(e.name === fileName));
+        return _.find(this.files, (e) => (e.name === fileName));
     }
 
     stringCount() {
         let stringCount = 0;
-        _.each(this.files, (sheet)=>{
+        _.each(this.files, (sheet) => {
             if(sheet.worksheet) {
-                _.each(sheet.worksheet.sheetData[0].row, (row)=>{
-                    _.each(row.c, (cell)=>{
+                _.each(sheet.worksheet.sheetData[0].row, (row) => {
+                    _.each(row.c, (cell) => {
                         if(cell['$'].t) {
                             stringCount++;
                         }
@@ -63,7 +63,9 @@ class SheetXmls {
     }
 
     templateSheetData() {
-        return _.find(this.files,(e)=>(e.name.indexOf('.rels') === -1)).worksheet.sheetData[0].row;
+        return _.find(this.files,(e) => {
+            return (e.name.indexOf('.rels') === -1);
+        }).worksheet.sheetData[0].row;
     }
 }
 
