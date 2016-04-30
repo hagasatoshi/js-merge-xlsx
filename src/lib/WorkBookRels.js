@@ -21,14 +21,13 @@ class WorkBookRels {
     }
 
     add(sheetId) {
-        this.sheetRelationships.push(
-            { '$':
-                { Id: sheetId,
-                    Type: OPEN_XML_SCHEMA_DEFINITION,
-                    Target: `worksheets/sheet${sheetId}.xml`
-                }
+        this.sheetRelationships.push({
+            '$': {
+                Id:     sheetId,
+                Type:   OPEN_XML_SCHEMA_DEFINITION,
+                Target: `worksheets/sheet${sheetId}.xml`
             }
-        );
+        });
     }
 
     delete(sheetPath) {
@@ -42,11 +41,11 @@ class WorkBookRels {
 
     findSheetPath(sheetId) {
 
-        return _.max(this.sheetRelationships, (e)=>(e['$'].Id === sheetId))['$'].Target;
+        return _.max(this.sheetRelationships, (e) => (e['$'].Id === sheetId))['$'].Target;
     }
 
-    nextRelationshipId(){
-        let maxRel =  _.max(this.sheetRelationships, (e)=> Number(e['$'].Id.replace('rId','')));
+    nextRelationshipId() {
+        let maxRel =  _.max(this.sheetRelationships, (e) => Number(e['$'].Id.replace('rId','')));
         let nextId = 'rId' + ('00' + (((maxRel['$'].Id.replace('rId','') >> 0))+1)).slice(-3);
         return nextId;
     }

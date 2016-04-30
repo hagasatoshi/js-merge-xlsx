@@ -20,14 +20,13 @@ class WorkBookXml {
     }
 
     add(sheetName, sheetId) {
-        this.sheetDefinitions.push(
-            { '$':
-                { name: sheetName,
-                    sheetId: sheetId.replace('rId',''),
-                    'r:id': sheetId
-                }
+        this.sheetDefinitions.push({
+            '$': {
+                name:    sheetName,
+                sheetId: sheetId.replace('rId',''),
+                'r:id':  sheetId
             }
-        );
+        });
     }
 
     delete(sheetName) {
@@ -39,8 +38,8 @@ class WorkBookXml {
     }
 
     findSheetId(sheetName) {
-        let sheet = _.find(this.sheetDefinitions, (e)=> (e['$'].name === sheetName));
-        if(!sheet){
+        let sheet = _.find(this.sheetDefinitions, (e) => (e['$'].name === sheetName));
+        if(!sheet) {
             return null;
         }
         return sheet['$']['r:id'];
