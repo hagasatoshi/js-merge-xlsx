@@ -10,9 +10,9 @@ const SharedStrings = require('./lib/SharedStrings');
 
 const isNode = require('detect-node');
 const config = {
-    compression: "DEFLATE",
+    compression:        'DEFLATE',
     buffer_type_output: (isNode ? 'nodebuffer' : 'blob'),
-    buffer_type_jszip: (isNode ? 'nodebuffer' : 'arraybuffer')
+    buffer_type_jszip:  (isNode ? 'nodebuffer' : 'arraybuffer')
 };
 
 class ExcelMerge {
@@ -25,10 +25,10 @@ class ExcelMerge {
     load(excel) {
         this.excel = excel;
         return Promise.props({
-            sharedstrings: excel.parseSharedStrings(),
-            workbookxmlRels: excel.parseWorkbookRels(),
-            workbookxml: excel.parseWorkbook(),
-            sheetXmls: excel.parseWorksheetsDir(),
+            sharedstrings:    excel.parseSharedStrings(),
+            workbookxmlRels:  excel.parseWorkbookRels(),
+            workbookxml:      excel.parseWorkbook(),
+            sheetXmls:        excel.parseWorksheetsDir(),
             templateSheetRel: excel.templateSheetRel()
         }).then(
             ({sharedstrings, workbookxmlRels,workbookxml,sheetXmls,templateSheetRel})=>{

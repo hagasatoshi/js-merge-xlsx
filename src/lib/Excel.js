@@ -13,13 +13,13 @@ const parseString = Promise.promisify(xml2js.parseString);
 const _ = require('underscore');
 require('./underscore_mixin');
 const isNode = require('detect-node');
-const jszipBuffer = {type: (isNode?'nodebuffer':'arraybuffer'), compression:"DEFLATE"};
+const jszipBuffer = {type: (isNode?'nodebuffer':'arraybuffer'), compression: 'DEFLATE'};
 
 const config = {
     FILE_SHARED_STRINGS: 'xl/sharedStrings.xml',
-    FILE_WORKBOOK_RELS: 'xl/_rels/workbook.xml.rels',
-    FILE_WORKBOOK: 'xl/workbook.xml',
-    DIR_WORKSHEETS: 'xl/worksheets',
+    FILE_WORKBOOK_RELS:  'xl/_rels/workbook.xml.rels',
+    FILE_WORKBOOK:       'xl/workbook.xml',
+    DIR_WORKSHEETS:      'xl/worksheets',
     DIR_WORKSHEETS_RELS: 'xl/worksheets/_rels'
 };
 
@@ -150,6 +150,5 @@ _.extend(Excel.prototype, {
 Excel.instanceOf = function(excel) {
     return new Excel(excel.generate(jszipBuffer));
 };
-
 
 module.exports = Excel;

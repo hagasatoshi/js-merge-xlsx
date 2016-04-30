@@ -21,14 +21,13 @@ class WorkBookRels {
     }
 
     add(sheetId) {
-        this.sheetRelationships.push(
-            {'$':
-                {Id: sheetId,
-                    Type: OPEN_XML_SCHEMA_DEFINITION,
-                    Target: `worksheets/sheet${sheetId}.xml`
-                }
+        this.sheetRelationships.push({
+            '$': {
+                Id:     sheetId,
+                Type:   OPEN_XML_SCHEMA_DEFINITION,
+                Target: `worksheets/sheet${sheetId}.xml`
             }
-        );
+        });
     }
 
     delete(sheetPath) {
