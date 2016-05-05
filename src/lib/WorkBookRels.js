@@ -33,7 +33,7 @@ class WorkBookRels {
     delete(sheetPath) {
         _.each(this.sheetRelationships, (sheet, index) => {
             if(sheet && (sheet['$'].Target === sheetPath)) {
-                this.sheetRelationships.splice(index,1);
+                this.sheetRelationships.splice(index, 1);
             }
         });
 
@@ -45,8 +45,8 @@ class WorkBookRels {
     }
 
     nextRelationshipId() {
-        let maxRel =  _.max(this.sheetRelationships, (e) => Number(e['$'].Id.replace('rId','')));
-        let nextId = 'rId' + ('00' + (((maxRel['$'].Id.replace('rId','') >> 0))+1)).slice(-3);
+        let maxRel =  _.max(this.sheetRelationships, (e) => Number(e['$'].Id.replace('rId', '')));
+        let nextId = 'rId' + ('00' + (((maxRel['$'].Id.replace('rId', '') >> 0))+1)).slice(-3);
         return nextId;
     }
 

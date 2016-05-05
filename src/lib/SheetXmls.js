@@ -63,7 +63,7 @@ class SheetXmls {
     }
 
     templateSheetData() {
-        return _.find(this.files,(e) => {
+        return _.find(this.files, (e) => {
             return (e.name.indexOf('.rels') === -1);
         }).worksheet.sheetData[0].row;
     }

@@ -23,7 +23,7 @@ class WorkBookXml {
         this.sheetDefinitions.push({
             '$': {
                 name:    sheetName,
-                sheetId: sheetId.replace('rId',''),
+                sheetId: sheetId.replace('rId', ''),
                 'r:id':  sheetId
             }
         });
@@ -32,7 +32,7 @@ class WorkBookXml {
     delete(sheetName) {
         _.each(this.sheetDefinitions, (sheet, index) => {
             if(sheet && (sheet['$'].name === sheetName)) {
-                this.sheetDefinitions.splice(index,1);
+                this.sheetDefinitions.splice(index, 1);
             }
         });
     }
