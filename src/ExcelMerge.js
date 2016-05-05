@@ -113,10 +113,10 @@ class ExcelMerge {
         let nextId = this.relationship.nextRelationshipId();
         this.relationship.add(nextId);
         this.workbookxml.add(destSheetName, nextId);
-        this.sharedstrings.addMergedStrings(bindingData);
+        let mergedStrings = this.sharedstrings.addMergedStrings(bindingData);
 
         let sourceSheet = this.findSheetByName(this.workbookxml.firstSheetName()).value;
-        let addedSheet = this.buildNewSheet(sourceSheet, bindingData);
+        let addedSheet = this.buildNewSheet(sourceSheet, mergedStrings);
 
         this.sheetXmls.add(nextId, addedSheet);
 
@@ -149,10 +149,10 @@ class ExcelMerge {
      * @return {SheetXmls}
      * @private
      */
-    buildNewSheet(sourceSheet, bindingData) {
+    buildNewSheet(sourceSheet, mergedStrings) {
         let addedSheet = _.deepCopy(sourceSheet);
         addedSheet.worksheet.sheetViews[0].sheetView[0]['$'].tabSelected = '0';
-        this.setCellIndexes(addedSheet, bindingData);
+        this.setCellIndexes(addedSheet, mergedStrings);
         return addedSheet;
     }
 
@@ -162,8 +162,7 @@ class ExcelMerge {
      * @param {Object} sheet
      * @param {Object} bindingData {key1:value, key2:value, key3:value ~}
      */
-    setCellIndexes(sheet, bindingData) {
-        let mergedStrings = this.sharedstrings.buildNewSharedStrings(bindingData);
+    setCellIndexes(sheet, mergedStrings) {
         _.each(mergedStrings, (string) => {
             _.each(string.usingCells, (cellAddress) => {
                 _.each(sheet.worksheet.sheetData[0].row, (row) => {

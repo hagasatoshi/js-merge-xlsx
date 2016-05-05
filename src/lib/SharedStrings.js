@@ -11,47 +11,61 @@ const Mustache = require('mustache');
 
 class SharedStrings {
 
-    constructor(sharedstringsObj, templateSheetData) {
-        this.rawData = sharedstringsObj;
-        this.strings = sharedstringsObj.sst.si;
-
-        this.setUsingCells(this.getOnlyHavingVariable(), templateSheetData);
+    constructor(rawObj, templateSheetObj) {
+        this.rawObj = rawObj;
+        this.templateSheetData = templateSheetObj;
+        this.stringModels = this.parseStringModels();
     }
 
-    setUsingCells(sharedStrings, templateSheetData) {
-        _.each(sharedStrings, (str) => {
-            str.usingCells = [];
-            _.each(templateSheetData, (row) => {
-                _.each(row.c, (cell) => {
-                    if(cell['$'].t === 's' && str.sharedIndex === (cell.v[0] >> 0)) {
-                        str.usingCells.push(cell['$'].r);
-                    }
-                });
-            });
+    parseStringModels() {
+        if(!this.rawObj.sst.si) {
+            return null;
+        }
+        let stringModels = _.deepCopy(this.rawObj.sst.si);
+        _.each(this.filterStaticString(stringModels), (stringModel) => {
+            stringModel.usingCells = _.reduce(
+                this.templateSheetData,
+                (usingCells, row) => {
+                    return usingCells.concat(
+                        SharedStrings.usingCellAddresses(row.c, stringModel.sharedIndex)
+                    );
+                }, []
+            );
         });
+        return stringModels;
     }
 
-    add(newStrings) {
-        let currentCount = this.strings.length;
-        _.each(newStrings, (e, index) => {
+    static usingCellAddresses(cells, stringIndex) {
+        return _.reduce(cells, (addresses, cell) => {
+            if(cell['$'].t === 's' && stringIndex === (cell.v[0] >> 0)) {
+                addresses.push(cell['$'].r);
+            }
+            return addresses;
+        }, []);
+    }
+
+    add(newStringModels) {
+        let currentCount = this.stringModels.length;
+        _.each(newStringModels, (e, index) => {
             e.sharedIndex = currentCount + index;
-            this.strings.push(e);
         });
+        this.stringModels = this.stringModels.concat(newStringModels);
+        return newStringModels;
     }
 
     value() {
-        if(!this.strings) {
+        if(!this.stringModels) {
             return null;
         }
-        this.rawData.sst.si = _.deleteProperties(this.strings, ['sharedIndex', 'usingCells']);
-        this.rawData.sst['$'].uniqueCount = this.strings.length;
-        this.rawData.sst['$'].count = this.strings.length;
-        return this.rawData;
+        this.rawObj.sst.si = _.deleteProperties(this.stringModels, ['sharedIndex', 'usingCells']);
+        this.rawObj.sst['$'].uniqueCount = this.stringModels.length;
+        this.rawObj.sst['$'].count = this.stringModels.length;
+        return this.rawObj;
     }
 
-    getOnlyHavingVariable() {
+    filterStaticString(stringModels) {
         let ret = [];
-        _.each(this.strings, (stringObj, index) => {
+        _.each(stringModels, (stringObj, index) => {
             if(_.stringValue(stringObj.t) && _.hasVariable(_.stringValue(stringObj.t))) {
                 stringObj.sharedIndex = index;
                 ret.push(stringObj);
@@ -61,12 +75,12 @@ class SharedStrings {
     }
 
     hasString() {
-        return !!this.strings;
+        return !!this.stringModels;
     }
 
     buildNewSharedStrings(mergedData) {
         return _.reduce(
-            _.deepCopy(this.getOnlyHavingVariable()),
+            _.deepCopy(this.filterStaticString(this.stringModels)),
             (newSharedStrings, templateString) => {
                 templateString.t[0] = Mustache.render(_.stringValue(templateString.t), mergedData);
                 newSharedStrings.push(templateString);
@@ -79,7 +93,7 @@ class SharedStrings {
         if(!this.hasString()) {
             return;
         }
-        this.add(
+        return this.add(
             this.buildNewSharedStrings(mergedData)
         );
     }
