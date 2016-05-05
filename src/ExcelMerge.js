@@ -31,7 +31,7 @@ class ExcelMerge {
             sheetXmls:        excel.parseWorksheetsDir(),
             templateSheetRel: excel.templateSheetRel()
         }).then(
-            ({sharedstrings, workbookxmlRels,workbookxml,sheetXmls,templateSheetRel}) => {
+            ({sharedstrings, workbookxmlRels, workbookxml, sheetXmls, templateSheetRel}) => {
                 this.relationship = new WorkBookRels(workbookxmlRels);
                 this.workbookxml = new WorkBookXml(workbookxml);
                 this.sheetXmls = new SheetXmls(sheetXmls);
@@ -81,7 +81,7 @@ class ExcelMerge {
      * @return {Object} excel data. Blob if on browser. Node-buffer if on Node.js.
      */
     bulkMergeMultiSheet(bindingDataArray) {
-        _.each(bindingDataArray, ({name,data}) => this.addSheetBindingData(name,data));
+        _.each(bindingDataArray, ({name, data}) => this.addSheetBindingData(name, data));
         return this.generate({type: config.buffer_type_output, compression: config.compression});
     }
 
@@ -164,10 +164,10 @@ class ExcelMerge {
      */
     setCellIndexes(sheet, bindingData) {
         let mergedStrings = this.sharedstrings.buildNewSharedStrings(bindingData);
-        _.each(mergedStrings,(string) => {
+        _.each(mergedStrings, (string) => {
             _.each(string.usingCells, (cellAddress) => {
-                _.each(sheet.worksheet.sheetData[0].row,(row) => {
-                    _.each(row.c,(cell) => {
+                _.each(sheet.worksheet.sheetData[0].row, (row) => {
+                    _.each(row.c, (cell) => {
                         if(cell['$'].r === cellAddress) {
                             cell.v[0] = string.sharedIndex;
                         }

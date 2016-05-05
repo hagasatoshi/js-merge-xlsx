@@ -29,7 +29,7 @@ _.mixin({
         if(!_(template).isString()) {
             return null;
         }
-        return _.map( _.filter(Mustache.parse(template),(e) => (e[0] === 'name')), (e) => e[1]);
+        return _.map( _.filter(Mustache.parse(template), (e) => (e[0] === 'name')), (e) => e[1]);
     },
 
     hasVariable: (template) => {
