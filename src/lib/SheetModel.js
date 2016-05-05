@@ -40,3 +40,5 @@ class SheetModel {
         });
     }
 }
+
+module.exports = SheetModel;
