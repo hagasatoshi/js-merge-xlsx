@@ -150,7 +150,7 @@ class ExcelMerge {
      * @private
      */
     buildNewSheet(sourceSheet, mergedStrings) {
-        let addedSheet = _.deepCopy(sourceSheet);
+        let addedSheet = _.deepCopy(sourceSheet.value());
         addedSheet.worksheet.sheetViews[0].sheetView[0]['$'].tabSelected = '0';
         this.setCellIndexes(addedSheet, mergedStrings);
         return addedSheet;

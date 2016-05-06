@@ -39,6 +39,14 @@ class SheetModel {
             });
         });
     }
+
+    value() {
+        return this.sheetObj;
+    }
+
+    getName() {
+        return this.sheetObj.name;
+    }
 }
 
 module.exports = SheetModel;

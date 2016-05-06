@@ -6,66 +6,71 @@
  */
 
 const _ = require('underscore');
+const SheetModel = require('./SheetModel');
 
 class SheetXmls {
 
     constructor(sheetObjs) {
-        this.sheetObjs = sheetObjs;
+        this.sheetModels = _.reduce(
+            sheetObjs,
+            (models, sheetObj) => {
+                models.push(new SheetModel(sheetObj));
+                return models;
+            },
+            []
+        )
     }
 
     value() {
-        return _.map(this.sheetObjs, (sheetObj) => {
-            if(!sheetObj.name) {
+        return _.map(this.sheetModels, (sheetModel) => {
+            if(!sheetModel.getName()) {
                 return null;
             }
-            let sheetModel = {};
-            sheetModel.worksheet = {};
-            _.extend(sheetModel.worksheet, sheetObj.worksheet);
-            return {name: sheetObj.name, data: sheetModel};
+            let wrk = {};
+            wrk.worksheet = {};
+            _.extend(wrk.worksheet, sheetModel.value().worksheet);
+            return {name: sheetModel.getName(), data: wrk};
         });
     }
 
     names() {
-        return _.map(this.sheetObjs, (sheetObj) => sheetObj.name);
+        return _.map(this.sheetModels, (sheetModel) => sheetModel.getName());
     }
 
     add(sheetId, sheetObj) {
         sheetObj.name = `sheet${sheetId}.xml`;
-        this.sheetObjs.push(sheetObj);
+        this.sheetModels.push(new SheetModel(sheetObj));
     }
 
     delete(fileName) {
-        _.each(this.sheetObjs, (sheetObj, index) => {
-            if(sheetObj && (sheetObj.name === fileName)) {
-                this.sheetObjs.splice(index, 1);
+        _.each(this.sheetModels, (sheetModel, index) => {
+            if(sheetModel.value() && (sheetModel.getName() === fileName)) {
+                this.sheetModels.splice(index, 1);
             }
         });
     }
 
     find(fileName) {
-        return _.find(this.sheetObjs, (sheetObj) => (sheetObj.name === fileName));
+        return _.find(this.sheetModels, (sheetModel) => {
+            if(!sheetModel.value()) {
+                return false;
+            }
+            return (sheetModel.getName() === fileName);
+        });
     }
 
     stringCount() {
         let stringCount = 0;
-        _.each(this.sheetObjs, (sheetObj) => {
-            if(sheetObj.worksheet) {
-                _.each(sheetObj.worksheet.sheetData[0].row, (row) => {
-                    _.each(row.c, (cell) => {
-                        if(cell['$'].t) {
-                            stringCount++;
-                        }
-                    });
-                });
-            }
+        _.each(this.sheetModels, (sheetModel) => {
+            stringCount += sheetModel.stringCount();
         });
         return stringCount;
     }
 
     templateSheetData() {
-        return _.find(this.sheetObjs, (sheetObj) => {
-            return (sheetObj.name.indexOf('.rels') === -1);
-        }).worksheet.sheetData[0].row;
+        return _.find(this.sheetModels, (sheetModel) => {
+            return (sheetModel.getName().indexOf('.rels') === -1);
+        }).value().worksheet.sheetData[0].row;
     }
 }
 
