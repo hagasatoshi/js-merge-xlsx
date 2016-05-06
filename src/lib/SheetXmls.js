@@ -11,14 +11,7 @@ const SheetModel = require('./SheetModel');
 class SheetXmls {
 
     constructor(sheetObjs) {
-        this.sheetModels = _.reduce(
-            sheetObjs,
-            (models, sheetObj) => {
-                models.push(new SheetModel(sheetObj));
-                return models;
-            },
-            []
-        )
+        this.sheetModels = _.map(sheetObjs, (sheetObj) => new SheetModel(sheetObj));
     }
 
     value() {
@@ -43,20 +36,17 @@ class SheetXmls {
     }
 
     delete(fileName) {
-        _.each(this.sheetModels, (sheetModel, index) => {
-            if(sheetModel.value() && (sheetModel.getName() === fileName)) {
-                this.sheetModels.splice(index, 1);
-            }
-        });
+        _.splice(
+            this.sheetModels,
+            (sheetModel) => (sheetModel.value() && (sheetModel.getName() === fileName))
+        );
     }
 
     find(fileName) {
-        return _.find(this.sheetModels, (sheetModel) => {
-            if(!sheetModel.value()) {
-                return false;
-            }
-            return (sheetModel.getName() === fileName);
-        });
+        return _.find(
+            this.sheetModels,
+            (sheetModel) => sheetModel.value() && (sheetModel.getName() === fileName)
+        );
     }
 
     stringCount() {

@@ -55,5 +55,17 @@ _.mixin({
 
     sum: (arrayObj, valueFn) => _.reduce(arrayObj, (sum, obj) => valueFn(obj), 0),
 
-    count: (arrayObj, criteriaFn) => _.sum(arrayObj, (obj) => criteriaFn(obj) ? 1 : 0)
+    count: (arrayObj, criteriaFn) => _.sum(arrayObj, (obj) => criteriaFn(obj) ? 1 : 0),
+
+    reverseEach: (arrayObj, fn) => {
+        _.each(_.sortBy(arrayObj, (obj, index) => (-1) * index), fn);
+    },
+
+    splice: (arrayObj, criteriaFn) => {
+        _.reverseEach(arrayObj, (obj, index) => {
+            if(criteriaFn(obj)) {
+                arrayObj.splice(index, 1);
+            }
+        })
+    }
 });
