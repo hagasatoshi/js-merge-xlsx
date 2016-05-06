@@ -14,20 +14,10 @@ class SheetModel {
     }
 
     stringCount() {
-        if(!this.sheetObj.worksheet) {
-            return 0;
-        }
-        return _.reduce(
-            this.sheetObj.worksheet.sheetData[0].row,
-            (count, row) => {
-                _.each(row.c, (cell) => {
-                    if(cell['$'].t) {
-                        count++;
-                    }
-                });
-                return count;
-            }, 0
-        );
+        const stringCountInRow = (cells) => _.count(cells, (cell) => !!cell['$'].t);
+        return this.sheetObj.worksheet ?
+            _.sum(this.sheetObj.worksheet.sheetData[0].row, stringCountInRow) :
+            0 ;
     }
 
     setStringIndex(stringIndex, cellAddress) {
