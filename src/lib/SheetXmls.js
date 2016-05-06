@@ -9,48 +9,48 @@ const _ = require('underscore');
 
 class SheetXmls {
 
-    constructor(files) {
-        this.files = files;
+    constructor(sheetObjs) {
+        this.sheetObjs = sheetObjs;
     }
 
     value() {
-        return _.map(this.files, (file) => {
-            if(!file.name) {
+        return _.map(this.sheetObjs, (sheetObj) => {
+            if(!sheetObj.name) {
                 return null;
             }
-            let sheetObj = {};
-            sheetObj.worksheet = {};
-            _.extend(sheetObj.worksheet, file.worksheet);
-            return {name: file.name, data: sheetObj};
+            let sheetModel = {};
+            sheetModel.worksheet = {};
+            _.extend(sheetModel.worksheet, sheetObj.worksheet);
+            return {name: sheetObj.name, data: sheetModel};
         });
     }
 
     names() {
-        return _.map(this.files, (file) => file.name);
+        return _.map(this.sheetObjs, (sheetObj) => sheetObj.name);
     }
 
-    add(sheetId, file) {
-        file.name = `sheet${sheetId}.xml`;
-        this.files.push(file);
+    add(sheetId, sheetObj) {
+        sheetObj.name = `sheet${sheetId}.xml`;
+        this.sheetObjs.push(sheetObj);
     }
 
     delete(fileName) {
-        _.each(this.files, (file, index) => {
-            if(file && (file.name === fileName)) {
-                this.files.splice(index, 1);
+        _.each(this.sheetObjs, (sheetObj, index) => {
+            if(sheetObj && (sheetObj.name === fileName)) {
+                this.sheetObjs.splice(index, 1);
             }
         });
     }
 
     find(fileName) {
-        return _.find(this.files, (e) => (e.name === fileName));
+        return _.find(this.sheetObjs, (sheetObj) => (sheetObj.name === fileName));
     }
 
     stringCount() {
         let stringCount = 0;
-        _.each(this.files, (sheet) => {
-            if(sheet.worksheet) {
-                _.each(sheet.worksheet.sheetData[0].row, (row) => {
+        _.each(this.sheetObjs, (sheetObj) => {
+            if(sheetObj.worksheet) {
+                _.each(sheetObj.worksheet.sheetData[0].row, (row) => {
                     _.each(row.c, (cell) => {
                         if(cell['$'].t) {
                             stringCount++;
@@ -63,8 +63,8 @@ class SheetXmls {
     }
 
     templateSheetData() {
-        return _.find(this.files, (e) => {
-            return (e.name.indexOf('.rels') === -1);
+        return _.find(this.sheetObjs, (sheetObj) => {
+            return (sheetObj.name.indexOf('.rels') === -1);
         }).worksheet.sheetData[0].row;
     }
 }
