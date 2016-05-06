@@ -60,11 +60,7 @@ class SheetXmls {
     }
 
     stringCount() {
-        let stringCount = 0;
-        _.each(this.sheetModels, (sheetModel) => {
-            stringCount += sheetModel.stringCount();
-        });
-        return stringCount;
+        return _.sum(this.sheetModels, (sheetModel) => sheetModel.stringCount());
     }
 
     templateSheetData() {
