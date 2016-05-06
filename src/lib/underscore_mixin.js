@@ -51,7 +51,21 @@ _.mixin({
         return val.replace(/(&lt;|&gt;|&quot;|&#39;|&amp;)/g, (str, item) => decodeMap[item]);
     },
 
-    xml: (obj) => {
-        return _.decode(builder.buildObject(obj));
+    xml: (obj) => _.decode(builder.buildObject(obj)),
+
+    sum: (arrayObj, valueFn) => _.reduce(arrayObj, (sum, obj) => valueFn(obj), 0),
+
+    count: (arrayObj, criteriaFn) => _.sum(arrayObj, (obj) => criteriaFn(obj) ? 1 : 0),
+
+    reverseEach: (arrayObj, fn) => {
+        _.each(_.sortBy(arrayObj, (obj, index) => (-1) * index), fn);
+    },
+
+    splice: (arrayObj, criteriaFn) => {
+        _.reverseEach(arrayObj, (obj, index) => {
+            if(criteriaFn(obj)) {
+                arrayObj.splice(index, 1);
+            }
+        })
     }
 });

@@ -6,66 +6,57 @@
  */
 
 const _ = require('underscore');
+const SheetModel = require('./SheetModel');
 
 class SheetXmls {
 
-    constructor(files) {
-        this.files = files;
+    constructor(sheetObjs) {
+        this.sheetModels = _.map(sheetObjs, (sheetObj) => new SheetModel(sheetObj));
     }
 
     value() {
-        return _.map(this.files, (file) => {
-            if(!file.name) {
+        return _.map(this.sheetModels, (sheetModel) => {
+            if(!sheetModel.getName()) {
                 return null;
             }
-            let sheetObj = {};
-            sheetObj.worksheet = {};
-            _.extend(sheetObj.worksheet, file.worksheet);
-            return {name: file.name, data: sheetObj};
+            let wrk = {};
+            wrk.worksheet = {};
+            _.extend(wrk.worksheet, sheetModel.value().worksheet);
+            return {name: sheetModel.getName(), data: wrk};
         });
     }
 
     names() {
-        return _.map(this.files, (file) => file.name);
+        return _.map(this.sheetModels, (sheetModel) => sheetModel.getName());
     }
 
-    add(sheetId, file) {
-        file.name = `sheet${sheetId}.xml`;
-        this.files.push(file);
+    add(sheetId, sheetObj) {
+        sheetObj.name = `sheet${sheetId}.xml`;
+        this.sheetModels.push(new SheetModel(sheetObj));
     }
 
     delete(fileName) {
-        _.each(this.files, (file, index) => {
-            if(file && (file.name === fileName)) {
-                this.files.splice(index, 1);
-            }
-        });
+        _.splice(
+            this.sheetModels,
+            (sheetModel) => (sheetModel.value() && (sheetModel.getName() === fileName))
+        );
     }
 
     find(fileName) {
-        return _.find(this.files, (e) => (e.name === fileName));
+        return _.find(
+            this.sheetModels,
+            (sheetModel) => sheetModel.value() && (sheetModel.getName() === fileName)
+        );
     }
 
     stringCount() {
-        let stringCount = 0;
-        _.each(this.files, (sheet) => {
-            if(sheet.worksheet) {
-                _.each(sheet.worksheet.sheetData[0].row, (row) => {
-                    _.each(row.c, (cell) => {
-                        if(cell['$'].t) {
-                            stringCount++;
-                        }
-                    });
-                });
-            }
-        });
-        return stringCount;
+        return _.sum(this.sheetModels, (sheetModel) => sheetModel.stringCount());
     }
 
     templateSheetData() {
-        return _.find(this.files, (e) => {
-            return (e.name.indexOf('.rels') === -1);
-        }).worksheet.sheetData[0].row;
+        return _.find(this.sheetModels, (sheetModel) => {
+            return (sheetModel.getName().indexOf('.rels') === -1);
+        }).value().worksheet.sheetData[0].row;
     }
 }
 

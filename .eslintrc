@@ -19,7 +19,7 @@
     "indent": ["error", 4],
 
     "comma-style": ["error", "last"],
-    "brace-style": ["error", "1tbs", { "allowSingleLine": false }],
+    "brace-style": ["error", "1tbs", { "allowSingleLine": true }],
     "consistent-this": ["error", "DO NOT USE"],
 
     "object-curly-spacing": ["error", "never"],
@@ -35,7 +35,6 @@
     "no-multiple-empty-lines": ["error", {
       "max": 1
     }],
-    "no-unused-expressions": "error",
     "no-use-before-define": "error",
     "quotes": ["error", "single"],
     "no-multi-spaces": ["error", {
