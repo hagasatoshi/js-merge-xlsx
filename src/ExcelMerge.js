@@ -24,23 +24,23 @@ class ExcelMerge {
      */
     load(excel) {
         this.excel = excel;
-        return Promise.props({
-            sharedstrings:    excel.parseSharedStrings(),
-            workbookxmlRels:  excel.parseWorkbookRels(),
-            workbookxml:      excel.parseWorkbook(),
-            sheetXmls:        excel.parseWorksheetsDir(),
-            templateSheetRel: excel.templateSheetRel()
-        }).then(
-            ({sharedstrings, workbookxmlRels, workbookxml, sheetXmls, templateSheetRel}) => {
-                this.relationship = new WorkBookRels(workbookxmlRels);
-                this.workbookxml = new WorkBookXml(workbookxml);
-                this.sheetXmls = new SheetXmls(sheetXmls);
-                this.sharedstrings = new SharedStrings(
-                    sharedstrings, this.sheetXmls.templateSheetData()
-                );
-                return this;
-            }
-        );
+        return excel.setTemplateSheetRel()
+        .then(() => {
+            return Promise.props({
+                sharedstrings:   excel.parseSharedStrings(),
+                workbookxmlRels: excel.parseWorkbookRels(),
+                workbookxml:     excel.parseWorkbook(),
+                sheetXmls:       excel.parseWorksheetsDir()
+            })
+        }).then(({sharedstrings, workbookxmlRels, workbookxml, sheetXmls}) => {
+            this.relationship = new WorkBookRels(workbookxmlRels);
+            this.workbookxml = new WorkBookXml(workbookxml);
+            this.sheetXmls = new SheetXmls(sheetXmls);
+            this.sharedstrings = new SharedStrings(
+                sharedstrings, this.sheetXmls.templateSheetData()
+            );
+            return this;
+        });
     }
 
     /**

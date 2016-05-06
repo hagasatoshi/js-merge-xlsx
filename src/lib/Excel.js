@@ -91,7 +91,7 @@ _.extend(Excel.prototype, {
         return this.parseDir(config.DIR_WORKSHEETS_RELS);
     },
 
-    templateSheetRel: function() {
+    setTemplateSheetRel: function() {
         return this.parseWorksheetRelsDir()
         .then((sheetXmlsRels) => {
             this.templateSheetRel = sheetXmlsRels ?
