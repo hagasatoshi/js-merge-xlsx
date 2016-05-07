@@ -36,6 +36,7 @@ class ExcelMerge {
             this.relationship = new WorkBookRels(workbookxmlRels);
             this.workbookxml = new WorkBookXml(workbookxml);
             this.sheetXmls = new SheetXmls(sheetXmls);
+            this.templateSheetModel = this.sheetXmls.getTemplateSheetModel();
             this.sharedstrings = new SharedStrings(
                 sharedstrings, this.sheetXmls.templateSheetData()
             );
@@ -83,7 +84,7 @@ class ExcelMerge {
     bulkMergeMultiSheet(bindingDataArray) {
         return _.reduce(
             bindingDataArray,
-            (thisObj, {name, data}) => thisObj.addSheetBindingData(name, data),
+            (thisObj, {name, data}) => thisObj.addMergedSheet(name, data),
             this
         ).deleteTemplateSheet()
         .generate({type: config.buffer_type_output, compression: config.compression});
@@ -106,23 +107,22 @@ class ExcelMerge {
     }
 
     /**
-     * addSheetBindingData
-     * @param {String} destSheetName
-     * @param {Object} bindingData {key1:value, key2:value, key3:value ~}
+     * addMergedSheet
+     * @param {String} newSheetName
+     * @param {Object} mergeData {key1:value, key2:value, key3:value ~}
      * @return {Object} this
      * @private
      */
-    addSheetBindingData(destSheetName, bindingData) {
+    addMergedSheet(newSheetName, mergeData) {
         let nextId = this.relationship.nextRelationshipId();
         this.relationship.add(nextId);
-        this.workbookxml.add(destSheetName, nextId);
-        let mergedStrings = this.sharedstrings.addMergedStrings(bindingData);
-
-        let sourceSheet = this.findSheetByName(this.workbookxml.firstSheetName()).value;
-        let addedSheet = sourceSheet.cloneWithMergedString(mergedStrings);
-
-        this.sheetXmls.add(nextId, addedSheet.value());
-
+        this.workbookxml.add(newSheetName, nextId);
+        this.sheetXmls.add(
+            `sheet${nextId}.xml`,
+            this.templateSheetModel.cloneWithMergedString(
+                this.sharedstrings.addMergedStrings(mergeData)
+            )
+        );
         return this;
     }
 
