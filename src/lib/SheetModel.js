@@ -16,18 +16,8 @@ class SheetModel {
     stringCount() {
         const stringCountInRow = (cells) => _.count(cells, (cell) => !!cell['$'].t);
         return this.sheetObj.worksheet ?
-            _.sum(this.sheetObj.worksheet.sheetData[0].row, stringCountInRow) :
+            _.sum(this.getRows(), stringCountInRow) :
             0 ;
-    }
-
-    setStringIndex(stringIndex, cellAddress) {
-        _.each(this.sheetObj.worksheet.sheetData[0].row, (row) => {
-            _.each(row.c, (cell) => {
-                if(cell['$'].r === cellAddress) {
-                    cell.v[0] = stringIndex;
-                }
-            });
-        });
     }
 
     value() {
@@ -36,6 +26,38 @@ class SheetModel {
 
     getName() {
         return this.sheetObj.name;
+    }
+
+    getRows() {
+        return this.sheetObj.worksheet.sheetData[0].row;
+    }
+
+    clone(sheetSelected = false) {
+        let cloned = new SheetModel(_.deepCopy(this.sheetObj));
+        cloned.setSheetSelected(sheetSelected);
+        return cloned;
+    }
+
+    setSheetSelected(sheetSelected) {
+        this.sheetObj.worksheet.sheetViews[0].sheetView[0]['$'].tabSelected =
+            sheetSelected ? '1' : '0';
+    }
+
+    updateStringIndex(stringModels) {
+        const updateIndex = (stringModel, row) => {
+            _.each(stringModel.usingCells, (address) => {
+                let cellAtThisAddress = _.find(row.c, (cell) => (cell['$'].r === address));
+                if(cellAtThisAddress) {
+                    cellAtThisAddress.v[0] = stringModel.sharedIndex;
+                }
+            });
+        };
+        _.nestedEach(stringModels, this.getRows(), updateIndex);
+        return this;
+    }
+
+    cloneWithMergedString(stringModels) {
+        return this.clone().updateStringIndex(stringModels);
     }
 }
 

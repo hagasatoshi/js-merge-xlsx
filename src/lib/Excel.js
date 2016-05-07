@@ -84,6 +84,7 @@ _.extend(Excel.prototype, {
 
     removeWorksheet: function(sheetName) {
         this.remove(`${config.DIR_WORKSHEETS}/${sheetName}`);
+        this.remove(`${config.DIR_WORKSHEETS_RELS}/${sheetName}.rels`);
         return this;
     },
 
@@ -91,7 +92,7 @@ _.extend(Excel.prototype, {
         return this.parseDir(config.DIR_WORKSHEETS_RELS);
     },
 
-    templateSheetRel: function() {
+    setTemplateSheetRel: function() {
         return this.parseWorksheetRelsDir()
         .then((sheetXmlsRels) => {
             this.templateSheetRel = sheetXmlsRels ?
@@ -112,11 +113,6 @@ _.extend(Excel.prototype, {
         _.each(sheetNames, (sheetName) => {
             this.file(`${config.DIR_WORKSHEETS_RELS}/${sheetName}.rels`, valueString);
         });
-        return this;
-    },
-
-    removeWorksheetRel: function(sheetName) {
-        this.remove(`${config.DIR_WORKSHEETS_RELS}/${sheetName}.rels`);
         return this;
     },
 

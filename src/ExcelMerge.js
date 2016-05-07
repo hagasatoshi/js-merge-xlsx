@@ -24,23 +24,23 @@ class ExcelMerge {
      */
     load(excel) {
         this.excel = excel;
-        return Promise.props({
-            sharedstrings:    excel.parseSharedStrings(),
-            workbookxmlRels:  excel.parseWorkbookRels(),
-            workbookxml:      excel.parseWorkbook(),
-            sheetXmls:        excel.parseWorksheetsDir(),
-            templateSheetRel: excel.templateSheetRel()
-        }).then(
-            ({sharedstrings, workbookxmlRels, workbookxml, sheetXmls, templateSheetRel}) => {
-                this.relationship = new WorkBookRels(workbookxmlRels);
-                this.workbookxml = new WorkBookXml(workbookxml);
-                this.sheetXmls = new SheetXmls(sheetXmls);
-                this.sharedstrings = new SharedStrings(
-                    sharedstrings, this.sheetXmls.templateSheetData()
-                );
-                return this;
-            }
-        );
+        return excel.setTemplateSheetRel()
+        .then(() => {
+            return Promise.props({
+                sharedstrings:   excel.parseSharedStrings(),
+                workbookxmlRels: excel.parseWorkbookRels(),
+                workbookxml:     excel.parseWorkbook(),
+                sheetXmls:       excel.parseWorksheetsDir()
+            })
+        }).then(({sharedstrings, workbookxmlRels, workbookxml, sheetXmls}) => {
+            this.relationship = new WorkBookRels(workbookxmlRels);
+            this.workbookxml = new WorkBookXml(workbookxml);
+            this.sheetXmls = new SheetXmls(sheetXmls);
+            this.sharedstrings = new SharedStrings(
+                sharedstrings, this.sheetXmls.templateSheetData()
+            );
+            return this;
+        });
     }
 
     /**
@@ -81,8 +81,12 @@ class ExcelMerge {
      * @return {Object} excel data. Blob if on browser. Node-buffer if on Node.js.
      */
     bulkMergeMultiSheet(bindingDataArray) {
-        _.each(bindingDataArray, ({name, data}) => this.addSheetBindingData(name, data));
-        return this.generate({type: config.buffer_type_output, compression: config.compression});
+        return _.reduce(
+            bindingDataArray,
+            (thisObj, {name, data}) => thisObj.addSheetBindingData(name, data),
+            this
+        ).deleteTemplateSheet()
+        .generate({type: config.buffer_type_output, compression: config.compression});
     }
 
     /**
@@ -92,7 +96,6 @@ class ExcelMerge {
      * @private
      */
     generate(option) {
-        this.deleteTemplateSheet();
         return this.excel
             .setSharedStrings(this.sharedstrings.value())
             .setWorkbookRels(this.relationship.value())
@@ -116,9 +119,9 @@ class ExcelMerge {
         let mergedStrings = this.sharedstrings.addMergedStrings(bindingData);
 
         let sourceSheet = this.findSheetByName(this.workbookxml.firstSheetName()).value;
-        let addedSheet = this.buildNewSheet(sourceSheet, mergedStrings);
+        let addedSheet = sourceSheet.cloneWithMergedString(mergedStrings);
 
-        this.sheetXmls.add(nextId, addedSheet);
+        this.sheetXmls.add(nextId, addedSheet.value());
 
         return this;
     }
@@ -133,47 +136,9 @@ class ExcelMerge {
         this.relationship.delete(targetSheet.path);
         this.workbookxml.delete(sheetname);
 
-        _.each(this.sheetXmls.value(), ({name, data}) => {
-            if((name === targetSheet.value.name)) {
-                this.excel.removeWorksheet(targetSheet.value.name);
-                this.excel.removeWorksheetRel(targetSheet.value.name);
-            }
-        });
         this.sheetXmls.delete(targetSheet.value.name);
-    }
-
-    /**
-     * buildNewSheet
-     * @param {Object} sourceSheet
-     * @param {Object} bindingData {key1:value, key2:value, key3:value ~}
-     * @return {SheetXmls}
-     * @private
-     */
-    buildNewSheet(sourceSheet, mergedStrings) {
-        let addedSheet = _.deepCopy(sourceSheet.value());
-        addedSheet.worksheet.sheetViews[0].sheetView[0]['$'].tabSelected = '0';
-        this.setCellIndexes(addedSheet, mergedStrings);
-        return addedSheet;
-    }
-
-    //TODO このメソッドはsheetXmlsのメソッドにうつす予定
-    /**
-     * setCellIndexes
-     * @param {Object} sheet
-     * @param {Object} bindingData {key1:value, key2:value, key3:value ~}
-     */
-    setCellIndexes(sheet, mergedStrings) {
-        _.each(mergedStrings, (string) => {
-            _.each(string.usingCells, (cellAddress) => {
-                _.each(sheet.worksheet.sheetData[0].row, (row) => {
-                    _.each(row.c, (cell) => {
-                        if(cell['$'].r === cellAddress) {
-                            cell.v[0] = string.sharedIndex;
-                        }
-                    });
-                });
-            });
-        });
+        this.excel.removeWorksheet(targetSheet.value.name);
+        return this;
     }
 
     /**
