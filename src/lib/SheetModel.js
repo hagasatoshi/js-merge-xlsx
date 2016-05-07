@@ -16,12 +16,12 @@ class SheetModel {
     stringCount() {
         const stringCountInRow = (cells) => _.count(cells, (cell) => !!cell['$'].t);
         return this.sheetObj.worksheet ?
-            _.sum(this.sheetObj.worksheet.sheetData[0].row, stringCountInRow) :
+            _.sum(this.getRows(), stringCountInRow) :
             0 ;
     }
 
     setStringIndex(stringIndex, cellAddress) {
-        _.each(this.sheetObj.worksheet.sheetData[0].row, (row) => {
+        _.each(this.getRows(), (row) => {
             _.each(row.c, (cell) => {
                 if(cell['$'].r === cellAddress) {
                     cell.v[0] = stringIndex;
@@ -38,6 +38,10 @@ class SheetModel {
         return this.sheetObj.name;
     }
 
+    getRows() {
+        return this.sheetObj.worksheet.sheetData[0].row;
+    }
+
     clone(sheetSelected = false) {
         let cloned = new SheetModel(_.deepCopy(this.sheetObj));
         cloned.setSheetSelected(sheetSelected);
@@ -50,17 +54,15 @@ class SheetModel {
     }
 
     updateStringIndex(stringModels) {
-        _.each(stringModels, (stringModel) => {
-            _.each(stringModel.usingCells, (cellAddress) => {
-                _.each(this.sheetObj.worksheet.sheetData[0].row, (row) => {
-                    _.each(row.c, (cell) => {
-                        if(cell['$'].r === cellAddress) {
-                            cell.v[0] = stringModel.sharedIndex;
-                        }
-                    });
-                });
+        const updateIndex = (stringModel, row) => {
+            _.each(stringModel.usingCells, (address) => {
+                let cellAtThisAddress = _.find(row.c, (cell) => (cell['$'].r === address));
+                if(cellAtThisAddress) {
+                    cellAtThisAddress.v[0] = stringModel.sharedIndex;
+                }
             });
-        });
+        };
+        _.nestedEach(stringModels, this.getRows(), updateIndex);
         return this;
     }
 

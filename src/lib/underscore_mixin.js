@@ -61,6 +61,14 @@ _.mixin({
         _.each(_.sortBy(arrayObj, (obj, index) => (-1) * index), fn);
     },
 
+    nestedEach: (array1, array2, fn) => {
+        _.each(array1, (e1) => {
+            _.each(array2, (e2) => {
+                fn(e1, e2);
+            });
+        });
+    },
+
     splice: (arrayObj, criteriaFn) => {
         _.reverseEach(arrayObj, (obj, index) => {
             if(criteriaFn(obj)) {
