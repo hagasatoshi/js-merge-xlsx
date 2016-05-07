@@ -136,13 +136,8 @@ class ExcelMerge {
         this.relationship.delete(targetSheet.path);
         this.workbookxml.delete(sheetname);
 
-        _.each(this.sheetXmls.value(), ({name, data}) => {
-            if((name === targetSheet.value.name)) {
-                this.excel.removeWorksheet(targetSheet.value.name);
-                this.excel.removeWorksheetRel(targetSheet.value.name);
-            }
-        });
         this.sheetXmls.delete(targetSheet.value.name);
+        this.excel.removeWorksheet(targetSheet.value.name);
         return this;
     }
 
