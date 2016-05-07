@@ -30,9 +30,9 @@ class SheetXmls {
         return _.map(this.sheetModels, (sheetModel) => sheetModel.getName());
     }
 
-    add(sheetId, sheetObj) {
-        sheetObj.name = `sheet${sheetId}.xml`;
-        this.sheetModels.push(new SheetModel(sheetObj));
+    add(xmlFileName, sheetModel) {
+        sheetModel.setName(xmlFileName);
+        this.sheetModels.push(sheetModel);
     }
 
     delete(fileName) {
@@ -47,6 +47,10 @@ class SheetXmls {
             this.sheetModels,
             (sheetModel) => sheetModel.value() && (sheetModel.getName() === fileName)
         );
+    }
+
+    getTemplateSheetModel() {
+        return _.find(this.sheetModels, (sheetModel) => sheetModel.isValid());
     }
 
     stringCount() {

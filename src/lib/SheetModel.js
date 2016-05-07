@@ -24,6 +24,15 @@ class SheetModel {
         return this.sheetObj;
     }
 
+    setName(xmlFileName) {
+        this.sheetObj.name = xmlFileName;
+        return this;
+    }
+
+    isValid() {
+        return !!this.sheetObj.worksheet;
+    }
+
     getName() {
         return this.sheetObj.name;
     }
