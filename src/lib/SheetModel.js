@@ -20,16 +20,6 @@ class SheetModel {
             0 ;
     }
 
-    setStringIndex(stringIndex, cellAddress) {
-        _.each(this.getRows(), (row) => {
-            _.each(row.c, (cell) => {
-                if(cell['$'].r === cellAddress) {
-                    cell.v[0] = stringIndex;
-                }
-            });
-        });
-    }
-
     value() {
         return this.sheetObj;
     }
