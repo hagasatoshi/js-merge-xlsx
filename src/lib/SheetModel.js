@@ -37,6 +37,36 @@ class SheetModel {
     getName() {
         return this.sheetObj.name;
     }
+
+    clone(sheetSelected = false) {
+        let cloned = new SheetModel(_.deepCopy(this.sheetObj));
+        cloned.setSheetSelected(sheetSelected);
+        return cloned;
+    }
+
+    setSheetSelected(sheetSelected) {
+        this.sheetObj.worksheet.sheetViews[0].sheetView[0]['$'].tabSelected =
+            sheetSelected ? '1' : '0';
+    }
+
+    updateStringIndex(stringModels) {
+        _.each(stringModels, (stringModel) => {
+            _.each(stringModel.usingCells, (cellAddress) => {
+                _.each(this.sheetObj.worksheet.sheetData[0].row, (row) => {
+                    _.each(row.c, (cell) => {
+                        if(cell['$'].r === cellAddress) {
+                            cell.v[0] = stringModel.sharedIndex;
+                        }
+                    });
+                });
+            });
+        });
+        return this;
+    }
+
+    cloneWithMergedString(stringModels) {
+        return this.clone().updateStringIndex(stringModels);
+    }
 }
 
 module.exports = SheetModel;

@@ -119,9 +119,9 @@ class ExcelMerge {
         let mergedStrings = this.sharedstrings.addMergedStrings(bindingData);
 
         let sourceSheet = this.findSheetByName(this.workbookxml.firstSheetName()).value;
-        let addedSheet = this.buildNewSheet(sourceSheet, mergedStrings);
+        let addedSheet = sourceSheet.cloneWithMergedString(mergedStrings);
 
-        this.sheetXmls.add(nextId, addedSheet);
+        this.sheetXmls.add(nextId, addedSheet.value());
 
         return this;
     }
@@ -139,40 +139,6 @@ class ExcelMerge {
         this.sheetXmls.delete(targetSheet.value.name);
         this.excel.removeWorksheet(targetSheet.value.name);
         return this;
-    }
-
-    /**
-     * buildNewSheet
-     * @param {Object} sourceSheet
-     * @param {Object} bindingData {key1:value, key2:value, key3:value ~}
-     * @return {SheetXmls}
-     * @private
-     */
-    buildNewSheet(sourceSheet, mergedStrings) {
-        let addedSheet = _.deepCopy(sourceSheet.value());
-        addedSheet.worksheet.sheetViews[0].sheetView[0]['$'].tabSelected = '0';
-        this.setCellIndexes(addedSheet, mergedStrings);
-        return addedSheet;
-    }
-
-    //TODO このメソッドはsheetXmlsのメソッドにうつす予定
-    /**
-     * setCellIndexes
-     * @param {Object} sheet
-     * @param {Object} bindingData {key1:value, key2:value, key3:value ~}
-     */
-    setCellIndexes(sheet, mergedStrings) {
-        _.each(mergedStrings, (string) => {
-            _.each(string.usingCells, (cellAddress) => {
-                _.each(sheet.worksheet.sheetData[0].row, (row) => {
-                    _.each(row.c, (cell) => {
-                        if(cell['$'].r === cellAddress) {
-                            cell.v[0] = string.sharedIndex;
-                        }
-                    });
-                });
-            });
-        });
     }
 
     /**
