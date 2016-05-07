@@ -81,8 +81,12 @@ class ExcelMerge {
      * @return {Object} excel data. Blob if on browser. Node-buffer if on Node.js.
      */
     bulkMergeMultiSheet(bindingDataArray) {
-        _.each(bindingDataArray, ({name, data}) => this.addSheetBindingData(name, data));
-        return this.generate({type: config.buffer_type_output, compression: config.compression});
+        return _.reduce(
+            bindingDataArray,
+            (thisObj, {name, data}) => thisObj.addSheetBindingData(name, data),
+            this
+        ).deleteTemplateSheet()
+        .generate({type: config.buffer_type_output, compression: config.compression});
     }
 
     /**
@@ -92,7 +96,6 @@ class ExcelMerge {
      * @private
      */
     generate(option) {
-        this.deleteTemplateSheet();
         return this.excel
             .setSharedStrings(this.sharedstrings.value())
             .setWorkbookRels(this.relationship.value())
@@ -140,6 +143,7 @@ class ExcelMerge {
             }
         });
         this.sheetXmls.delete(targetSheet.value.name);
+        return this;
     }
 
     /**
