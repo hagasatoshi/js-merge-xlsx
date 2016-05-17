@@ -140,7 +140,17 @@ _.extend(Excel.prototype, {
 
     merge: function(mergedData) {
         return this.file('xl/sharedStrings.xml', Mustache.render(this.sharedStrings(), mergedData))
+    },
+
+    generateWithData(excelObj, option) {
+        return this.setSharedStrings(excelObj.sharedstrings.value())
+            .setWorkbookRels(excelObj.relationship.value())
+            .setWorkbook(excelObj.workbookxml.value())
+            .setWorksheets(excelObj.sheetXmls.value())
+            .setWorksheetRels(excelObj.sheetXmls.names())
+            .generate(option);
     }
+
 });
 
 Excel.instanceOf = function(excel) {
