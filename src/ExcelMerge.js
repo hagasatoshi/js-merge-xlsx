@@ -17,36 +17,39 @@ const SheetXmls = require('./lib/SheetXmls');
 const SharedStrings = require('./lib/SharedStrings');
 const config = require('./lib/Config');
 
-const merge = (template, data, oututType = config.JSZIP_OPTION.BUFFER_TYPE_OUTPUT) => {
-    let templateObj = new JSZip(template);
-    return templateObj.file(
-        config.EXCEL_FILES.FILE_SHARED_STRINGS,
-        Mustache.render(templateObj.file(config.EXCEL_FILES.FILE_SHARED_STRINGS).asText(), data)
-    )
-    .generate({type: oututType, compression: config.JSZIP_OPTION.COMPLESSION});
-};
+const ExcelMerge = {
 
-const bulkMergeToFiles = (template, arrayObj) => {
-    return _.reduce(arrayObj, (zip, {name, data}) => {
-        zip.file(name, merge(template, data, config.JSZIP_OPTION.buffer_type_jszip));
-        return zip;
-    }, new JSZip())
-    .generate({
-        type:        config.JSZIP_OPTION.BUFFER_TYPE_OUTPUT,
-        compression: config.JSZIP_OPTION.COMPLESSION
-    });
-};
+    merge: (template, data, oututType = config.JSZIP_OPTION.BUFFER_TYPE_OUTPUT) => {
+        let templateObj = new JSZip(template);
+        return templateObj.file(
+            config.EXCEL_FILES.FILE_SHARED_STRINGS,
+            Mustache.render(templateObj.file(config.EXCEL_FILES.FILE_SHARED_STRINGS).asText(), data)
+        )
+        .generate({type: oututType, compression: config.JSZIP_OPTION.COMPLESSION});
+    },
 
-const bulkMergeToSheets = (template, arrayObj) => {
-    return parse(template)
-    .then((templateObj) => {
-        let excelObj = new Merge(templateObj)
-            .addMergedSheets(arrayObj)
-            //TODO Should delete template sheet.
-            //.deleteTemplateSheet()
-            .value();
-        return new Excel(template).generateWithData(excelObj);
-    });
+    bulkMergeToFiles: (template, arrayObj) => {
+        return _.reduce(arrayObj, (zip, {name, data}) => {
+            zip.file(name, ExcelMerge.merge(template, data, config.JSZIP_OPTION.buffer_type_jszip));
+            return zip;
+        }, new JSZip())
+        .generate({
+            type:        config.JSZIP_OPTION.BUFFER_TYPE_OUTPUT,
+            compression: config.JSZIP_OPTION.COMPLESSION
+        });
+    },
+
+    bulkMergeToSheets: (template, arrayObj) => {
+        return parse(template)
+        .then((templateObj) => {
+            let excelObj = new Merge(templateObj)
+                .addMergedSheets(arrayObj)
+                //TODO Should delete template sheet.
+                //.deleteTemplateSheet()
+                .value();
+            return new Excel(template).generateWithData(excelObj);
+        });
+    }
 };
 
 const parse = (template) => {
@@ -118,4 +121,4 @@ class Merge {
     }
 }
 
-module.exports = {merge, bulkMergeToFiles, bulkMergeToSheets};
+module.exports = ExcelMerge;
