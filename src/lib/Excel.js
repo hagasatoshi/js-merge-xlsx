@@ -1,32 +1,21 @@
 /**
  * Excel
- * JSZip extension class
  * @author Satoshi Haga
  * @date 2016/03/27
  */
 
 const Mustache = require('mustache');
-let Excel = require('jszip');
 const Promise = require('bluebird');
-const xml2js = require('xml2js');
-const parseString = Promise.promisify(xml2js.parseString);
+const parseString = Promise.promisify(require('xml2js').parseString);
 const _ = require('underscore');
 require('./underscore_mixin');
-const isNode = require('detect-node');
-const jszipBuffer = {type: (isNode?'nodebuffer':'arraybuffer'), compression: 'DEFLATE'};
-
-const config = {
-    FILE_SHARED_STRINGS: 'xl/sharedStrings.xml',
-    FILE_WORKBOOK_RELS:  'xl/_rels/workbook.xml.rels',
-    FILE_WORKBOOK:       'xl/workbook.xml',
-    DIR_WORKSHEETS:      'xl/worksheets',
-    DIR_WORKSHEETS_RELS: 'xl/worksheets/_rels'
-};
+const config = require('./Config');
+let Excel = require('jszip');
 
 _.extend(Excel.prototype, {
 
     sharedStrings: function() {
-        return this.file(config.FILE_SHARED_STRINGS).asText();
+        return this.file(config.EXCEL_FILES.FILE_SHARED_STRINGS).asText();
     },
 
     variables: function() {
@@ -34,7 +23,7 @@ _.extend(Excel.prototype, {
     },
 
     parseSharedStrings: function() {
-        return this.parseFile(config.FILE_SHARED_STRINGS);
+        return this.parseFile(config.EXCEL_FILES.FILE_SHARED_STRINGS);
     },
 
     hasAsSharedString: function(targetStr) {
@@ -43,35 +32,35 @@ _.extend(Excel.prototype, {
 
     setSharedStrings: function(obj) {
         if(obj) {
-            this.file(config.FILE_SHARED_STRINGS, _.xml(obj));
+            this.file(config.EXCEL_FILES.FILE_SHARED_STRINGS, _.xml(obj));
         }
         return this;
     },
 
     parseWorkbookRels: function() {
-        return this.parseFile(config.FILE_WORKBOOK_RELS);
+        return this.parseFile(config.EXCEL_FILES.FILE_WORKBOOK_RELS);
     },
 
     setWorkbookRels: function(obj) {
-        this.file(config.FILE_WORKBOOK_RELS, _.xml(obj));
+        this.file(config.EXCEL_FILES.FILE_WORKBOOK_RELS, _.xml(obj));
         return this;
     },
 
     parseWorkbook: function() {
-        return this.parseFile(config.FILE_WORKBOOK);
+        return this.parseFile(config.EXCEL_FILES.FILE_WORKBOOK);
     },
 
     setWorkbook: function(obj) {
-        this.file(config.FILE_WORKBOOK, _.xml(obj));
+        this.file(config.EXCEL_FILES.FILE_WORKBOOK, _.xml(obj));
         return this;
     },
 
     parseWorksheetsDir: function() {
-        return this.parseDir(config.DIR_WORKSHEETS);
+        return this.parseDir(config.EXCEL_FILES.DIR_WORKSHEETS);
     },
 
     setWorksheet: function(sheetName, obj) {
-        this.file(`${config.DIR_WORKSHEETS}/${sheetName}`, _.xml(obj));
+        this.file(`${config.EXCEL_FILES.DIR_WORKSHEETS}/${sheetName}`, _.xml(obj));
         return this;
     },
 
@@ -83,13 +72,13 @@ _.extend(Excel.prototype, {
     },
 
     removeWorksheet: function(sheetName) {
-        this.remove(`${config.DIR_WORKSHEETS}/${sheetName}`);
-        this.remove(`${config.DIR_WORKSHEETS_RELS}/${sheetName}.rels`);
+        this.remove(`${config.EXCEL_FILES.DIR_WORKSHEETS}/${sheetName}`);
+        this.remove(`${config.EXCEL_FILES.DIR_WORKSHEETS_RELS}/${sheetName}.rels`);
         return this;
     },
 
     parseWorksheetRelsDir: function() {
-        return this.parseDir(config.DIR_WORKSHEETS_RELS);
+        return this.parseDir(config.EXCEL_FILES.DIR_WORKSHEETS_RELS);
     },
 
     setTemplateSheetRel: function() {
@@ -97,11 +86,12 @@ _.extend(Excel.prototype, {
         .then((sheetXmlsRels) => {
             this.templateSheetRel = sheetXmlsRels ?
                 {Relationships: sheetXmlsRels[0].Relationships} : null;
+            return this;
         });
     },
 
     setWorksheetRel: function(sheetName, obj) {
-        this.file(`${config.DIR_WORKSHEETS_RELS}/${sheetName}.rels`, _.xml(obj));
+        this.file(`${config.EXCEL_FILES.DIR_WORKSHEETS_RELS}/${sheetName}.rels`, _.xml(obj));
         return this;
     },
 
@@ -111,7 +101,7 @@ _.extend(Excel.prototype, {
         }
         let valueString = _.xml(this.templateSheetRel);
         _.each(sheetNames, (sheetName) => {
-            this.file(`${config.DIR_WORKSHEETS_RELS}/${sheetName}.rels`, valueString);
+            this.file(`${config.EXCEL_FILES.DIR_WORKSHEETS_RELS}/${sheetName}.rels`, valueString);
         });
         return this;
     },
@@ -142,19 +132,18 @@ _.extend(Excel.prototype, {
         return this.file('xl/sharedStrings.xml', Mustache.render(this.sharedStrings(), mergedData))
     },
 
-    generateWithData(excelObj, option) {
+    generateWithData(excelObj) {
         return this.setSharedStrings(excelObj.sharedstrings.value())
             .setWorkbookRels(excelObj.relationship.value())
             .setWorkbook(excelObj.workbookxml.value())
             .setWorksheets(excelObj.sheetXmls.value())
             .setWorksheetRels(excelObj.sheetXmls.names())
-            .generate(option);
+            .generate({
+                type:        config.JSZIP_OPTION.BUFFER_TYPE_OUTPUT,
+                compression: config.JSZIP_OPTION.COMPLESSION}
+            );
     }
 
 });
-
-Excel.instanceOf = function(excel) {
-    return new Excel(excel.generate(jszipBuffer));
-};
 
 module.exports = Excel;

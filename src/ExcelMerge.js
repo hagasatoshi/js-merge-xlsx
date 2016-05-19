@@ -1,3 +1,9 @@
+/**
+ * ExcelMerge
+ * @author Satoshi Haga
+ * @date 2016/03/27
+ */
+
 const Promise = require('bluebird');
 const _ = require('underscore');
 const JSZip = require('jszip');
@@ -9,37 +15,26 @@ const WorkBookXml = require('./lib/WorkBookXml');
 const WorkBookRels = require('./lib/WorkBookRels');
 const SheetXmls = require('./lib/SheetXmls');
 const SharedStrings = require('./lib/SharedStrings');
+const config = require('./lib/Config');
 
-const isNode = require('detect-node');
-const config = {
-    compression:        'DEFLATE',
-    buffer_type_output: (isNode ? 'nodebuffer' : 'blob'),
-    buffer_type_jszip:  (isNode ? 'nodebuffer' : 'arraybuffer')
-};
-
-const EXCEL_FILE = {
-    SHARED_STRINGS:      'xl/sharedStrings.xml',
-    WORKBOOK_RELS:       'xl/_rels/workbook.xml.rels',
-    WORKBOOK:            'xl/workbook.xml',
-    DIR_WORKSHEETS:      'xl/worksheets',
-    DIR_WORKSHEETS_RELS: 'xl/worksheets/_rels'
-};
-
-const merge = (template, data, oututType = config.buffer_type_output) => {
+const merge = (template, data, oututType = config.JSZIP_OPTION.BUFFER_TYPE_OUTPUT) => {
     let templateObj = new JSZip(template);
     return templateObj.file(
-        EXCEL_FILE.SHARED_STRINGS,
-        Mustache.render(templateObj.file(EXCEL_FILE.SHARED_STRINGS).asText(), data)
+        config.EXCEL_FILES.FILE_SHARED_STRINGS,
+        Mustache.render(templateObj.file(config.EXCEL_FILES.FILE_SHARED_STRINGS).asText(), data)
     )
-    .generate({type: oututType, compression: config.compression});
+    .generate({type: oututType, compression: config.JSZIP_OPTION.COMPLESSION});
 };
 
 const bulkMergeToFiles = (template, arrayObj) => {
     return _.reduce(arrayObj, (zip, {name, data}) => {
-        zip.file(name, merge(template, data, config.buffer_type_jszip));
+        zip.file(name, merge(template, data, config.JSZIP_OPTION.buffer_type_jszip));
         return zip;
     }, new JSZip())
-    .generate({type: config.buffer_type_output, compression: config.compression});
+    .generate({
+        type:        config.JSZIP_OPTION.BUFFER_TYPE_OUTPUT,
+        compression: config.JSZIP_OPTION.COMPLESSION
+    });
 };
 
 const bulkMergeToSheets = (template, arrayObj) => {
@@ -47,32 +42,30 @@ const bulkMergeToSheets = (template, arrayObj) => {
     .then((templateObj) => {
         let excelObj = new Merge(templateObj)
             .addMergedSheets(arrayObj)
-            .deleteTemplateSheet()
+            //TODO Should delete template sheet.
+            //.deleteTemplateSheet()
             .value();
-        return new Excel(template).generateWithData(
-            excelObj,
-            {type: config.buffer_type_output, compression: config.compression}
-        );
+        return new Excel(template).generateWithData(excelObj);
     });
 };
 
 const parse = (template) => {
     return new Excel(template).setTemplateSheetRel()
-        .then(() => {
+        .then((templateObj) => {
             return Promise.props({
-                sharedstrings:   excel.parseSharedStrings(),
-                workbookxmlRels: excel.parseWorkbookRels(),
-                workbookxml:     excel.parseWorkbook(),
-                sheetXmls:       excel.parseWorksheetsDir()
+                sharedstrings:   templateObj.parseSharedStrings(),
+                workbookxmlRels: templateObj.parseWorkbookRels(),
+                workbookxml:     templateObj.parseWorkbook(),
+                sheetXmls:       templateObj.parseWorksheetsDir()
             })
         }).then(({sharedstrings, workbookxmlRels, workbookxml, sheetXmls}) => {
             let sheetXmlObjs = new SheetXmls(sheetXmls);
             return {
-                relationship: new WorkBookRels(workbookxmlRels),
-                workbookxml: new WorkBookXml(workbookxml),
-                sheetXmls: sheetXmlObjs,
+                relationship:       new WorkBookRels(workbookxmlRels),
+                workbookxml:        new WorkBookXml(workbookxml),
+                sheetXmls:          sheetXmlObjs,
                 templateSheetModel: sheetXmlObjs.getTemplateSheetModel(),
-                sharedstrings: new SharedStrings(
+                sharedstrings:      new SharedStrings(
                     sharedstrings, sheetXmlObjs.templateSheetData()
                 )
             };
@@ -86,7 +79,7 @@ class Merge {
     }
 
     addMergedSheets(dataArray) {
-        this.excelObj = _.each(dataArray, ({newSheetName, mergeData}) => this.addMergedSheet(newSheetName, mergeData));
+        _.each(dataArray, ({name, data}) => this.addMergedSheet(name, data));
         return this;
     }
 
@@ -103,24 +96,21 @@ class Merge {
     };
 
     deleteTemplateSheet() {
-        let sheetname = this.workbookxml.firstSheetName();
+        let sheetname = this.excelObj.workbookxml.firstSheetName();
         let targetSheet = this.findSheetByName(sheetname);
-        this.relationship.delete(targetSheet.path);
-        this.workbookxml.delete(sheetname);
-
-        this.sheetXmls.delete(targetSheet.value.name);
-        this.excel.removeWorksheet(targetSheet.value.name);
+        this.excelObj.relationship.delete(targetSheet.path);
+        this.excelObj.workbookxml.delete(sheetname);
         return this;
     }
 
     findSheetByName(sheetname) {
-        let sheetid = this.workbookxml.findSheetId(sheetname);
+        let sheetid = this.excelObj.workbookxml.findSheetId(sheetname);
         if(!sheetid) {
             return null;
         }
-        let targetFilePath = this.relationship.findSheetPath(sheetid);
+        let targetFilePath = this.excelObj.relationship.findSheetPath(sheetid);
         let targetFileName = _.last(targetFilePath.split('/'));
-        return {path: targetFilePath, value: this.sheetXmls.find(targetFileName)};
+        return {path: targetFilePath, value: this.excelObj.sheetXmls.find(targetFileName)};
     }
 
     value() {
