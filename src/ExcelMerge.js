@@ -8,34 +8,30 @@ const Promise = require('bluebird');
 const _ = require('underscore');
 const JSZip = require('jszip');
 const Mustache = require('mustache');
-require('./lib/underscore_mixin');
-
-const Excel = require('./lib/Excel');
-const WorkBookXml = require('./lib/WorkBookXml');
-const WorkBookRels = require('./lib/WorkBookRels');
-const SheetXmls = require('./lib/SheetXmls');
-const SharedStrings = require('./lib/SharedStrings');
-const config = require('./lib/Config');
+const {
+    Excel, WorkBookXml, WorkBookRels, SheetXmls,
+    SharedStrings, Config, underscore_mixin
+} = require('require-dir')('./lib');
 
 const ExcelMerge = {
 
-    merge: (template, data, oututType = config.JSZIP_OPTION.BUFFER_TYPE_OUTPUT) => {
+    merge: (template, data, oututType = Config.JSZIP_OPTION.BUFFER_TYPE_OUTPUT) => {
         let templateObj = new JSZip(template);
         return templateObj.file(
-            config.EXCEL_FILES.FILE_SHARED_STRINGS,
-            Mustache.render(templateObj.file(config.EXCEL_FILES.FILE_SHARED_STRINGS).asText(), data)
+            Config.EXCEL_FILES.FILE_SHARED_STRINGS,
+            Mustache.render(templateObj.file(Config.EXCEL_FILES.FILE_SHARED_STRINGS).asText(), data)
         )
-        .generate({type: oututType, compression: config.JSZIP_OPTION.COMPLESSION});
+        .generate({type: oututType, compression: Config.JSZIP_OPTION.COMPLESSION});
     },
 
     bulkMergeToFiles: (template, arrayObj) => {
         return _.reduce(arrayObj, (zip, {name, data}) => {
-            zip.file(name, ExcelMerge.merge(template, data, config.JSZIP_OPTION.buffer_type_jszip));
+            zip.file(name, ExcelMerge.merge(template, data, Config.JSZIP_OPTION.buffer_type_jszip));
             return zip;
         }, new JSZip())
         .generate({
-            type:        config.JSZIP_OPTION.BUFFER_TYPE_OUTPUT,
-            compression: config.JSZIP_OPTION.COMPLESSION
+            type:        Config.JSZIP_OPTION.BUFFER_TYPE_OUTPUT,
+            compression: Config.JSZIP_OPTION.COMPLESSION
         });
     },
 
