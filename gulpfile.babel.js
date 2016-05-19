@@ -10,6 +10,7 @@ const runSequence = require('run-sequence');
 const config = {
     js: {
         src:  'src/**/*.js',
+        test: 'test/**/*.js',
         dest: './'
     },
     uglify: {
@@ -49,17 +50,18 @@ gulp.task('test-setup', () => {
         .pipe(gulp.dest(config.test.dest));
 });
 
-gulp.task('mocha', () => {
-    return gulp.src(config.test.main)
-        .pipe($.mocha());
-});
-
 gulp.task('lint', () => {
     return gulp.src(config.js.src)
         .pipe($.eslint({useEslintrc: true}))
         .pipe($.eslint.format())
         .pipe($.eslint.failAfterError());
 });
+
+gulp.task('mocha', () => {
+    return gulp.src(config.js.test)
+        .pipe($.mocha());
+});
+
 gulp.task('default', (cb) => {
     runSequence(
         'lint', ['compile','test-setup'], 'compress', 'mocha', cb

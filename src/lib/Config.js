@@ -1,0 +1,22 @@
+/**
+ * Config
+ * @author Satoshi Haga
+ * @date 2016/03/27
+ */
+
+const isNode = require('detect-node');
+
+module.exports =  {
+    EXCEL_FILES: {
+        FILE_SHARED_STRINGS: 'xl/sharedStrings.xml',
+        FILE_WORKBOOK_RELS:  'xl/_rels/workbook.xml.rels',
+        FILE_WORKBOOK:       'xl/workbook.xml',
+        DIR_WORKSHEETS:      'xl/worksheets',
+        DIR_WORKSHEETS_RELS: 'xl/worksheets/_rels'
+    },
+    JSZIP_OPTION: {
+        COMPLESSION:        'DEFLATE',
+        BUFFER_TYPE_OUTPUT: (isNode ? 'nodebuffer' : 'blob'),
+        BUFFER_TYPE_JSZIP:  (isNode ? 'nodebuffer' : 'arraybuffer')
+    }
+};
