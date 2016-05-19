@@ -35,7 +35,6 @@
     "no-multiple-empty-lines": ["error", {
       "max": 1
     }],
-    "no-use-before-define": "error",
     "quotes": ["error", "single"],
     "no-multi-spaces": ["error", {
       "exceptions": {
