@@ -133,17 +133,19 @@ _.extend(Excel.prototype, {
     },
 
     generateWithData(excelObj) {
-        return this.setSharedStrings(excelObj.sharedstrings.value())
-            .setWorkbookRels(excelObj.relationship.value())
-            .setWorkbook(excelObj.workbookxml.value())
-            .setWorksheets(excelObj.sheetXmls.value())
-            .setWorksheetRels(excelObj.sheetXmls.names())
-            .generate({
-                type:        config.JSZIP_OPTION.BUFFER_TYPE_OUTPUT,
-                compression: config.JSZIP_OPTION.COMPLESSION}
-            );
+        return this.setTemplateSheetRel()
+            .then(() => {
+                return this.setSharedStrings(excelObj.sharedstrings.value())
+                    .setWorkbookRels(excelObj.relationship.value())
+                    .setWorkbook(excelObj.workbookxml.value())
+                    .setWorksheets(excelObj.sheetXmls.value())
+                    .setWorksheetRels(excelObj.sheetXmls.names())
+                    .generate({
+                        type:        config.JSZIP_OPTION.BUFFER_TYPE_OUTPUT,
+                        compression: config.JSZIP_OPTION.COMPLESSION}
+                    );
+            })
     }
-
 });
 
 module.exports = Excel;

@@ -40,8 +40,7 @@ const ExcelMerge = {
         .then((templateObj) => {
             let excelObj = new Merge(templateObj)
                 .addMergedSheets(arrayObj)
-                //TODO Should delete template sheet.
-                //.deleteTemplateSheet()
+                .deleteTemplateSheet()
                 .value();
             return new Excel(template).generateWithData(excelObj);
         });
@@ -49,26 +48,24 @@ const ExcelMerge = {
 };
 
 const parse = (template) => {
-    return new Excel(template).setTemplateSheetRel()
-        .then((templateObj) => {
-            return Promise.props({
-                sharedstrings:   templateObj.parseSharedStrings(),
-                workbookxmlRels: templateObj.parseWorkbookRels(),
-                workbookxml:     templateObj.parseWorkbook(),
-                sheetXmls:       templateObj.parseWorksheetsDir()
-            })
-        }).then(({sharedstrings, workbookxmlRels, workbookxml, sheetXmls}) => {
-            let sheetXmlObjs = new SheetXmls(sheetXmls);
-            return {
-                relationship:       new WorkBookRels(workbookxmlRels),
-                workbookxml:        new WorkBookXml(workbookxml),
-                sheetXmls:          sheetXmlObjs,
-                templateSheetModel: sheetXmlObjs.getTemplateSheetModel(),
-                sharedstrings:      new SharedStrings(
-                    sharedstrings, sheetXmlObjs.templateSheetData()
-                )
-            };
-        });
+    let templateObj = new Excel(template);
+    return Promise.props({
+        sharedstrings:   templateObj.parseSharedStrings(),
+        workbookxmlRels: templateObj.parseWorkbookRels(),
+        workbookxml:     templateObj.parseWorkbook(),
+        sheetXmls:       templateObj.parseWorksheetsDir()
+    }).then(({sharedstrings, workbookxmlRels, workbookxml, sheetXmls}) => {
+        let sheetXmlObjs = new SheetXmls(sheetXmls);
+        return {
+            relationship:       new WorkBookRels(workbookxmlRels),
+            workbookxml:        new WorkBookXml(workbookxml),
+            sheetXmls:          sheetXmlObjs,
+            templateSheetModel: sheetXmlObjs.getTemplateSheetModel(),
+            sharedstrings:      new SharedStrings(
+                sharedstrings, sheetXmlObjs.templateSheetData()
+            )
+        };
+    });
 };
 
 class Merge {
