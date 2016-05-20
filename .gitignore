@@ -3,8 +3,7 @@ node_modules
 bower_components
 .idea
 build
-test/mocha/output/**/*.xlsx
-test/mocha/output/**/*.zip
+test/output
 .env
 
 
