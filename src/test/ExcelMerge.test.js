@@ -3,7 +3,7 @@ const _ = require('underscore');
 const readYamlAsync = Promise.promisify(require('read-yaml'));
 const fs = Promise.promisifyAll(require('fs'));
 const excelmerge = require('../ExcelMerge');
-const assert = require('assert');
+const assert = require('chai').assert;
 
 const config = {
     templateDir: './test/templates/',
@@ -36,10 +36,10 @@ describe('test for excelmerge.merge()', () => {
                     `${config.outptutDir}test1.xlsx`, excelmerge.merge(template, data)
                 );
             }).then(() => {
-                assert(true);
+                assert.isOk(true);
             }).catch((err) => {
                 console.log(err);
-                assert(false);
+                assert.isOk(false);
             });
     });
 });
@@ -57,10 +57,10 @@ describe('test for excelmerge.bulkMergeToFiles()', () => {
                     excelmerge.bulkMergeToFiles(template, arrayObj)
                 );
             }).then(() => {
-                assert(true);
+                assert.isOk(true);
             }).catch((err) => {
                 console.log(err);
-                assert(false);
+                assert.isOk(false);
             });
     });
 });
@@ -79,10 +79,10 @@ describe('test for excelmerge.bulkMergeToSheets()', () => {
                     `${config.outptutDir}test3.xlsx`, excelData
                 );
             }).then(() => {
-                assert(true);
+                assert.isOk(true);
             }).catch((err) => {
                 console.log(err);
-                assert(false);
+                assert.isOk(false);
             });
     });
 });

@@ -5,7 +5,7 @@ var _ = require('underscore');
 var readYamlAsync = Promise.promisify(require('read-yaml'));
 var fs = Promise.promisifyAll(require('fs'));
 var excelmerge = require('../ExcelMerge');
-var assert = require('assert');
+var assert = require('chai').assert;
 
 var config = {
     templateDir: './test/templates/',
@@ -38,10 +38,10 @@ describe('test for excelmerge.merge()', function () {
 
             return fs.writeFileAsync(config.outptutDir + 'test1.xlsx', excelmerge.merge(template, data));
         }).then(function () {
-            assert(true);
+            assert.isOk(true);
         })['catch'](function (err) {
             console.log(err);
-            assert(false);
+            assert.isOk(false);
         });
     });
 });
@@ -58,10 +58,10 @@ describe('test for excelmerge.bulkMergeToFiles()', function () {
             });
             return fs.writeFileAsync(config.outptutDir + 'test2.zip', excelmerge.bulkMergeToFiles(template, arrayObj));
         }).then(function () {
-            assert(true);
+            assert.isOk(true);
         })['catch'](function (err) {
             console.log(err);
-            assert(false);
+            assert.isOk(false);
         });
     });
 });
@@ -80,10 +80,10 @@ describe('test for excelmerge.bulkMergeToSheets()', function () {
         }).then(function (excelData) {
             return fs.writeFileAsync(config.outptutDir + 'test3.xlsx', excelData);
         }).then(function () {
-            assert(true);
+            assert.isOk(true);
         })['catch'](function (err) {
             console.log(err);
-            assert(false);
+            assert.isOk(false);
         });
     });
 });
