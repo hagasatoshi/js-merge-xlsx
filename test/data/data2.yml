@@ -1,4 +1,4 @@
-- AccountName__c:  サンプル太郎
+- AccountName__c:  サンプル<>"\&'太郎
   AccountAddress__c: 東京都サンプル市サンプル町000-0000
   StartDateFormat__c: 2015年10月1日
   EndDateFormat__c: 2016年9月30日

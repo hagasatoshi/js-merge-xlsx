@@ -18,7 +18,7 @@ class SharedStrings {
     }
 
     parseStringModels() {
-        if(!this.rawObj.sst.si) {
+        if(!this.rawObj.sst || !this.rawObj.sst.si) {
             return null;
         }
         let stringModels = _.deepCopy(this.rawObj.sst.si);

@@ -29,7 +29,10 @@ _.mixin({
         if(!_(template).isString()) {
             return null;
         }
-        return _.map( _.filter(Mustache.parse(template), (e) => (e[0] === 'name')), (e) => e[1]);
+        // TODO should return only element having variables as '{{}}' and '{{{}}}'
+        // by regular expression
+        //return _.map(_.filter(Mustache.parse(template), (e) => (e[0] === 'name')), (e) => e[1]);
+        return _.map(template, (e) => e[1]);
     },
 
     hasVariable: (template) => {
@@ -44,14 +47,6 @@ _.mixin({
         _.each(data, (e) => _.each(properties, (prop) => delete e[prop]));
         return isArray? data : data[0];
     },
-
-    decode: (val) => {
-        if(!val || (typeof val !== 'string')) return val;
-        let decodeMap = {'&lt;': '<', '&gt;': '>', '&quot;': '"', '&#39;': '\'', '&amp;': '&'};
-        return val.replace(/(&lt;|&gt;|&quot;|&#39;|&amp;)/g, (str, item) => decodeMap[item]);
-    },
-
-    xml: (obj) => _.decode(builder.buildObject(obj)),
 
     sum: (arrayObj, valueFn) => _.reduce(arrayObj, (sum, obj) => valueFn(obj), 0),
 
@@ -75,5 +70,11 @@ _.mixin({
                 arrayObj.splice(index, 1);
             }
         })
+    },
+
+    containsAsPartialString: (array, str) => {
+        return _.reduce(array, (contained, e) => {
+            return contained || (e.indexOf(str) !== -1);
+        }, false)
     }
 });

@@ -6,7 +6,9 @@
 
 const Mustache = require('mustache');
 const Promise = require('bluebird');
-const parseString = Promise.promisify(require('xml2js').parseString);
+const xml2js = require('xml2js');
+const parseString = Promise.promisify(xml2js.parseString);
+const builder = new xml2js.Builder();
 const _ = require('underscore');
 require('./underscore_mixin');
 const config = require('./Config');
@@ -14,25 +16,19 @@ let Excel = require('jszip');
 
 _.extend(Excel.prototype, {
 
+    //read as encoded strings
     sharedStrings: function() {
         return this.file(config.EXCEL_FILES.FILE_SHARED_STRINGS).asText();
-    },
-
-    variables: function() {
-        return _.variables(this.sharedStrings());
     },
 
     parseSharedStrings: function() {
         return this.parseFile(config.EXCEL_FILES.FILE_SHARED_STRINGS);
     },
 
-    hasAsSharedString: function(targetStr) {
-        return (this.sharedStrings().indexOf(targetStr) !== -1);
-    },
-
+    //save with xml-encoding
     setSharedStrings: function(obj) {
         if(obj) {
-            this.file(config.EXCEL_FILES.FILE_SHARED_STRINGS, _.xml(obj));
+            this.file(config.EXCEL_FILES.FILE_SHARED_STRINGS, builder.buildObject(obj));
         }
         return this;
     },
@@ -42,7 +38,7 @@ _.extend(Excel.prototype, {
     },
 
     setWorkbookRels: function(obj) {
-        this.file(config.EXCEL_FILES.FILE_WORKBOOK_RELS, _.xml(obj));
+        this.file(config.EXCEL_FILES.FILE_WORKBOOK_RELS, builder.buildObject(obj));
         return this;
     },
 
@@ -51,7 +47,7 @@ _.extend(Excel.prototype, {
     },
 
     setWorkbook: function(obj) {
-        this.file(config.EXCEL_FILES.FILE_WORKBOOK, _.xml(obj));
+        this.file(config.EXCEL_FILES.FILE_WORKBOOK, builder.buildObject(obj));
         return this;
     },
 
@@ -60,7 +56,7 @@ _.extend(Excel.prototype, {
     },
 
     setWorksheet: function(sheetName, obj) {
-        this.file(`${config.EXCEL_FILES.DIR_WORKSHEETS}/${sheetName}`, _.xml(obj));
+        this.file(`${config.EXCEL_FILES.DIR_WORKSHEETS}/${sheetName}`, builder.buildObject(obj));
         return this;
     },
 
@@ -91,7 +87,10 @@ _.extend(Excel.prototype, {
     },
 
     setWorksheetRel: function(sheetName, obj) {
-        this.file(`${config.EXCEL_FILES.DIR_WORKSHEETS_RELS}/${sheetName}.rels`, _.xml(obj));
+        this.file(
+            `${config.EXCEL_FILES.DIR_WORKSHEETS_RELS}/${sheetName}.rels`,
+            builder.buildObject(obj)
+        );
         return this;
     },
 
@@ -99,7 +98,7 @@ _.extend(Excel.prototype, {
         if(!this.templateSheetRel) {
             return this;
         }
-        let valueString = _.xml(this.templateSheetRel);
+        let valueString = builder.buildObject(this.templateSheetRel);
         _.each(sheetNames, (sheetName) => {
             this.file(`${config.EXCEL_FILES.DIR_WORKSHEETS_RELS}/${sheetName}.rels`, valueString);
         });
