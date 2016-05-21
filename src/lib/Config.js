@@ -18,5 +18,10 @@ module.exports =  {
         COMPLESSION:        'DEFLATE',
         BUFFER_TYPE_OUTPUT: (isNode ? 'nodebuffer' : 'blob'),
         BUFFER_TYPE_JSZIP:  (isNode ? 'nodebuffer' : 'arraybuffer')
+    },
+    TEST_DIRS: {
+        TEMPLATE: './test/templates/',
+        DATA:     './test/data/',
+        OUTPUT:   './test/output/'
     }
 };
