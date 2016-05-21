@@ -75,5 +75,11 @@ _.mixin({
                 arrayObj.splice(index, 1);
             }
         })
+    },
+
+    containsAsPartialString: (array, str) => {
+        return _.reduce(array, (contained, e) => {
+            return contained || (e.indexOf(str) !== -1);
+        }, false)
     }
 });

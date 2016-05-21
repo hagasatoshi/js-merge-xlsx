@@ -14,6 +14,7 @@ let Excel = require('jszip');
 
 _.extend(Excel.prototype, {
 
+    //read as encoded strings
     sharedStrings: function() {
         return this.file(config.EXCEL_FILES.FILE_SHARED_STRINGS).asText();
     },
@@ -26,10 +27,12 @@ _.extend(Excel.prototype, {
         return this.parseFile(config.EXCEL_FILES.FILE_SHARED_STRINGS);
     },
 
+    //match as encoded strings
     hasAsSharedString: function(targetStr) {
         return (this.sharedStrings().indexOf(targetStr) !== -1);
     },
 
+    //save with xml-encoding
     setSharedStrings: function(obj) {
         if(obj) {
             this.file(config.EXCEL_FILES.FILE_SHARED_STRINGS, _.xml(obj));
