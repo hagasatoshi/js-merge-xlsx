@@ -26,7 +26,7 @@ _.mixin({
     },
 
     variables: (template) => {
-        if(!_(template).isString()) {
+        if(!_.isString(template)) {
             return null;
         }
         // TODO should return only element having variables as '{{}}' and '{{{}}}'
