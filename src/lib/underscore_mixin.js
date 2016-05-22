@@ -76,5 +76,17 @@ _.mixin({
         return _.reduce(array, (contained, e) => {
             return contained || (e.indexOf(str) !== -1);
         }, false)
+    },
+
+    consistOf: (elm, props) => {
+        return _.reduce(props, (consist, prop) => {
+            return consist && (elm[prop] !== undefined);
+        }, true)
+    },
+
+    allConsistOf: (array, props) => {
+        return _.reduce(array, (consist, elm) => {
+            return consist && _.consistOf(elm, props);
+        }, true);
     }
 });

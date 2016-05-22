@@ -4,7 +4,6 @@
  * @date 2016/03/27
  */
 
-const Mustache = require('mustache');
 const Promise = require('bluebird');
 const xml2js = require('xml2js');
 const parseString = Promise.promisify(xml2js.parseString);
@@ -68,8 +67,13 @@ _.extend(Excel.prototype, {
     },
 
     removeWorksheet: function(sheetName) {
-        this.remove(`${config.EXCEL_FILES.DIR_WORKSHEETS}/${sheetName}`);
-        this.remove(`${config.EXCEL_FILES.DIR_WORKSHEETS_RELS}/${sheetName}.rels`);
+        let filePath = `${config.EXCEL_FILES.DIR_WORKSHEETS}/${sheetName}`;
+        let relsFilePath = `${filePath}.rels`;
+        if(!this.file(filePath)) {
+            return this;
+        }
+        this.remove(filePath);
+        this.remove(relsFilePath);
         return this;
     },
 
@@ -125,10 +129,6 @@ _.extend(Excel.prototype, {
             ,
             Promise.resolve()
         );
-    },
-
-    merge: function(mergedData) {
-        return this.file('xl/sharedStrings.xml', Mustache.render(this.sharedStrings(), mergedData))
     },
 
     generateWithData(excelObj) {
