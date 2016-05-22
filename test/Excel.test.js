@@ -7,6 +7,8 @@ var Excel = require('../lib/Excel');
 require('../lib/underscore_mixin');
 var assert = require('chai').assert;
 var config = require('../lib/Config');
+var xml2js = require('xml2js');
+var builder = new xml2js.Builder();
 
 var readFiles = function readFiles(template) {
     return Promise.props({
@@ -493,6 +495,259 @@ describe('Excel.js', function () {
             return fs.readFileAsync(config.TEST_DIRS.TEMPLATE + 'Template.xlsx').then(function (template) {
                 var workSheet = new Excel(template).setWorksheets([{ name: 'sheet1.xml', data: { anyKey: '<>\"\\\&\'' } }]).file(config.EXCEL_FILES.DIR_WORKSHEETS + '/sheet1.xml').asText();
                 assert.isOk(workSheet.includes('<anyKey>\&lt;\&gt;\"\\\&amp;\'</anyKey>'));
+            })['catch'](function (err) {
+                console.log(err);
+                assert.isOk(false);
+            });
+        });
+    });
+
+    describe('removeWorksheet()', function () {
+
+        it('should return this instance', function () {
+            return fs.readFileAsync(config.TEST_DIRS.TEMPLATE + 'Template.xlsx').then(function (template) {
+                var templateObj = new Excel(template).setWorksheets([{ name: 'sheet1.xml', data: { anyKey: 'anyValue' } }]);
+                var test = templateObj.removeWorksheet('sheet1.xml');
+                assert.notStrictEqual(test, undefined);
+                assert.notStrictEqual(test, null);
+                assert.isOk(test instanceof Excel);
+            })['catch'](function (err) {
+                console.log(err);
+                assert.isOk(false);
+            });
+        });
+
+        it('should remove the file', function () {
+            return fs.readFileAsync(config.TEST_DIRS.TEMPLATE + 'Template.xlsx').then(function (template) {
+                var templateObj = new Excel(template).setWorksheets([{ name: 'sheet1.xml', data: { anyKey: 'anyValue' } }]);
+                templateObj.removeWorksheet('sheet1.xml');
+                assert.strictEqual(templateObj.file(config.EXCEL_FILES.DIR_WORKSHEETS + '/sheet1.xml'), null);
+            })['catch'](function (err) {
+                console.log(err);
+                assert.isOk(false);
+            });
+        });
+
+        it('should not remove other files', function () {
+            return fs.readFileAsync(config.TEST_DIRS.TEMPLATE + 'Template.xlsx').then(function (template) {
+                var templateObj = new Excel(template).setWorksheets([{ name: 'sheet1.xml', data: { anyKey: 'anyValue' } }, { name: 'sheet2.xml', data: { anyKey: 'anyValue' } }, { name: 'sheet3.xml', data: { anyKey: 'anyValue' } }]);
+                templateObj.removeWorksheet('sheet1.xml');
+                assert.notStrictEqual(templateObj.file(config.EXCEL_FILES.DIR_WORKSHEETS + '/sheet2.xml'), null);
+                assert.notStrictEqual(templateObj.file(config.EXCEL_FILES.DIR_WORKSHEETS + '/sheet3.xml'), null);
+            })['catch'](function (err) {
+                console.log(err);
+                assert.isOk(false);
+            });
+        });
+
+        it('should return with no error even if not existing', function () {
+            return fs.readFileAsync(config.TEST_DIRS.TEMPLATE + 'Template.xlsx').then(function (template) {
+                var templateObj = new Excel(template);
+                var test = templateObj.removeWorksheet('invalid sheet name');
+                assert.isOk(test instanceof Excel);
+            })['catch'](function (err) {
+                console.log(err);
+                assert.isOk(false);
+            });
+        });
+    });
+
+    describe('parseWorksheetRelsDir()', function () {
+
+        it('should parse relation file', function () {
+            return fs.readFileAsync(config.TEST_DIRS.TEMPLATE + 'Template.xlsx').then(function (template) {
+                return new Excel(template).parseWorksheetRelsDir();
+            }).then(function (worksheetRels) {
+                assert.notStrictEqual(worksheetRels, undefined);
+                assert.notStrictEqual(worksheetRels, null);
+                assert.isOk(_.isArray(worksheetRels));
+                assert.strictEqual(1, worksheetRels.length);
+                assert.isOk(_.allConsistOf(worksheetRels, ['Relationships', 'name']));
+            })['catch'](function (err) {
+                console.log(err);
+                assert.isOk(false);
+            });
+        });
+
+        it('should parse each relation file', function () {
+            return fs.readFileAsync(config.TEST_DIRS.TEMPLATE + 'Template3Sheet.xlsx').then(function (template) {
+                return new Excel(template).parseWorksheetRelsDir();
+            }).then(function (worksheetRels) {
+                assert.notStrictEqual(worksheetRels, undefined);
+                assert.notStrictEqual(worksheetRels, null);
+                assert.isOk(_.isArray(worksheetRels));
+                assert.strictEqual(3, worksheetRels.length);
+                assert.isOk(_.allConsistOf(worksheetRels, ['Relationships', 'name']));
+            })['catch'](function (err) {
+                console.log(err);
+                assert.isOk(false);
+            });
+        });
+    });
+
+    describe('setTemplateSheetRel()', function () {
+
+        it('should return this instance', function () {
+            return fs.readFileAsync(config.TEST_DIRS.TEMPLATE + 'Template.xlsx').then(function (template) {
+                return new Excel(template).setTemplateSheetRel();
+            }).then(function (templateObj) {
+                assert.notStrictEqual(templateObj, undefined);
+                assert.notStrictEqual(templateObj, null);
+                assert.isOk(templateObj instanceof Excel);
+            })['catch'](function (err) {
+                console.log(err);
+                assert.isOk(false);
+            });
+        });
+
+        it('should set relation file as template sheet', function () {
+            return fs.readFileAsync(config.TEST_DIRS.TEMPLATE + 'Template.xlsx').then(function (template) {
+                return new Excel(template).setTemplateSheetRel();
+            }).then(function (templateObj) {
+                assert.notStrictEqual(templateObj.templateSheetRel, undefined);
+                assert.notStrictEqual(templateObj.templateSheetRel.Relationships, undefined);
+            })['catch'](function (err) {
+                console.log(err);
+                assert.isOk(false);
+            });
+        });
+    });
+
+    describe('setWorksheetRel()', function () {
+
+        it('should return this instance', function () {
+            return fs.readFileAsync(config.TEST_DIRS.TEMPLATE + 'Template.xlsx').then(function (template) {
+                var test = new Excel(template).setWorksheetRel('someSheet.xml', {});
+                assert.notStrictEqual(test, undefined);
+                assert.notStrictEqual(test, null);
+                assert.isOk(test instanceof Excel);
+            })['catch'](function (err) {
+                console.log(err);
+                assert.isOk(false);
+            });
+        });
+
+        it('should set value as xml string', function () {
+            return fs.readFileAsync(config.TEST_DIRS.TEMPLATE + 'Template.xlsx').then(function (template) {
+                var workSheetRels = new Excel(template).setWorksheetRel('someSheet.xml', { anyKey: 'anyValue' }).file(config.EXCEL_FILES.DIR_WORKSHEETS_RELS + '/someSheet.xml.rels').asText();
+                assert.isOk(workSheetRels.includes('<anyKey>anyValue</anyKey>'));
+            })['catch'](function (err) {
+                console.log(err);
+                assert.isOk(false);
+            });
+        });
+
+        it('should set Japanese value as xml string', function () {
+            return fs.readFileAsync(config.TEST_DIRS.TEMPLATE + 'Template.xlsx').then(function (template) {
+                var workSheetRels = new Excel(template).setWorksheetRel('someSheet.xml', { anyKey: '日本語' }).file(config.EXCEL_FILES.DIR_WORKSHEETS_RELS + '/someSheet.xml.rels').asText();
+                assert.isOk(workSheetRels.includes('<anyKey>日本語</anyKey>'));
+            })['catch'](function (err) {
+                console.log(err);
+                assert.isOk(false);
+            });
+        });
+
+        it('should set value with encoding', function () {
+            return fs.readFileAsync(config.TEST_DIRS.TEMPLATE + 'Template.xlsx').then(function (template) {
+                var workSheetRels = new Excel(template).setWorksheetRel('someSheet.xml', { anyKey: '<>\"\\\&\'' }).file(config.EXCEL_FILES.DIR_WORKSHEETS_RELS + '/someSheet.xml.rels').asText();
+                assert.isOk(workSheetRels.includes('<anyKey>\&lt;\&gt;\"\\\&amp;\'</anyKey>'));
+            })['catch'](function (err) {
+                console.log(err);
+                assert.isOk(false);
+            });
+        });
+    });
+
+    describe('setWorksheetRels()', function () {
+
+        it('should return this instance if template is not set', function () {
+            return fs.readFileAsync(config.TEST_DIRS.TEMPLATE + 'Template.xlsx').then(function (template) {
+                var test = new Excel(template).setWorksheetRels(['someSheet']);
+                assert.notStrictEqual(test, undefined);
+                assert.notStrictEqual(test, null);
+                assert.isOk(test instanceof Excel);
+            })['catch'](function (err) {
+                console.log(err);
+                assert.isOk(false);
+            });
+        });
+
+        it('relation file should be the same with template', function () {
+            return fs.readFileAsync(config.TEST_DIRS.TEMPLATE + 'Template.xlsx').then(function (template) {
+                return new Excel(template).setTemplateSheetRel();
+            }).then(function (templateObj) {
+                var test = templateObj.setWorksheetRels(['someSheet']);
+                var workSheetRels = templateObj.setWorksheetRels(['someSheet']).file(config.EXCEL_FILES.DIR_WORKSHEETS_RELS + '/someSheet.rels').asText();
+                var templateString = builder.buildObject(templateObj.templateSheetRel);
+                assert.strictEqual(workSheetRels, templateString);
+            })['catch'](function (err) {
+                console.log(err);
+                assert.isOk(false);
+            });
+        });
+
+        it('all relation files should be the same with template', function () {
+            return fs.readFileAsync(config.TEST_DIRS.TEMPLATE + 'Template.xlsx').then(function (template) {
+                return new Excel(template).setTemplateSheetRel();
+            }).then(function (templateObj) {
+                templateObj = templateObj.setWorksheetRels(['someSheet1', 'someSheet2', 'someSheet3']);
+                var templateString = builder.buildObject(templateObj.templateSheetRel);
+                _.each(['someSheet1', 'someSheet2', 'someSheet3'], function (sheetName) {
+                    var sheetStr = templateObj.file(config.EXCEL_FILES.DIR_WORKSHEETS_RELS + '/' + sheetName + '.rels').asText();
+                    assert.strictEqual(sheetStr, templateString);
+                });
+            })['catch'](function (err) {
+                console.log(err);
+                assert.isOk(false);
+            });
+        });
+    });
+
+    describe('parseFile()', function () {
+
+        it('should parse async by returning Promise', function () {
+            return fs.readFileAsync(config.TEST_DIRS.TEMPLATE + 'Template.xlsx').then(function (template) {
+                var promise = new Excel(template).parseFile(config.EXCEL_FILES.FILE_SHARED_STRINGS);
+                assert.notStrictEqual(promise, undefined);
+                assert.notStrictEqual(promise, null);
+                assert.isOk(promise instanceof Promise);
+            })['catch'](function (err) {
+                console.log(err);
+                assert.isOk(false);
+            });
+        });
+
+        it('should parse from xml string', function () {
+            return fs.readFileAsync(config.TEST_DIRS.TEMPLATE + 'Template.xlsx').then(function (template) {
+                return new Excel(template).parseFile(config.EXCEL_FILES.FILE_SHARED_STRINGS);
+            }).then(function (stringModel) {
+                assert.isNotOk(stringModel instanceof String);
+            })['catch'](function (err) {
+                console.log(err);
+                assert.isOk(false);
+            });
+        });
+    });
+
+    describe('parseDir()', function () {
+
+        it('should parse async by returning Promise', function () {
+            return fs.readFileAsync(config.TEST_DIRS.TEMPLATE + 'Template.xlsx').then(function (template) {
+                var promise = new Excel(template).parseDir(config.EXCEL_FILES.DIR_WORKSHEETS);
+                assert.notStrictEqual(promise, undefined);
+                assert.notStrictEqual(promise, null);
+                assert.isOk(promise instanceof Promise);
+            })['catch'](function (err) {
+                console.log(err);
+                assert.isOk(false);
+            });
+        });
+
+        it('should parse each file in the directory', function () {
+            return fs.readFileAsync(config.TEST_DIRS.TEMPLATE + 'Template.xlsx').then(function (template) {
+                return new Excel(template).parseDir(config.EXCEL_FILES.DIR_WORKSHEETS);
+            }).then(function (fileModels) {
+                assert.isOk(_.allConsistOf(fileModels, ['name']));
             })['catch'](function (err) {
                 console.log(err);
                 assert.isOk(false);
