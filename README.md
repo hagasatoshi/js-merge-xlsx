@@ -79,86 +79,64 @@ Please check [example codes](https://github.com/hagasatoshi/js-merge-xlsx/tree/m
 You can also use it on web browser by using webpack(browserify). 
 Bluebird automatically casts thenable object, such as object returned by "$http.get()" or "$.get()", to trusted Promise. https://github.com/petkaantonov/bluebird/blob/master/API.md#promiseresolvedynamic-value---promise  
 So, you can code in the same way as Node.js.    
-Example(ES6 syntax)  
+example  
 ```JavaScript
-/**
- * * indexController.js
- * * angular controller definition
- * * @author Satoshi Haga
- * * @date 2015/10/06
- **/
+const Promise = require('bluebird');
+const {merge, bulkMergeToFiles, bulkMergeToSheets} = require('js-merge-xlsx');
+const JSZip = require('jszip');
+const _ = require('underscore');
 
-var Promise = require('bluebird');
-var ExcelMerge = require('js-merge-xlsx');
-var JSZip = require('jszip');
-var _ = require('underscore');
+module.exports = ($scope, $http) => {
 
-var indexController = ($scope, $http)=>{
+    $scope.merge = () => {
+        Promise.props({
+            template: $http.get('/template/Template.xlsx', {responseType: 'arraybuffer'}),
+            data:     $http.get('/data/data1.json')
+        }).then(({template, data}) => {
 
-    /**
-     * * exampleMerge
-     * * example of ExcelMerge#merge()
-     */
-    $scope.exampleMerge = ()=>{
-        Promise.resolve($http.get('/template/Template.xlsx', {responseType: "arraybuffer"}))
-        .then((excelTemplate)=>{
-            return Promise.props({
-                data: $http.get('/data/data1.json'),
-                excelMerge: new ExcelMerge().load(new JSZip(excelTemplate.data))
-            });
-        }).then(({data, excelMerge})=>{
-            return excelMerge.merge(data.data);
-        }).then((excelData)=>{
-            saveAs(excelData,'example.xlsx');   //FileSaver#saveAs()
-        }).catch((err)=>{
-            console.error(err);
+            //FileSaver#saveAs()
+            saveAs(merge(template, data), 'example.xlsx');
+        }).catch((err) => {
+            console.log(err);
         });
     };
 
-    /**
-     * * exampleBulkMergeMultiFile
-     * * example of ExcelMerge#bulkMergeMultiFile()
-     */
-    $scope.exampleBulkMergeMultiFile = ()=>{
-        Promise.resolve($http.get('/template/Template.xlsx', {responseType: "arraybuffer"}))
-        .then((excelTemplate)=>{
-            return Promise.props({
-                data: $http.get('/data/data2.json'),
-                excelMerge: new ExcelMerge().load(new JSZip(excelTemplate.data))
+    $scope.bulkMergeToFiles = () => {
+        Promise.props({
+            template: $http.get('/template/Template.xlsx', {responseType: 'arraybuffer'}),
+            data:     $http.get('/data/data2.json')
+        }).then(({template, data}) => {
+
+            data = _.map(data.data, (e,index) => {
+                return {name: `file${(index+1)}.xlsx`, data: e};
             });
-        }).then(({data, excelMerge})=>{
-            data = _.map(data.data, (e,index)=>({name:`file${(index+1)}.xlsx`, data:e}));
-            return excelMerge.bulkMergeMultiFile(data); //FileSaver#saveAs()
-        }).then((zipData)=>{
-            saveAs(zipData,'example.zip');
-        }).catch((err)=>{
-            console.error(err);
+            //FileSaver#saveAs()
+            saveAs(bulkMergeToFiles(template, data), 'example.zip');
+        }).catch((err) => {
+            console.log(err);
         });
     };
 
-    /**
-     * * exampleBulkMergeMultiSheet
-     * * example of ExcelMerge#bulkMergeMultiSheet()
-     */
-    $scope.exampleBulkMergeMultiSheet = ()=>{
-        Promise.resolve($http.get('/template/Template.xlsx', {responseType: "arraybuffer"}))
-        .then((excelTemplate)=>{
-            return Promise.props({
-                data: $http.get('/data/data2.json'),
-                excelMerge: new ExcelMerge().load(new JSZip(excelTemplate.data))
+    $scope.bulkMergeToSheets = ()=>{
+        Promise.props({
+            template: $http.get('/template/Template.xlsx', {responseType: 'arraybuffer'}),
+            data:     $http.get('/data/data2.json')
+        }).then(({template, data}) => {
+
+            data = _.map(data.data, (e,index) => {
+                return {name: `sample${(index+1)}`, data: e};
             });
-        }).then(({data, excelMerge})=>{
-            data = _.map(data.data, (e,index)=>({name:`sample${(index+1)}`, data:e}));
-            return excelMerge.bulkMergeMultiSheet(data);
-        }).then((excelData)=>{
-            saveAs(excelData,'example.xlsx');
-        }).catch((err)=>{
-            console.error(err);
+
+            //bulkMergeToSheets() is called asyc by returning Promise(bluebird) instance.
+            return bulkMergeToSheets(template, data);
+        }).then((excel) => {
+
+            saveAs(excel,'example.xlsx');
+        }).catch((err) => {
+            console.log(err);
         });
     };
 };
-
-module.exports = indexController;
 ```
 
 Please check [example codes](https://github.com/hagasatoshi/js-merge-xlsx/tree/master/example/2_express) and [API](https://github.com/hagasatoshi/js-merge-xlsx/blob/master/API.md) for detail.
