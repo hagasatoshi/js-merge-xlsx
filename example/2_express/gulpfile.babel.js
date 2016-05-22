@@ -1,51 +1,62 @@
-/**
- * * Gulp task definition
- * * @author Satoshi Haga
- * * @date 2015/09/30
- **/
-var gulp = require('gulp');
-var babel = require('gulp-babel');
-var sass = require('gulp-sass');
-var webpack = require('webpack-stream');
-var runSequence = require('run-sequence');
+const gulp = require('gulp');
+const $ = require('gulp-load-plugins')();
+const webpack = require('webpack-stream');
+const runSequence = require('run-sequence');
 
-/* compile client resources */
-gulp.task('babel-client', ()=> {
-    return gulp.src('src/js/client/**/*.js')
-        .pipe(babel())
-        .pipe(gulp.dest('build'));
+const config = {
+    js: {
+        client: {
+            src:  'src/js/client/**/*.js',
+            dest: 'build'
+        },
+        server: {
+            src:  'src/js/server/server.js',
+            dest: './'
+        }
+    },
+    sass: {
+        src:  './src/styles/*.scss',
+        dest: 'public/styles'
+    },
+    webpack: {
+        src:  './build/app.js',
+        file: 'js_merge_xlsx.js',
+        dest: 'public/scripts/'
+    }
+};
+
+gulp.task('babel-client', () => {
+    return gulp.src(config.js.client.src)
+        .pipe($.babel())
+        .pipe(gulp.dest(config.js.client.dest));
 });
 
-/* compile server resources */
-gulp.task('babel-server', ()=> {
-    return gulp.src('src/js/server/server.js')
-        .pipe(babel())
-        .pipe(gulp.dest('./'));
+gulp.task('babel-server', () => {
+    return gulp.src(config.js.server.src)
+        .pipe($.babel())
+        .pipe(gulp.dest(config.js.server.dest));
 });
 
-/* sass compile task */
-gulp.task('sass', ()=> {
-    return gulp.src('./src/styles/*.scss')
-        .pipe(sass())
-        .pipe(gulp.dest('public/styles'));
+gulp.task('sass', () => {
+    return gulp.src(config.sass.src)
+        .pipe($.sass())
+        .pipe(gulp.dest(config.sass.dest));
 });
 
-/* task building 'js_merge_xlsx.js' */
-gulp.task('webpack', ()=> {
-    return gulp.src('./build/app.js')
+gulp.task('webpack', () => {
+    return gulp.src(config.webpack.src)
         .pipe(webpack({
             output: {
-                filename: 'js_merge_xlsx.js'
+                filename: config.webpack.file
             }
         }))
-        .pipe(gulp.dest('public/scripts/'));
+        .pipe(gulp.dest(config.webpack.dest));
 });
 
-/* default task */
-gulp.task('default', (callback)=> {
+gulp.task('default', (cb) => {
     runSequence(
         ['babel-client','babel-server','sass'],
         'webpack',
-        callback
+        cb
     )
 });

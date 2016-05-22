@@ -9,8 +9,9 @@
     "body-parser": "^1.14.1",
     "detect-node": "^2.0.3",
     "express": "^4.13.3",
+    "gulp-load-plugins": "^1.2.2",
     "jade": "^1.11.0",
-    "js-merge-xlsx": "1.0.1",
+    "js-merge-xlsx": "2.0.0",
     "jszip": "^2.5.0",
     "path": "^0.12.7",
     "underscore": "^1.8.3"
