@@ -1,47 +1,47 @@
-/**
- * * app.js
- * * Example on Node.js
- * * @author Satoshi Haga
- * * @date 2015/09/30
- **/
+const Promise = require('bluebird');
+const readYamlSync = require('read-data').yaml.sync;
+const fs = Promise.promisifyAll(require('fs'));
+const _ = require('underscore');
+const {merge, bulkMergeToFiles, bulkMergeToSheets} = require('js-merge-xlsx');
 
-var ExcelMerge = require('js-merge-xlsx');
-var Promise = require('bluebird');
-var readYamlAsync = Promise.promisify(require('read-yaml'));
-var fs = Promise.promisifyAll(require('fs'));
-var JSZip = require('jszip');
-var _ = require('underscore');
+const config = {
+    template:   './template/Template.xlsx',
+    singleData: './data/data1.yml',
+    arrayData:  './data/data2.yml'
+};
 
-//Load Template
-fs.readFileAsync('./template/Template.xlsx')
-.then((excelTemplate)=>{
-    return Promise.props({
-        data: readYamlAsync('./data/data1.yml'),
-        bulkData: readYamlAsync('./data/data2.yml'),
-        excelMerge1: new ExcelMerge().load(new JSZip(excelTemplate)),
-        excelMerge2: new ExcelMerge().load(new JSZip(excelTemplate)),
-        excelMerge3: new ExcelMerge().load(new JSZip(excelTemplate))
-    });
-}).then(({data, bulkData, excelMerge1, excelMerge2, excelMerge3})=>{
+const readData = () => {
+    let templateObj = fs.readFileSync(config.template);
+    let data  = readYamlSync(config.singleData);
+    let bulkData = readYamlSync(config.arrayData);
 
-    //add name property for ExcelMerge#bulkMergeMultiFile()
-    let bulkData1 = _.map(bulkData, (e,index)=> ({name:`file${index+1}.xlsx`, data:e}));
+    return {
+        templateObj: templateObj,
+        data: data,
+        bulkData1: _.map(bulkData, (e, index) => {
+            return {name: `file${index + 1}.xlsx`, data: e};
+        }),
+        bulkData2: _.map(bulkData, (e, index) => {
+            return {name: `example${index + 1}`, data: e};
+        })
+    };
+};
 
-    //add name property for ExcelMerge#bulkMergeMultiSheet()
-    let bulkData2 = _.map(bulkData, (e,index)=> ({name:`example${index+1}`, data:e}));
+//Start
+let {templateObj, data, bulkData1, bulkData2} = readData();
 
-    //Execute merge
-    return Promise.props({
-        excel1: excelMerge1.merge(data),
-        excel2: excelMerge2.bulkMergeMultiFile(bulkData1),
-        excel3: excelMerge3.bulkMergeMultiSheet(bulkData2)
-    });
-}).then(({excel1, excel2, excel3})=>{
-    return Promise.all([
-        fs.writeFileAsync('example1.xlsx',excel1),
-        fs.writeFileAsync('example2.zip',excel2),
-        fs.writeFileAsync('example3.xlsx',excel3)
-    ]);
-}).catch((err)=>{
-    console.error(new Error(err).stack);
+//example of merge()
+fs.writeFileSync('example1.xlsx',  merge(templateObj, data));
+
+//example of bulkMergeToFiles()
+fs.writeFileSync(
+    'example2.zip',
+    bulkMergeToFiles(templateObj, bulkData1)
+);
+
+//example of bulkMergeToSheets()
+//this method is called async by returning Promise(bluebird) instance.
+bulkMergeToSheets(templateObj, bulkData2)
+.then((excel) => {
+    fs.writeFileSync('example3.xlsx', excel);
 });

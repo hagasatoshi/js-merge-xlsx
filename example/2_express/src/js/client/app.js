@@ -1,19 +1,16 @@
-/**
- * * app.js
- * * client-side process
- * * @author Satoshi Haga
- * * @date 2015/10/06
- **/
+const angular = require('angular');
+require('angular-bootstrap');
 
-import angular from 'angular'
-import 'angular-bootstrap'
-
-angular.module('app',[
+angular.module('app', [
     'ui.bootstrap',
     require('./controllers').name
-]).config(($locationProvider,$httpProvider)=>{
-    if(!$httpProvider.defaults.headers.get)
-        $httpProvider.defaults.headers.get = {};
-    $httpProvider.defaults.headers.get['If-Modified-Since'] = '0';
-    $locationProvider.html5Mode({enabled: true,requireBase: false});
+]).config(($locationProvider, $httpProvider) => {
+
+    let headers = $httpProvider.defaults.headers;
+    headers.get = headers.get ? headers.get : {};
+
+    headers.get['If-Modified-Since'] = '0';
+    $locationProvider.html5Mode({
+        enabled: true,requireBase: false
+    });
 });

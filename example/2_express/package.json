@@ -10,7 +10,7 @@
     "detect-node": "^2.0.3",
     "express": "^4.13.3",
     "jade": "^1.11.0",
-    "js-merge-xlsx": "1.0.1",
+    "js-merge-xlsx": "2.0.0",
     "jszip": "^2.5.0",
     "path": "^0.12.7",
     "underscore": "^1.8.3"
@@ -19,6 +19,7 @@
     "babel": "^5.8.23",
     "gulp": "^3.9.0",
     "gulp-babel": "^5.2.1",
+    "gulp-load-plugins": "1.2.0",
     "gulp-sass": "^2.0.4",
     "run-sequence": "^1.1.4",
     "webpack-stream": "^2.1.1"
