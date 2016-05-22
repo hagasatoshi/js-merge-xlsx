@@ -22,9 +22,9 @@ describe('Excel.js', () => {
                 .then((template) => {
                     let sharedStrings = new Excel(template).sharedStrings();
                     assert.isOk(typeof sharedStrings === 'string');
-                    assert.isOk(sharedStrings.includes('{{AccountName__c}}'));
-                    assert.isOk(sharedStrings.includes('{{AccountAddress__c}}'));
-                    assert.isOk(sharedStrings.includes('{{SalaryDate__c}}'));
+                    assert.isOk(_.includeString(sharedStrings, '{{AccountName__c}}'));
+                    assert.isOk(_.includeString(sharedStrings, '{{AccountAddress__c}}'));
+                    assert.isOk(_.includeString(sharedStrings, '{{SalaryDate__c}}'));
                 }).catch((err) => {
                     console.log(err);
                     assert.isOk(false);
@@ -46,7 +46,7 @@ describe('Excel.js', () => {
             return fs.readFileAsync(`${config.TEST_DIRS.TEMPLATE}Template.xlsx`)
                 .then((template) => {
                     let sharedStrings = new Excel(template).sharedStrings();
-                    assert.isOk(sharedStrings.includes('雇用期間'));
+                    assert.isOk(_.includeString(sharedStrings, '雇用期間'));
                 }).catch((err) => {
                     console.log(err);
                     assert.isOk(false);
@@ -57,7 +57,7 @@ describe('Excel.js', () => {
             return fs.readFileAsync(`${config.TEST_DIRS.TEMPLATE}TemplateWithXmlEntity.xlsx`)
                 .then((template) => {
                     let sharedStrings = new Excel(template).sharedStrings();
-                    assert.isOk(sharedStrings.includes('\&lt;\&gt;\"\\\&amp;\''));
+                    assert.isOk(_.includeString(sharedStrings, '\&lt;\&gt;\"\\\&amp;\''));
                 }).catch((err) => {
                     console.log(err);
                     assert.isOk(false);
@@ -155,7 +155,7 @@ describe('Excel.js', () => {
                     let sharedStrings = new Excel(template).setSharedStrings({
                         anyKey: 'anyValue'
                     }).sharedStrings();
-                    assert.isOk(sharedStrings.includes('<anyKey>anyValue</anyKey>'));
+                    assert.isOk(_.includeString(sharedStrings, '<anyKey>anyValue</anyKey>'));
                 }).catch((err) => {
                     console.log(err);
                     assert.isOk(false);
@@ -168,7 +168,7 @@ describe('Excel.js', () => {
                     let sharedStrings = new Excel(template).setSharedStrings({
                         anyKey: '日本語'
                     }).sharedStrings();
-                    assert.isOk(sharedStrings.includes('<anyKey>日本語</anyKey>'));
+                    assert.isOk(_.includeString(sharedStrings, '<anyKey>日本語</anyKey>'));
                 }).catch((err) => {
                     console.log(err);
                     assert.isOk(false);
@@ -181,7 +181,9 @@ describe('Excel.js', () => {
                     let sharedStrings = new Excel(template).setSharedStrings({
                         anyKey: '<>\"\\\&\''
                     }).sharedStrings();
-                    assert.isOk(sharedStrings.includes('<anyKey>\&lt;\&gt;\"\\\&amp;\'</anyKey>'));
+                    assert.isOk(
+                        _.includeString(sharedStrings, '<anyKey>\&lt;\&gt;\"\\\&amp;\'</anyKey>')
+                    );
                 }).catch((err) => {
                     console.log(err);
                     assert.isOk(false);
@@ -215,7 +217,7 @@ describe('Excel.js', () => {
                 }).then((workbookRels) => {
                     let sheetCount = _.chain(workbookRels.Relationships.Relationship)
                         .map((e) => e['$'].Target)
-                        .filter((e) => e.includes('worksheets/'))
+                        .filter((e) => _.includeString(e, 'worksheets/'))
                         .value()
                         .length;
                     assert.strictEqual(sheetCount, 3);
@@ -248,7 +250,7 @@ describe('Excel.js', () => {
                         .setWorkbookRels({anyKey: 'anyValue'})
                         .file(config.EXCEL_FILES.FILE_WORKBOOK_RELS)
                         .asText();
-                    assert.isOk(workbookRels.includes('<anyKey>anyValue</anyKey>'));
+                    assert.isOk(_.includeString(workbookRels, '<anyKey>anyValue</anyKey>'));
                 }).catch((err) => {
                     console.log(err);
                     assert.isOk(false);
@@ -262,7 +264,7 @@ describe('Excel.js', () => {
                         .setWorkbookRels({anyKey: '日本語'})
                         .file(config.EXCEL_FILES.FILE_WORKBOOK_RELS)
                         .asText();
-                    assert.isOk(workbookRels.includes('<anyKey>日本語</anyKey>'));
+                    assert.isOk(_.includeString(workbookRels, '<anyKey>日本語</anyKey>'));
                 }).catch((err) => {
                     console.log(err);
                     assert.isOk(false);
@@ -276,7 +278,9 @@ describe('Excel.js', () => {
                         .setWorkbookRels({anyKey: '<>\"\\\&\''})
                         .file(config.EXCEL_FILES.FILE_WORKBOOK_RELS)
                         .asText();
-                    assert.isOk(workbookRels.includes('<anyKey>\&lt;\&gt;\"\\\&amp;\'</anyKey>'));
+                    assert.isOk(
+                        _.includeString(workbookRels, '<anyKey>\&lt;\&gt;\"\\\&amp;\'</anyKey>')
+                    );
                 }).catch((err) => {
                     console.log(err);
                     assert.isOk(false);
@@ -345,7 +349,7 @@ describe('Excel.js', () => {
                         .setWorkbook({anyKey: 'anyValue'})
                         .file(config.EXCEL_FILES.FILE_WORKBOOK)
                         .asText();
-                    assert.isOk(workbookRels.includes('<anyKey>anyValue</anyKey>'));
+                    assert.isOk(_.includeString(workbookRels, '<anyKey>anyValue</anyKey>'));
                 }).catch((err) => {
                     console.log(err);
                     assert.isOk(false);
@@ -359,7 +363,7 @@ describe('Excel.js', () => {
                         .setWorkbook({anyKey: '日本語'})
                         .file(config.EXCEL_FILES.FILE_WORKBOOK)
                         .asText();
-                    assert.isOk(workbookRels.includes('<anyKey>日本語</anyKey>'));
+                    assert.isOk(_.includeString(workbookRels, '<anyKey>日本語</anyKey>'));
                 }).catch((err) => {
                     console.log(err);
                     assert.isOk(false);
@@ -373,7 +377,9 @@ describe('Excel.js', () => {
                         .setWorkbook({anyKey: '<>\"\\\&\''})
                         .file(config.EXCEL_FILES.FILE_WORKBOOK)
                         .asText();
-                    assert.isOk(workbookRels.includes('<anyKey>\&lt;\&gt;\"\\\&amp;\'</anyKey>'));
+                    assert.isOk(
+                        _.includeString(workbookRels, '<anyKey>\&lt;\&gt;\"\\\&amp;\'</anyKey>')
+                    );
                 }).catch((err) => {
                     console.log(err);
                     assert.isOk(false);
@@ -445,7 +451,7 @@ describe('Excel.js', () => {
                         .setWorksheet('someSheet.xml', {anyKey: 'anyValue'})
                         .file(`${config.EXCEL_FILES.DIR_WORKSHEETS}/someSheet.xml`)
                         .asText();
-                    assert.isOk(workSheet.includes('<anyKey>anyValue</anyKey>'));
+                    assert.isOk(_.includeString(workSheet, '<anyKey>anyValue</anyKey>'));
                 }).catch((err) => {
                     console.log(err);
                     assert.isOk(false);
@@ -459,7 +465,7 @@ describe('Excel.js', () => {
                         .setWorksheet('someSheet.xml', {anyKey: '日本語'})
                         .file(`${config.EXCEL_FILES.DIR_WORKSHEETS}/someSheet.xml`)
                         .asText();
-                    assert.isOk(workSheet.includes('<anyKey>日本語</anyKey>'));
+                    assert.isOk(_.includeString(workSheet, '<anyKey>日本語</anyKey>'));
                 }).catch((err) => {
                     console.log(err);
                     assert.isOk(false);
@@ -473,7 +479,9 @@ describe('Excel.js', () => {
                         .setWorksheet('someSheet.xml', {anyKey: '<>\"\\\&\''})
                         .file(`${config.EXCEL_FILES.DIR_WORKSHEETS}/someSheet.xml`)
                         .asText();
-                    assert.isOk(workSheet.includes('<anyKey>\&lt;\&gt;\"\\\&amp;\'</anyKey>'));
+                    assert.isOk(
+                        _.includeString(workSheet, '<anyKey>\&lt;\&gt;\"\\\&amp;\'</anyKey>')
+                    );
                 }).catch((err) => {
                     console.log(err);
                     assert.isOk(false);
@@ -505,7 +513,7 @@ describe('Excel.js', () => {
                         ])
                         .file(`${config.EXCEL_FILES.DIR_WORKSHEETS}/sheet1.xml`)
                         .asText();
-                    assert.isOk(workSheet.includes('<anyKey>anyValue</anyKey>'));
+                    assert.isOk(_.includeString(workSheet, '<anyKey>anyValue</anyKey>'));
                 }).catch((err) => {
                     console.log(err);
                     assert.isOk(false);
@@ -524,17 +532,17 @@ describe('Excel.js', () => {
                     let sheet1 = excelTemplate
                         .file(`${config.EXCEL_FILES.DIR_WORKSHEETS}/sheet1.xml`)
                         .asText();
-                    assert.isOk(sheet1.includes('<key1>value1</key1>'));
+                    assert.isOk(_.includeString(sheet1, '<key1>value1</key1>'));
 
                     let sheet2 = excelTemplate
                         .file(`${config.EXCEL_FILES.DIR_WORKSHEETS}/sheet2.xml`)
                         .asText();
-                    assert.isOk(sheet2.includes('<key2>value2</key2>'));
+                    assert.isOk(_.includeString(sheet2, '<key2>value2</key2>'));
 
                     let sheet3 = excelTemplate
                         .file(`${config.EXCEL_FILES.DIR_WORKSHEETS}/sheet3.xml`)
                         .asText();
-                    assert.isOk(sheet3.includes('<key3>value3</key3>'));
+                    assert.isOk(_.includeString(sheet3, '<key3>value3</key3>'));
                 }).catch((err) => {
                     console.log(err);
                     assert.isOk(false);
@@ -550,7 +558,7 @@ describe('Excel.js', () => {
                         ])
                         .file(`${config.EXCEL_FILES.DIR_WORKSHEETS}/sheet1.xml`)
                         .asText();
-                    assert.isOk(workSheet.includes('<anyKey>日本語</anyKey>'));
+                    assert.isOk(_.includeString(workSheet, '<anyKey>日本語</anyKey>'));
                 }).catch((err) => {
                     console.log(err);
                     assert.isOk(false);
@@ -566,7 +574,9 @@ describe('Excel.js', () => {
                         ])
                         .file(`${config.EXCEL_FILES.DIR_WORKSHEETS}/sheet1.xml`)
                         .asText();
-                    assert.isOk(workSheet.includes('<anyKey>\&lt;\&gt;\"\\\&amp;\'</anyKey>'));
+                    assert.isOk(
+                        _.includeString(workSheet, '<anyKey>\&lt;\&gt;\"\\\&amp;\'</anyKey>')
+                    );
                 }).catch((err) => {
                     console.log(err);
                     assert.isOk(false);
@@ -737,7 +747,7 @@ describe('Excel.js', () => {
                         .setWorksheetRel('someSheet.xml', {anyKey: 'anyValue'})
                         .file(`${config.EXCEL_FILES.DIR_WORKSHEETS_RELS}/someSheet.xml.rels`)
                         .asText();
-                    assert.isOk(workSheetRels.includes('<anyKey>anyValue</anyKey>'));
+                    assert.isOk(_.includeString(workSheetRels, '<anyKey>anyValue</anyKey>'));
                 }).catch((err) => {
                     console.log(err);
                     assert.isOk(false);
@@ -751,7 +761,7 @@ describe('Excel.js', () => {
                         .setWorksheetRel('someSheet.xml', {anyKey: '日本語'})
                         .file(`${config.EXCEL_FILES.DIR_WORKSHEETS_RELS}/someSheet.xml.rels`)
                         .asText();
-                    assert.isOk(workSheetRels.includes('<anyKey>日本語</anyKey>'));
+                    assert.isOk(_.includeString(workSheetRels, '<anyKey>日本語</anyKey>'));
                 }).catch((err) => {
                     console.log(err);
                     assert.isOk(false);
@@ -765,7 +775,9 @@ describe('Excel.js', () => {
                         .setWorksheetRel('someSheet.xml', {anyKey: '<>\"\\\&\''})
                         .file(`${config.EXCEL_FILES.DIR_WORKSHEETS_RELS}/someSheet.xml.rels`)
                         .asText();
-                    assert.isOk(workSheetRels.includes('<anyKey>\&lt;\&gt;\"\\\&amp;\'</anyKey>'));
+                    assert.isOk(
+                        _.includeString(workSheetRels, '<anyKey>\&lt;\&gt;\"\\\&amp;\'</anyKey>')
+                    );
                 }).catch((err) => {
                     console.log(err);
                     assert.isOk(false);

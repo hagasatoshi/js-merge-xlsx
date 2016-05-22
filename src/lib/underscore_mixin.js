@@ -88,5 +88,9 @@ _.mixin({
         return _.reduce(array, (consist, elm) => {
             return consist && _.consistOf(elm, props);
         }, true);
+    },
+
+    includeString: (str, keyword) => {
+        return str.indexOf(keyword) !== -1;
     }
 });
