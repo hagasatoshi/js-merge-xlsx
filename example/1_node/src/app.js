@@ -2,8 +2,7 @@ const Promise = require('bluebird');
 const readYamlSync = require('read-data').yaml.sync;
 const fs = Promise.promisifyAll(require('fs'));
 const _ = require('underscore');
-const {merge, bulkMergeToFiles, bulkMergeToSheets}
-    = require('js-merge-xlsx');
+const {merge, bulkMergeToFiles, bulkMergeToSheets} = require('js-merge-xlsx');
 
 const config = {
     template:   './template/Template.xlsx',
