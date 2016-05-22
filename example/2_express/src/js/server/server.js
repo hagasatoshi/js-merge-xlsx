@@ -1,22 +1,22 @@
-/**
- * * server.js
- * * Express server-side process
- * * @author Satoshi Haga
- * * @date 2015/10/05
- **/
-import express from 'express'
-import path from 'path'
-import bodyParser from 'body-parser'
-var app = express();
-app.set('views', path.join(__dirname, './src/views'));
+const path = require('path');
+const bodyParser = require('body-parser');
+const app = require('express')();
+
+const config = {
+    jadeFiles: './src/views',
+    publicDir: './public',
+    indexFile: 'index'
+};
+
+app.set('views', config.jadeFiles);
 app.set('view engine', 'jade');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(express.static('public'));
+app.use(express.static(config.publicDir));
 
-app.get('/', (req, res)=> res.render('index'));
+app.get('/', (req, res)=> res.render(config.indexFile));
 
-var port = process.env.PORT || 3000;
+let port = process.env.PORT || 3000;
 app.set('port', port);
 app.listen(app.get('port'), ()=>console.log('Listening on ' + port));
 
