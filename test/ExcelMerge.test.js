@@ -13,11 +13,13 @@ var config = {
     outptutDir: './test/output/'
 };
 
-var removeExstingFiles = function removeExstingFiles(done) {
+var removeExstingFiles = function removeExstingFiles(regex) {
     _.each(fs.readdirSync(config.outptutDir), function (file) {
+        if (regex && !regex.test(file)) {
+            return;
+        }
         fs.unlinkSync('' + config.outptutDir + file);
     });
-    done && done();
 };
 
 var readFiles = function readFiles(template, yaml) {
@@ -27,7 +29,7 @@ var readFiles = function readFiles(template, yaml) {
     });
 };
 
-removeExstingFiles();
+removeExstingFiles(/\.(xlsx|zip)$/);
 
 describe('test for excelmerge.merge()', function () {
 

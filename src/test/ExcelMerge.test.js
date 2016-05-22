@@ -11,11 +11,13 @@ const config = {
     outptutDir:  './test/output/'
 };
 
-const removeExstingFiles = (done) => {
+const removeExstingFiles = (regex) => {
     _.each(fs.readdirSync(config.outptutDir), (file) => {
+        if(regex && !regex.test(file)) {
+            return;
+        }
         fs.unlinkSync(`${config.outptutDir}${file}`);
     });
-    done && done();
 };
 
 const readFiles = (template, yaml) => {
@@ -25,7 +27,7 @@ const readFiles = (template, yaml) => {
     });
 };
 
-removeExstingFiles();
+removeExstingFiles(/\.(xlsx|zip)$/);
 
 describe('test for excelmerge.merge()', () => {
 
