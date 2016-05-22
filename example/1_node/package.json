@@ -4,7 +4,7 @@
     "fs": "0.0.2",
     "js-merge-xlsx": "2.0.0",
     "jszip": "^2.5.0",
-    "read-yaml": "^1.0.0"
+    "read-data": "^0.3.0"
   },
   "devDependencies": {
     "gulp": "^3.9.0",
