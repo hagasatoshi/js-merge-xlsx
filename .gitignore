@@ -3,7 +3,8 @@ node_modules
 bower_components
 .idea
 build
-test/output
+test/output/*.xlsx
+test/output/*.zip
 .env
 
 

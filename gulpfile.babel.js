@@ -10,7 +10,7 @@ const runSequence = require('run-sequence');
 const config = {
     js: {
         src:  'src/**/*.js',
-        test: 'test/**/*.js',
+        test: 'test/**/*.test.js',
         dest: './'
     },
     uglify: {
@@ -18,11 +18,6 @@ const config = {
         src_lib:  'lib/*.js',
         dest:     './',
         dest_lib: 'lib'
-    },
-    test: {
-        src:  'src_test/mocha/**/*.js',
-        dest: 'test/mocha',
-        main: 'test/mocha/test.js'
     }
 };
 
@@ -44,12 +39,6 @@ gulp.task('compress-lib', () => {
         .pipe(gulp.dest(config.uglify.dest_lib));
 });
 
-gulp.task('test-setup', () => {
-    return gulp.src(config.test.src)
-        .pipe($.babel())
-        .pipe(gulp.dest(config.test.dest));
-});
-
 gulp.task('lint', () => {
     return gulp.src(config.js.src)
         .pipe($.eslint({useEslintrc: true}))
@@ -64,7 +53,7 @@ gulp.task('mocha', () => {
 
 gulp.task('default', (cb) => {
     runSequence(
-        'lint', ['compile','test-setup'], 'compress', 'mocha', cb
+        'lint', 'compile', 'compress', 'mocha', cb
     )
 });
 
