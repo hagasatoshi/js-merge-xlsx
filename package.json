@@ -5,7 +5,7 @@
   "homepage": "https://github.com/hagasatoshi/js-merge-xlsx",
   "main": "./excelmerge.js",
   "scripts": {
-    "test": "mocha test/mocha/test.js"
+    "test": "mocha test/**/*.test.js"
   },
   "author": "Satoshi Haga (satoshi.haga.github@gmail.com)",
   "license": "MIT",
