@@ -29,10 +29,7 @@ _.mixin({
         if(!_.isString(template)) {
             return null;
         }
-        // TODO should return only element having variables as '{{}}' and '{{{}}}'
-        // by regular expression
-        //return _.map(_.filter(Mustache.parse(template), (e) => (e[0] === 'name')), (e) => e[1]);
-        return _.map(template, (e) => e[1]);
+        return _.map(_.filter(Mustache.parse(template), (e) => (e[0] === '&')), (e) => e[1]);
     },
 
     hasVariable: (template) => {
