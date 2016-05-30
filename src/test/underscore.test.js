@@ -4,6 +4,18 @@ const assert = require('chai').assert;
 
 describe('underscore.js', () => {
 
+    describe('stringValue()', () => {
+        it('should return the same value if not array', () => {
+            assert.strictEqual(_.stringValue('test'), 'test');
+        });
+        it('should return first element if array', () => {
+            assert.strictEqual(_.stringValue(['first', 'second', 'third']), 'first');
+        });
+        it('should return attribute "mustache" if have', () => {
+            assert.strictEqual(_.stringValue([{_: 'mustache', key1: 'value1'}]), 'mustache');
+        });
+    });
+
     describe('count()', () => {
         it('should count up by value-funciton', () => {
             assert.strictEqual(
