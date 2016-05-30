@@ -11,10 +11,6 @@ const xml2js = require('xml2js');
 const builder = new xml2js.Builder();
 
 _.mixin({
-    isString: (arg) => {
-        return (typeof arg === 'string');
-    },
-
     stringValue: (xml2jsElement) => {
         if(!_.isArray(xml2jsElement)) {
             return xml2jsElement;
