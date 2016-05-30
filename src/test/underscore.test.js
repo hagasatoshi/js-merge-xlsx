@@ -4,6 +4,109 @@ const assert = require('chai').assert;
 
 describe('underscore.js', () => {
 
+    describe('stringValue()', () => {
+        it('should return the same value if not array', () => {
+            assert.strictEqual(_.stringValue('test'), 'test');
+        });
+        it('should return first element if array', () => {
+            assert.strictEqual(_.stringValue(['first', 'second', 'third']), 'first');
+        });
+        it('should return attribute "mustache" if have', () => {
+            assert.strictEqual(_.stringValue([{_: 'mustache', key1: 'value1'}]), 'mustache');
+        });
+    });
+
+    describe('variables()', () => {
+        it('should parse from word surrounded by triple-brace', () => {
+            let parsed = _.variables('{{{word}}}');
+            assert.isOk(_.isArray(parsed));
+            assert.strictEqual(parsed.length, 1);
+            assert.strictEqual(parsed[0], 'word');
+        });
+
+        it('should parse from all word surrounded by triple-brace', () => {
+            let parsed = _.variables('{{{word1}}}, {{{word2}}}}, {{{word3}}}');
+            assert.isOk(_.isArray(parsed));
+            assert.strictEqual(parsed.length, 3);
+            assert.strictEqual(parsed[0], 'word1');
+            assert.strictEqual(parsed[1], 'word2');
+            assert.strictEqual(parsed[2], 'word3');
+        });
+
+        it('should not parse from word surrounded by double-brace', () => {
+            let parsed = _.variables('{{word1}}');
+            assert.isOk(_.isArray(parsed));
+            assert.strictEqual(parsed.length, 0);
+        });
+
+        it('should not parse from word surrounded by double-brace', () => {
+            let parsed = _.variables('{{word1}}, {{word2}}, {{word3}}');
+            assert.isOk(_.isArray(parsed));
+            assert.strictEqual(parsed.length, 0);
+        });
+
+        it('should not encode when parsing', () => {
+            let parsed = _.variables('{{{<>\"\\\&\'}}}');
+            assert.isOk(_.isArray(parsed));
+            assert.strictEqual(parsed.length, 1);
+            assert.strictEqual(parsed[0], '<>\"\\\&\'');
+        });
+
+        it('should return null if not string', () => {
+            let parsed = _.variables(['{{{value1}}}']);
+            assert.strictEqual(parsed, null);
+        });
+
+        it('should return null if null', () => {
+            let parsed = _.variables(null);
+            assert.strictEqual(parsed, null);
+        });
+
+        it('should return null if undefined', () => {
+            let parsed = _.variables(undefined);
+            assert.strictEqual(parsed, null);
+        });
+
+    });
+
+    describe('hasVariable()', () => {
+        it('should return true if having a triple-brace', () => {
+            let hasVariable = _.hasVariable('{{{word}}}');
+            assert.strictEqual(hasVariable, true);
+        });
+
+        it('should return true if having triple-braces', () => {
+            let hasVariable = _.hasVariable('{{{word1}}}, {{{word2}}}');
+            assert.strictEqual(hasVariable, true);
+        });
+
+        it('should return false if having a double-brace', () => {
+            let hasVariable = _.hasVariable('{{word1}}');
+            assert.strictEqual(hasVariable, false);
+        });
+
+        it('should return false if having double-braces', () => {
+            let hasVariable = _.hasVariable('{{word1}}, {{word2}}');
+            assert.strictEqual(hasVariable, false);
+        });
+
+        it('should return false if not string', () => {
+            let hasVariable = _.hasVariable(['{{word1}}']);
+            assert.strictEqual(hasVariable, false);
+        });
+
+        it('should return false if null', () => {
+            let hasVariable = _.hasVariable(null);
+            assert.strictEqual(hasVariable, false);
+        });
+
+        it('should return false if undefined', () => {
+            let hasVariable = _.hasVariable(undefined);
+            assert.strictEqual(hasVariable, false);
+        });
+
+    });
+
     describe('count()', () => {
         it('should count up by value-funciton', () => {
             assert.strictEqual(

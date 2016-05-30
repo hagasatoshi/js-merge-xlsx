@@ -11,14 +11,12 @@ const xml2js = require('xml2js');
 const builder = new xml2js.Builder();
 
 _.mixin({
-    stringValue: (xml2jsElement) => {
-        if(!_.isArray(xml2jsElement)) {
-            return xml2jsElement;
-        }
-        if(xml2jsElement[0]._) {
-            return xml2jsElement[0]._;
-        }
-        return xml2jsElement[0];
+    stringValue: (elm) => {
+        if(!_.isArray(elm))
+            return elm;
+
+        elm = elm[0];
+        return elm._ ? elm._ : elm;
     },
 
     variables: (template) => {

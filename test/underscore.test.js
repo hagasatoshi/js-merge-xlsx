@@ -6,6 +6,107 @@ var assert = require('chai').assert;
 
 describe('underscore.js', function () {
 
+    describe('stringValue()', function () {
+        it('should return the same value if not array', function () {
+            assert.strictEqual(_.stringValue('test'), 'test');
+        });
+        it('should return first element if array', function () {
+            assert.strictEqual(_.stringValue(['first', 'second', 'third']), 'first');
+        });
+        it('should return attribute "mustache" if have', function () {
+            assert.strictEqual(_.stringValue([{ _: 'mustache', key1: 'value1' }]), 'mustache');
+        });
+    });
+
+    describe('variables()', function () {
+        it('should parse from word surrounded by triple-brace', function () {
+            var parsed = _.variables('{{{word}}}');
+            assert.isOk(_.isArray(parsed));
+            assert.strictEqual(parsed.length, 1);
+            assert.strictEqual(parsed[0], 'word');
+        });
+
+        it('should parse from all word surrounded by triple-brace', function () {
+            var parsed = _.variables('{{{word1}}}, {{{word2}}}}, {{{word3}}}');
+            assert.isOk(_.isArray(parsed));
+            assert.strictEqual(parsed.length, 3);
+            assert.strictEqual(parsed[0], 'word1');
+            assert.strictEqual(parsed[1], 'word2');
+            assert.strictEqual(parsed[2], 'word3');
+        });
+
+        it('should not parse from word surrounded by double-brace', function () {
+            var parsed = _.variables('{{word1}}');
+            assert.isOk(_.isArray(parsed));
+            assert.strictEqual(parsed.length, 0);
+        });
+
+        it('should not parse from word surrounded by double-brace', function () {
+            var parsed = _.variables('{{word1}}, {{word2}}, {{word3}}');
+            assert.isOk(_.isArray(parsed));
+            assert.strictEqual(parsed.length, 0);
+        });
+
+        it('should not encode when parsing', function () {
+            var parsed = _.variables('{{{<>\"\\\&\'}}}');
+            assert.isOk(_.isArray(parsed));
+            assert.strictEqual(parsed.length, 1);
+            assert.strictEqual(parsed[0], '<>\"\\\&\'');
+        });
+
+        it('should return null if not string', function () {
+            var parsed = _.variables(['{{{value1}}}']);
+            assert.strictEqual(parsed, null);
+        });
+
+        it('should return null if null', function () {
+            var parsed = _.variables(null);
+            assert.strictEqual(parsed, null);
+        });
+
+        it('should return null if undefined', function () {
+            var parsed = _.variables(undefined);
+            assert.strictEqual(parsed, null);
+        });
+    });
+
+    describe('hasVariable()', function () {
+        it('should return true if having a triple-brace', function () {
+            var hasVariable = _.hasVariable('{{{word}}}');
+            assert.strictEqual(hasVariable, true);
+        });
+
+        it('should return true if having triple-braces', function () {
+            var hasVariable = _.hasVariable('{{{word1}}}, {{{word2}}}');
+            assert.strictEqual(hasVariable, true);
+        });
+
+        it('should return false if having a double-brace', function () {
+            var hasVariable = _.hasVariable('{{word1}}');
+            assert.strictEqual(hasVariable, false);
+        });
+
+        it('should return false if having double-braces', function () {
+            var hasVariable = _.hasVariable('{{word1}}, {{word2}}');
+            assert.strictEqual(hasVariable, false);
+        });
+
+        it('should return false if not string', function () {
+            var hasVariable = _.hasVariable(['{{word1}}']);
+            assert.strictEqual(hasVariable, false);
+        });
+
+        it('should return false if null', function () {
+            var hasVariable = _.hasVariable(null);
+            assert.strictEqual(hasVariable, false);
+        });
+
+        it('should return false if undefined', function () {
+            var hasVariable = _.hasVariable(undefined);
+            assert.strictEqual(hasVariable, false);
+        });
+    });
+
     describe('count()', function () {
         it('should count up by value-funciton', function () {
             assert.strictEqual(_.count([1, 2, 3, 4, 5], function (e) {
