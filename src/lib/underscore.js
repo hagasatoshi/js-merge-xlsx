@@ -45,7 +45,7 @@ _.mixin({
         return isArray? data : data[0];
     },
 
-    sum: (arrayObj, valueFn) => _.reduce(arrayObj, (sum, obj) => valueFn(obj), 0),
+    sum: (arrayObj, valueFn) => _.reduce(arrayObj, (sum, obj) => sum + valueFn(obj), 0),
 
     count: (arrayObj, criteriaFn) => _.sum(arrayObj, (obj) => criteriaFn(obj) ? 1 : 0),
 

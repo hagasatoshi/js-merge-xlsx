@@ -5,6 +5,32 @@ require('../lib/underscore');
 var assert = require('chai').assert;
 
 describe('underscore.js', function () {
+    describe('sum()', function () {
+        it('should sum up by value-funciton', function () {
+            assert.strictEqual(_.sum([1, 2, 3, 4, 5], function (e) {
+                return e * 2;
+            }), 30);
+        });
+
+        it('should return zero if empty', function () {
+            assert.strictEqual(_.sum([], function (e) {
+                return e * 2;
+            }), 0);
+        });
+
+        it('should return zero if null', function () {
+            assert.strictEqual(_.sum(null, function (e) {
+                return e * 2;
+            }), 0);
+        });
+
+        it('should return zero if undefined', function () {
+            assert.strictEqual(_.sum(undefined, function (e) {
+                return e * 2;
+            }), 0);
+        });
+    });
+
     describe('consistOf()', function () {
 
         it('should return true if having single string property', function () {
