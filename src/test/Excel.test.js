@@ -666,7 +666,7 @@ describe('Excel.js', () => {
                     assert.notStrictEqual(worksheetRels, null);
                     assert.isOk(_.isArray(worksheetRels));
                     assert.strictEqual(1, worksheetRels.length);
-                    assert.isOk(_.allConsistOf(
+                    assert.isOk(_.consistOf(
                         worksheetRels, ['Relationships', 'name']
                     ));
                 }).catch((err) => {
@@ -684,7 +684,7 @@ describe('Excel.js', () => {
                     assert.notStrictEqual(worksheetRels, null);
                     assert.isOk(_.isArray(worksheetRels));
                     assert.strictEqual(3, worksheetRels.length);
-                    assert.isOk(_.allConsistOf(
+                    assert.isOk(_.consistOf(
                         worksheetRels, ['Relationships', 'name']
                     ));
                 }).catch((err) => {
@@ -892,7 +892,7 @@ describe('Excel.js', () => {
                     return new Excel(template)
                         .parseDir(config.EXCEL_FILES.DIR_WORKSHEETS);
                 }).then((fileModels) => {
-                    assert.isOk(_.allConsistOf(fileModels, ['name']));
+                    assert.isOk(_.consistOf(fileModels, ['name']));
                 }).catch((err) => {
                     console.log(err);
                     assert.isOk(false);
