@@ -5,6 +5,33 @@ require('../lib/underscore');
 var assert = require('chai').assert;
 
 describe('underscore.js', function () {
+
+    describe('count()', function () {
+        it('should count up by value-funciton', function () {
+            assert.strictEqual(_.count([1, 2, 3, 4, 5], function (e) {
+                return e % 2 === 0;
+            }), 2);
+        });
+
+        it('should return zero if empty', function () {
+            assert.strictEqual(_.count([], function (e) {
+                return e % 2 === 0;
+            }), 0);
+        });
+
+        it('should return zero if null', function () {
+            assert.strictEqual(_.count(null, function (e) {
+                return e % 2 === 0;
+            }), 0);
+        });
+
+        it('should return zero if undefined', function () {
+            assert.strictEqual(_.count(undefined, function (e) {
+                return e % 2 === 0;
+            }), 0);
+        });
+    });
+
     describe('sum()', function () {
         it('should sum up by value-funciton', function () {
             assert.strictEqual(_.sum([1, 2, 3, 4, 5], function (e) {
