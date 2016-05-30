@@ -9,7 +9,7 @@ const xml2js = require('xml2js');
 const parseString = Promise.promisify(xml2js.parseString);
 const builder = new xml2js.Builder();
 const _ = require('underscore');
-require('./underscore_mixin');
+require('./underscore');
 const config = require('./Config');
 let Excel = require('jszip');
 
