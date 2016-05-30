@@ -70,6 +70,43 @@ describe('underscore.js', function () {
         });
     });
 
+    describe('hasVariable()', function () {
+        it('should return true if having a triple-brace', function () {
+            var hasVariable = _.hasVariable('{{{word}}}');
+            assert.strictEqual(hasVariable, true);
+        });
+
+        it('should return true if having triple-braces', function () {
+            var hasVariable = _.hasVariable('{{{word1}}}, {{{word2}}}');
+            assert.strictEqual(hasVariable, true);
+        });
+
+        it('should return false if having a double-brace', function () {
+            var hasVariable = _.hasVariable('{{word1}}');
+            assert.strictEqual(hasVariable, false);
+        });
+
+        it('should return false if having double-braces', function () {
+            var hasVariable = _.hasVariable('{{word1}}, {{word2}}');
+            assert.strictEqual(hasVariable, false);
+        });
+
+        it('should return false if not string', function () {
+            var hasVariable = _.hasVariable(['{{word1}}']);
+            assert.strictEqual(hasVariable, false);
+        });
+
+        it('should return false if null', function () {
+            var hasVariable = _.hasVariable(null);
+            assert.strictEqual(hasVariable, false);
+        });
+
+        it('should return false if undefined', function () {
+            var hasVariable = _.hasVariable(undefined);
+            assert.strictEqual(hasVariable, false);
+        });
+    });
+
     describe('count()', function () {
         it('should count up by value-funciton', function () {
             assert.strictEqual(_.count([1, 2, 3, 4, 5], function (e) {

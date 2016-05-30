@@ -69,6 +69,44 @@ describe('underscore.js', () => {
 
     });
 
+    describe('hasVariable()', () => {
+        it('should return true if having a triple-brace', () => {
+            let hasVariable = _.hasVariable('{{{word}}}');
+            assert.strictEqual(hasVariable, true);
+        });
+
+        it('should return true if having triple-braces', () => {
+            let hasVariable = _.hasVariable('{{{word1}}}, {{{word2}}}');
+            assert.strictEqual(hasVariable, true);
+        });
+
+        it('should return false if having a double-brace', () => {
+            let hasVariable = _.hasVariable('{{word1}}');
+            assert.strictEqual(hasVariable, false);
+        });
+
+        it('should return false if having double-braces', () => {
+            let hasVariable = _.hasVariable('{{word1}}, {{word2}}');
+            assert.strictEqual(hasVariable, false);
+        });
+
+        it('should return false if not string', () => {
+            let hasVariable = _.hasVariable(['{{word1}}']);
+            assert.strictEqual(hasVariable, false);
+        });
+
+        it('should return false if null', () => {
+            let hasVariable = _.hasVariable(null);
+            assert.strictEqual(hasVariable, false);
+        });
+
+        it('should return false if undefined', () => {
+            let hasVariable = _.hasVariable(undefined);
+            assert.strictEqual(hasVariable, false);
+        });
+
+    });
+
     describe('count()', () => {
         it('should count up by value-funciton', () => {
             assert.strictEqual(
