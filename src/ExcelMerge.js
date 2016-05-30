@@ -10,7 +10,7 @@ const JSZip = require('jszip');
 const Mustache = require('mustache');
 const {
     Excel, WorkBookXml, WorkBookRels, SheetXmls,
-    SharedStrings, Config, underscore_mixin
+    SharedStrings, Config, underscore
 } = require('require-dir')('./lib');
 
 const ExcelMerge = {

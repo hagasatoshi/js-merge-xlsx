@@ -75,15 +75,23 @@ _.mixin({
         }, false)
     },
 
-    consistOf: (elm, props) => {
-        return _.reduce(props, (consist, prop) => {
-            return consist && (elm[prop] !== undefined);
-        }, true)
-    },
-
-    allConsistOf: (array, props) => {
-        return _.reduce(array, (consist, elm) => {
-            return consist && _.consistOf(elm, props);
+    consistOf: (obj, props) => {
+        if(_.isArray(obj)) {
+            return _.reduce(obj, (consist, e) => {
+                return consist && _.consistOf(e, props);
+            }, true);
+        }
+        if(_.isString(props)) {
+            return _.has(obj, props);
+        }
+        if(_.isArray(props)) {
+            return _.reduce(props, (consist, prop) => {
+                return consist && _.consistOf(obj, prop);
+            }, true);
+        }
+        return _.reduce(props, (consist, prop, key) => {
+            return consist && obj[key] &&
+                _.consistOf(obj[key], prop);
         }, true);
     },
 

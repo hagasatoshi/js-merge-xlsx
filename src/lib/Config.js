@@ -22,6 +22,7 @@ module.exports =  {
     TEST_DIRS: {
         TEMPLATE: './test/templates/',
         DATA:     './test/data/',
-        OUTPUT:   './test/output/'
+        OUTPUT:   './test/output/',
+        XML:      './test/xml/'
     }
 };

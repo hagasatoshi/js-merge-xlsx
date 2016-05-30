@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+    <fileVersion appName="xl" lastEdited="5" lowestEdited="5" rupBuild="26024"/>
+    <workbookPr showInkAnnotation="0" autoCompressPictures="0"/>
+    <bookViews>
+        <workbookView xWindow="0" yWindow="0" windowWidth="25600" windowHeight="14640" tabRatio="500"/>
+    </bookViews>
+    <sheets>
+        <sheet name="Sheet1" sheetId="1" r:id="rId1"/>
+        <sheet name="Sheet2" sheetId="2" r:id="rId2"/>
+    </sheets>
+    <definedNames>
+        <definedName name="_xlnm.Print_Area" localSheetId="0">Sheet1!$A$1:$I$20</definedName>
+    </definedNames>
+    <calcPr calcId="140000" concurrentCalc="0"/>
+    <extLst>
+        <ext uri="{XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXX}" xmlns:mx="http://schemas.microsoft.com/office/mac/excel/2008/main">
+            <mx:ArchID Flags="2"/>
+        </ext>
+    </extLst>
+</workbook>

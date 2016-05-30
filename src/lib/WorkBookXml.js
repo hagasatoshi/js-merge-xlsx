@@ -27,6 +27,7 @@ class WorkBookXml {
                 'r:id':  sheetId
             }
         });
+        return this;
     }
 
     delete(sheetName) {
@@ -39,10 +40,7 @@ class WorkBookXml {
 
     findSheetId(sheetName) {
         let sheet = _.find(this.sheetDefinitions, (e) => (e['$'].name === sheetName));
-        if(!sheet) {
-            return null;
-        }
-        return sheet['$']['r:id'];
+        return sheet ? sheet['$']['r:id'] : null;
     }
 
     firstSheetName() {
