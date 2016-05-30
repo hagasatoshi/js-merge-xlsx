@@ -4,7 +4,7 @@ var Promise = require('bluebird');
 var _ = require('underscore');
 var fs = Promise.promisifyAll(require('fs'));
 var Excel = require('../lib/Excel');
-require('../lib/underscore_mixin');
+require('../lib/underscore');
 var assert = require('chai').assert;
 var config = require('../lib/Config');
 var xml2js = require('xml2js');

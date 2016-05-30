@@ -6,7 +6,7 @@
  */
 
 const _ = require('underscore');
-require('./underscore_mixin');
+require('./underscore');
 const Mustache = require('mustache');
 
 class SharedStrings {

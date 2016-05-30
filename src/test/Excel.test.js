@@ -2,7 +2,7 @@ const Promise = require('bluebird');
 const _ = require('underscore');
 const fs = Promise.promisifyAll(require('fs'));
 const Excel = require('../lib/Excel');
-require('../lib/underscore_mixin');
+require('../lib/underscore');
 const assert = require('chai').assert;
 const config = require('../lib/Config');
 const xml2js = require('xml2js');
