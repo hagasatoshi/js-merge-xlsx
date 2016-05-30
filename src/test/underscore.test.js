@@ -16,6 +16,59 @@ describe('underscore.js', () => {
         });
     });
 
+    describe('variables()', () => {
+        it('should parse from word surrounded by triple-brace', () => {
+            let parsed = _.variables('{{{word}}}');
+            assert.isOk(_.isArray(parsed));
+            assert.strictEqual(parsed.length, 1);
+            assert.strictEqual(parsed[0], 'word');
+        });
+
+        it('should parse from all word surrounded by triple-brace', () => {
+            let parsed = _.variables('{{{word1}}}, {{{word2}}}}, {{{word3}}}');
+            assert.isOk(_.isArray(parsed));
+            assert.strictEqual(parsed.length, 3);
+            assert.strictEqual(parsed[0], 'word1');
+            assert.strictEqual(parsed[1], 'word2');
+            assert.strictEqual(parsed[2], 'word3');
+        });
+
+        it('should not parse from word surrounded by double-brace', () => {
+            let parsed = _.variables('{{word1}}');
+            assert.isOk(_.isArray(parsed));
+            assert.strictEqual(parsed.length, 0);
+        });
+
+        it('should not parse from word surrounded by double-brace', () => {
+            let parsed = _.variables('{{word1}}, {{word2}}, {{word3}}');
+            assert.isOk(_.isArray(parsed));
+            assert.strictEqual(parsed.length, 0);
+        });
+
+        it('should not encode when parsing', () => {
+            let parsed = _.variables('{{{<>\"\\\&\'}}}');
+            assert.isOk(_.isArray(parsed));
+            assert.strictEqual(parsed.length, 1);
+            assert.strictEqual(parsed[0], '<>\"\\\&\'');
+        });
+
+        it('should return null if not string', () => {
+            let parsed = _.variables(['{{{value1}}}']);
+            assert.strictEqual(parsed, null);
+        });
+
+        it('should return null if null', () => {
+            let parsed = _.variables(null);
+            assert.strictEqual(parsed, null);
+        });
+
+        it('should return null if undefined', () => {
+            let parsed = _.variables(undefined);
+            assert.strictEqual(parsed, null);
+        });
+
+    });
+
     describe('count()', () => {
         it('should count up by value-funciton', () => {
             assert.strictEqual(
