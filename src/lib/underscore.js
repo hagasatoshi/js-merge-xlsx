@@ -61,6 +61,12 @@ _.mixin({
         );
     },
 
+    reduceInReverse: (arrayObj, fn, initialValue) => {
+        return _.reduce(
+            _.chain(arrayObj).reverse().value(), fn, initialValue
+        );
+    },
+
     nestedEach: (array1, array2, fn) => {
         _.each(array1, (e1) => {
             _.each(array2, (e2) => {
