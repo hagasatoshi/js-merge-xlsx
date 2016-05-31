@@ -231,6 +231,55 @@ describe('underscore.js', function () {
         });
     });
 
+    describe('deleteProps()', function () {
+        it('should delete property', function () {
+            var deleted = _.deleteProps({ key1: 'value1', key2: 'value2' }, ['key1']);
+            assert.strictEqual(deleted.key1, undefined);
+            assert.strictEqual(deleted.key2, 'value2');
+        });
+
+        it('should delete property even if last property', function () {
+            var deleted = _.deleteProps({ key1: 'value1' }, ['key1']);
+            assert.strictEqual(deleted.key1, undefined);
+            assert.notStrictEqual(deleted, null);
+            assert.notStrictEqual(deleted, undefined);
+        });
+
+        it('should not fail if invalid property name', function () {
+            var deleted = _.deleteProps({ key1: 'value1' }, ['invalidKey']);
+            assert.strictEqual(deleted.key1, 'value1');
+        });
+
+        it('should delete all properties', function () {
+            var deleted = _.deleteProps({ key1: 'value1', key2: 'value2', key3: 'value3' }, ['key1', 'key3']);
+            assert.strictEqual(deleted.key1, undefined);
+            assert.strictEqual(deleted.key2, 'value2');
+            assert.strictEqual(deleted.key3, undefined);
+        });
+
+        it('should delete property of all elements', function () {
+            var target = [{ key1: 'value11', key2: 'value21' }, { key1: 'value12', key2: 'value22' }, { key1: 'value13', key2: 'value23' }];
+            var deleted = _.deleteProps(target, ['key1']);
+            assert.strictEqual(target[0].key1, undefined);
+            assert.strictEqual(target[0].key2, 'value21');
+            assert.strictEqual(target[1].key1, undefined);
+            assert.strictEqual(target[1].key2, 'value22');
+            assert.strictEqual(target[2].key1, undefined);
+            assert.strictEqual(target[2].key2, 'value23');
+        });
+
+        it('should delete property of all elements', function () {
+            var target = [{ key1: 'value11', key2: 'value21' }, { key3: 'value12', key4: 'value22' }, { key5: 'value13', key6: 'value23' }];
+            var deleted = _.deleteProps(target, ['key1']);
+            assert.strictEqual(target[0].key1, undefined);
+            assert.strictEqual(target[0].key2, 'value21');
+            assert.strictEqual(target[1].key3, 'value12');
+            assert.strictEqual(target[1].key4, 'value22');
+            assert.strictEqual(target[2].key5, 'value13');
+            assert.strictEqual(target[2].key6, 'value23');
+        });
+    });
+
     describe('count()', function () {
         it('should count up by value-funciton', function () {
             assert.strictEqual(_.count([1, 2, 3, 4, 5], function (e) {
