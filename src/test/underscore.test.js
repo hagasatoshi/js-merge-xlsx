@@ -307,6 +307,15 @@ describe('underscore.js', () => {
         });
     });
 
+    describe('reduceInReverse()', () => {
+        it('should call element of array in reverse', () => {
+            let test = _.reduceInReverse(['first', 'second', 'third'], (combined, e) => {
+                return `${combined}/${e}`
+            }, '');
+            assert.strictEqual(test, '/third/second/first');
+        });
+    });
+
     describe('nestedEach()', () => {
         const appendString = (array1, array2) => {
             let ret = '';

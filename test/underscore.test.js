@@ -290,6 +290,15 @@ describe('underscore.js', function () {
         });
     });
 
+    describe('reduceInReverse()', function () {
+        it('should call element of array in reverse', function () {
+            var test = _.reduceInReverse(['first', 'second', 'third'], function (combined, e) {
+                return combined + '/' + e;
+            }, '');
+            assert.strictEqual(test, '/third/second/first');
+        });
+    });
+
     describe('nestedEach()', function () {
         var appendString = function appendString(array1, array2) {
             var ret = '';
