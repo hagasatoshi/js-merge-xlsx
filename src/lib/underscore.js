@@ -30,13 +30,25 @@ _.mixin({
         return _.isString(template) && (_.variables(template).length !== 0)
     },
 
-    deepCopy: (obj) => JSON.parse(JSON.stringify(obj)),
+    deepCopy: (obj) => {
+        if(!_.isObject(obj)) {
+            throw new Error("_.deepCopy() : argument should be object.");
+        }
+        return JSON.parse(JSON.stringify(obj));
+    },
 
-    deleteProperties: (data, properties) => {
-        let isArray = _.isArray(data);
-        if(!isArray) data = [data];
-        _.each(data, (e) => _.each(properties, (prop) => delete e[prop]));
-        return isArray? data : data[0];
+    deleteProps: (data, properties) => {
+        const recursive = (arrayObj, props) => {
+            return _.reduce(arrayObj, (array, elm) => {
+                array.push(_.deleteProps(elm, props));
+                return array;
+            }, []);
+        };
+        return _.isArray(data) ? recursive(data, properties) :
+            _.reduce(properties, (obj, prop) => {
+                delete obj[prop];
+                return obj;
+            }, data);
     },
 
     sum: (arrayObj, valueFn) => _.reduce(arrayObj, (sum, obj) => sum + valueFn(obj), 0),
@@ -44,7 +56,15 @@ _.mixin({
     count: (arrayObj, criteriaFn) => _.sum(arrayObj, (obj) => criteriaFn(obj) ? 1 : 0),
 
     reverseEach: (arrayObj, fn) => {
-        _.each(_.sortBy(arrayObj, (obj, index) => (-1) * index), fn);
+        _.each(
+            _.chain(arrayObj).reverse().value(), fn
+        );
+    },
+
+    reduceInReverse: (arrayObj, fn, initialValue) => {
+        return _.reduce(
+            _.chain(arrayObj).reverse().value(), fn, initialValue
+        );
     },
 
     nestedEach: (array1, array2, fn) => {
@@ -56,11 +76,12 @@ _.mixin({
     },
 
     splice: (arrayObj, criteriaFn) => {
-        _.reverseEach(arrayObj, (obj, index) => {
-            if(criteriaFn(obj)) {
-                arrayObj.splice(index, 1);
+        return _.reduceInReverse(arrayObj, (array, elm, index) => {
+            if(criteriaFn(elm)) {
+                array.splice(index, 1);
             }
-        })
+            return array;
+        }, arrayObj);
     },
 
     containsAsPartialString: (array, str) => {
