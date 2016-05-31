@@ -65,10 +65,14 @@ _.mixin({
         return Array.apply(null, {length}).map(Number.call, Number);
     },
 
+    //non-destructive for arrayObj
     reduceInReverse: (arrayObj, fn, initialValue) => {
-        return _.reduce(
-            _.chain(arrayObj).reverse().value(), fn, initialValue
-        );
+        let indexes = _.arrayFrom(arrayObj.length);
+        indexes = _.chain(indexes).reverse().value();
+
+        return _.reduce(indexes, (x, index) => {
+            return fn(x, arrayObj[index]);
+        }, initialValue);
     },
 
     nestedEach: (array1, array2, fn) => {

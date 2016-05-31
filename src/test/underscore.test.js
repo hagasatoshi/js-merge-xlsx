@@ -328,9 +328,21 @@ describe('underscore.js', () => {
         it('should call element of array in reverse', () => {
             let test = _.reduceInReverse(['first', 'second', 'third'], (combined, e) => {
                 return `${combined}/${e}`
-            }, '');
-            assert.strictEqual(test, '/third/second/first');
+            }, 'initial');
+            assert.strictEqual(test, 'initial/third/second/first');
         });
+
+        it('should not be destructive', () => {
+            let array = ['first', 'second', 'third'];
+            _.reduceInReverse(array, (combined, e) => `${combined}/${e}`, '');
+
+            assert.strictEqual(_.isArray(array), true);
+            assert.strictEqual(array.length, 3);
+            assert.strictEqual(array[0], 'first');
+            assert.strictEqual(array[1], 'second');
+            assert.strictEqual(array[2], 'third');
+        });
+
     });
 
     describe('nestedEach()', () => {

@@ -311,8 +311,21 @@ describe('underscore.js', function () {
         it('should call element of array in reverse', function () {
             var test = _.reduceInReverse(['first', 'second', 'third'], function (combined, e) {
                 return combined + '/' + e;
+            }, 'initial');
+            assert.strictEqual(test, 'initial/third/second/first');
+        });
+
+        it('should not be destructive', function () {
+            var array = ['first', 'second', 'third'];
+            _.reduceInReverse(array, function (combined, e) {
+                return combined + '/' + e;
             }, '');
-            assert.strictEqual(test, '/third/second/first');
+
+            assert.strictEqual(_.isArray(array), true);
+            assert.strictEqual(array.length, 3);
+            assert.strictEqual(array[0], 'first');
+            assert.strictEqual(array[1], 'second');
+            assert.strictEqual(array[2], 'third');
         });
     });
 
