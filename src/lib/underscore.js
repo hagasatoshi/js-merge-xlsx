@@ -61,6 +61,10 @@ _.mixin({
         );
     },
 
+    arrayFrom: (length) => {
+        return Array.apply(null, {length}).map(Number.call, Number);
+    },
+
     reduceInReverse: (arrayObj, fn, initialValue) => {
         return _.reduce(
             _.chain(arrayObj).reverse().value(), fn, initialValue

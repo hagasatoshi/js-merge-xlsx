@@ -290,6 +290,23 @@ describe('underscore.js', function () {
         });
     });
 
+    describe('arrayFrom()', function () {
+        it('should generate array having this length', function () {
+            var array = _.arrayFrom(3);
+            assert.strictEqual(_.isArray(array), true);
+            assert.strictEqual(array.length, 3);
+            assert.strictEqual(array[0], 0);
+            assert.strictEqual(array[1], 1);
+            assert.strictEqual(array[2], 2);
+        });
+
+        it('should generate empty array if length is 0', function () {
+            var array = _.arrayFrom(0);
+            assert.strictEqual(_.isArray(array), true);
+            assert.strictEqual(array.length, 0);
+        });
+    });
+
     describe('reduceInReverse()', function () {
         it('should call element of array in reverse', function () {
             var test = _.reduceInReverse(['first', 'second', 'third'], function (combined, e) {

@@ -307,6 +307,23 @@ describe('underscore.js', () => {
         });
     });
 
+    describe('arrayFrom()', () => {
+        it('should generate array having this length', () => {
+            let array = _.arrayFrom(3);
+            assert.strictEqual(_.isArray(array), true);
+            assert.strictEqual(array.length, 3);
+            assert.strictEqual(array[0], 0);
+            assert.strictEqual(array[1], 1);
+            assert.strictEqual(array[2], 2);
+        });
+
+        it('should generate empty array if length is 0', () => {
+            let array = _.arrayFrom(0);
+            assert.strictEqual(_.isArray(array), true);
+            assert.strictEqual(array.length, 0);
+        });
+    });
+
     describe('reduceInReverse()', () => {
         it('should call element of array in reverse', () => {
             let test = _.reduceInReverse(['first', 'second', 'third'], (combined, e) => {
