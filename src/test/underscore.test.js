@@ -307,6 +307,75 @@ describe('underscore.js', () => {
         });
     });
 
+    describe('nestedEach()', () => {
+        const appendString = (array1, array2) => {
+            let ret = '';
+            _.nestedEach(array1, array2, (e1, e2) => {
+                ret += `${e1}-${e2}/`;
+            });
+            return ret;
+        };
+
+        it('should call each element of both arrays', () => {
+            let appended = appendString(
+                ['a', 'b', 'c'],
+                ['1', '2', '3']
+            );
+            assert.strictEqual(appended, 'a-1/a-2/a-3/b-1/b-2/b-3/c-1/c-2/c-3/');
+        });
+
+        it('should not call if array1 is empty', () => {
+            let appended = appendString(
+                [],
+                ['1', '2', '3']
+            );
+            assert.strictEqual(appended, '');
+
+            appended = appendString(
+                null,
+                ['1', '2', '3']
+            );
+            assert.strictEqual(appended, '');
+
+            appended = appendString(
+                undefined,
+                ['1', '2', '3']
+            );
+            assert.strictEqual(appended, '');
+        });
+
+        it('should not call if array2 is empty', () => {
+            let appended = appendString(
+                ['1', '2', '3'],
+                []
+            );
+            assert.strictEqual(appended, '');
+
+            appended = appendString(
+                ['1', '2', '3'],
+                null
+            );
+            assert.strictEqual(appended, '');
+
+            appended = appendString(
+                ['1', '2', '3'],
+                undefined
+            );
+            assert.strictEqual(appended, '');
+        });
+
+        it('should not call if both array are empty', () => {
+            let appended = appendString([], []);
+            assert.strictEqual(appended, '');
+
+            appended = appendString(null, null);
+            assert.strictEqual(appended, '');
+
+            appended = appendString(undefined, undefined);
+            assert.strictEqual(appended, '');
+        });
+    });
+
     describe('count()', () => {
         it('should count up by value-funciton', () => {
             assert.strictEqual(
