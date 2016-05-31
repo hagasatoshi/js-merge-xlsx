@@ -38,10 +38,16 @@ _.mixin({
     },
 
     deleteProperties: (data, properties) => {
-        let isArray = _.isArray(data);
-        if(!isArray) data = [data];
-        _.each(data, (e) => _.each(properties, (prop) => delete e[prop]));
-        return isArray? data : data[0];
+        if(_.isArray(data)) {
+            return _.reduce(data, (array, elm) => {
+                array.push(_.deleteProperties(elm, properties));
+                return array;
+            }, []);
+        }
+        return _.reduce(properties, (obj, prop) => {
+            delete obj[prop];
+            return obj;
+        }, data);
     },
 
     sum: (arrayObj, valueFn) => _.reduce(arrayObj, (sum, obj) => sum + valueFn(obj), 0),
