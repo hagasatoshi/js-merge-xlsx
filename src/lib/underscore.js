@@ -76,11 +76,12 @@ _.mixin({
     },
 
     splice: (arrayObj, criteriaFn) => {
-        _.reverseEach(arrayObj, (obj, index) => {
-            if(criteriaFn(obj)) {
-                arrayObj.splice(index, 1);
+        return _.reduceInReverse(arrayObj, (array, elm, index) => {
+            if(criteriaFn(elm)) {
+                array.splice(index, 1);
             }
-        })
+            return array;
+        }, arrayObj);
     },
 
     containsAsPartialString: (array, str) => {
