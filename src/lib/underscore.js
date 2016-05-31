@@ -38,16 +38,17 @@ _.mixin({
     },
 
     deleteProperties: (data, properties) => {
-        if(_.isArray(data)) {
-            return _.reduce(data, (array, elm) => {
-                array.push(_.deleteProperties(elm, properties));
+        const recursive = (arrayObj, props) => {
+            return _.reduce(arrayObj, (array, elm) => {
+                array.push(_.deleteProperties(elm, props));
                 return array;
             }, []);
-        }
-        return _.reduce(properties, (obj, prop) => {
-            delete obj[prop];
-            return obj;
-        }, data);
+        };
+        return _.isArray(data) ? recursive(data, properties) :
+            _.reduce(properties, (obj, prop) => {
+                delete obj[prop];
+                return obj;
+            }, data);
     },
 
     sum: (arrayObj, valueFn) => _.reduce(arrayObj, (sum, obj) => sum + valueFn(obj), 0),
