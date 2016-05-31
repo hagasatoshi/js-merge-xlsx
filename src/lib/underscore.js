@@ -30,7 +30,12 @@ _.mixin({
         return _.isString(template) && (_.variables(template).length !== 0)
     },
 
-    deepCopy: (obj) => JSON.parse(JSON.stringify(obj)),
+    deepCopy: (obj) => {
+        if(!_.isObject(obj)) {
+            throw new Error("_.deepCopy() : argument should be object.");
+        }
+        return JSON.parse(JSON.stringify(obj));
+    },
 
     deleteProperties: (data, properties) => {
         let isArray = _.isArray(data);
