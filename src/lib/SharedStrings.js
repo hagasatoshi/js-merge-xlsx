@@ -57,7 +57,7 @@ class SharedStrings {
         if(!this.stringModels) {
             return null;
         }
-        this.rawObj.sst.si = _.deleteProperties(this.stringModels, ['sharedIndex', 'usingCells']);
+        this.rawObj.sst.si = _.deleteProps(this.stringModels, ['sharedIndex', 'usingCells']);
         this.rawObj.sst['$'].uniqueCount = this.stringModels.length;
         this.rawObj.sst['$'].count = this.stringModels.length;
         return this.rawObj;

@@ -37,10 +37,10 @@ _.mixin({
         return JSON.parse(JSON.stringify(obj));
     },
 
-    deleteProperties: (data, properties) => {
+    deleteProps: (data, properties) => {
         const recursive = (arrayObj, props) => {
             return _.reduce(arrayObj, (array, elm) => {
-                array.push(_.deleteProperties(elm, props));
+                array.push(_.deleteProps(elm, props));
                 return array;
             }, []);
         };
