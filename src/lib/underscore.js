@@ -56,7 +56,9 @@ _.mixin({
     count: (arrayObj, criteriaFn) => _.sum(arrayObj, (obj) => criteriaFn(obj) ? 1 : 0),
 
     reverseEach: (arrayObj, fn) => {
-        _.each(_.sortBy(arrayObj, (obj, index) => (-1) * index), fn);
+        _.each(
+            _.chain(arrayObj).reverse().value(), fn
+        );
     },
 
     nestedEach: (array1, array2, fn) => {
