@@ -280,6 +280,16 @@ describe('underscore.js', function () {
         });
     });
 
+    describe('reverseEach()', function () {
+        it('should call element of array in reverse', function () {
+            var test = '';
+            _.reverseEach(['first', 'second', 'third'], function (e) {
+                test += e + '/';
+            });
+            assert.strictEqual(test, 'third/second/first/');
+        });
+    });
+
     describe('count()', function () {
         it('should count up by value-funciton', function () {
             assert.strictEqual(_.count([1, 2, 3, 4, 5], function (e) {

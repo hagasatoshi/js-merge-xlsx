@@ -297,6 +297,16 @@ describe('underscore.js', () => {
 
     });
 
+    describe('reverseEach()', () => {
+        it('should call element of array in reverse', () => {
+            let test = '';
+            _.reverseEach(['first', 'second', 'third'], (e) => {
+                test += `${e}/`;
+            });
+            assert.strictEqual(test, 'third/second/first/');
+        });
+    });
+
     describe('count()', () => {
         it('should count up by value-funciton', () => {
             assert.strictEqual(
