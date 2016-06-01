@@ -77,9 +77,9 @@ describe('Excel.js', () => {
                     assert.isOk(si instanceof Array);
 
                     si = _.map(si, (e) => _.stringValue(e.t));
-                    assert.isOk(_.containsAsPartialString(si, '{{AccountName__c}}'));
-                    assert.isOk(_.containsAsPartialString(si, '{{AccountAddress__c}}'));
-                    assert.isOk(_.containsAsPartialString(si, '{{SalaryDate__c}}'));
+                    assert.isOk(_.containsAsPartial(si, '{{AccountName__c}}'));
+                    assert.isOk(_.containsAsPartial(si, '{{AccountAddress__c}}'));
+                    assert.isOk(_.containsAsPartial(si, '{{SalaryDate__c}}'));
                 }).catch((err) => {
                     console.log(err);
                     assert.isOk(false);
@@ -108,7 +108,7 @@ describe('Excel.js', () => {
                     assert.isOk(si instanceof Array);
 
                     si = _.map(si, (e) => _.stringValue(e.t));
-                    assert.isOk(_.containsAsPartialString(si, '雇用期間'));
+                    assert.isOk(_.containsAsPartial(si, '雇用期間'));
                 }).catch((err) => {
                     console.log(err);
                     assert.isOk(false);
@@ -125,7 +125,7 @@ describe('Excel.js', () => {
                     assert.isOk(si instanceof Array);
 
                     si = _.map(si, (e) => _.stringValue(e.t));
-                    assert.isOk(_.containsAsPartialString(si, '<>\"\\\&\''));
+                    assert.isOk(_.containsAsPartial(si, '<>\"\\\&\''));
                 }).catch((err) => {
                     console.log(err);
                     assert.isOk(false);
@@ -200,10 +200,10 @@ describe('Excel.js', () => {
                 }).then((workbookRels) => {
                     let relationships = workbookRels.Relationships.Relationship;
                     relationships = _.map(relationships, (e) => e['$'].Target);
-                    assert.isOk(_.containsAsPartialString(relationships, 'styles.xml'));
-                    assert.isOk(_.containsAsPartialString(relationships, 'sharedStrings.xml'));
-                    assert.isOk(_.containsAsPartialString(relationships, 'worksheets/'));
-                    assert.isOk(_.containsAsPartialString(relationships, 'theme/'));
+                    assert.isOk(_.containsAsPartial(relationships, 'styles.xml'));
+                    assert.isOk(_.containsAsPartial(relationships, 'sharedStrings.xml'));
+                    assert.isOk(_.containsAsPartial(relationships, 'worksheets/'));
+                    assert.isOk(_.containsAsPartial(relationships, 'theme/'));
                 }).catch((err) => {
                     console.log(err);
                     assert.isOk(false);

@@ -290,12 +290,42 @@ describe('underscore.js', function () {
         });
     });
 
+    describe('arrayFrom()', function () {
+        it('should generate array having this length', function () {
+            var array = _.arrayFrom(3);
+            assert.strictEqual(_.isArray(array), true);
+            assert.strictEqual(array.length, 3);
+            assert.strictEqual(array[0], 0);
+            assert.strictEqual(array[1], 1);
+            assert.strictEqual(array[2], 2);
+        });
+
+        it('should generate empty array if length is 0', function () {
+            var array = _.arrayFrom(0);
+            assert.strictEqual(_.isArray(array), true);
+            assert.strictEqual(array.length, 0);
+        });
+    });
+
     describe('reduceInReverse()', function () {
         it('should call element of array in reverse', function () {
             var test = _.reduceInReverse(['first', 'second', 'third'], function (combined, e) {
                 return combined + '/' + e;
+            }, 'initial');
+            assert.strictEqual(test, 'initial/third/second/first');
+        });
+
+        it('should not be destructive', function () {
+            var array = ['first', 'second', 'third'];
+            _.reduceInReverse(array, function (combined, e) {
+                return combined + '/' + e;
             }, '');
-            assert.strictEqual(test, '/third/second/first');
+
+            assert.strictEqual(_.isArray(array), true);
+            assert.strictEqual(array.length, 3);
+            assert.strictEqual(array[0], 'first');
+            assert.strictEqual(array[1], 'second');
+            assert.strictEqual(array[2], 'third');
         });
     });
 
@@ -344,6 +374,67 @@ describe('underscore.js', function () {
 
             appended = appendString(undefined, undefined);
             assert.strictEqual(appended, '');
+        });
+    });
+
+    describe('splice()', function () {
+        it('should remove each element valued as true by function', function () {
+            var integers = [1, 2, 3, 4, 5, 6];
+            var odd = _.splice(integers, function (x) {
+                return x % 2 === 0;
+            });
+            assert.strictEqual(_.isArray(odd), true);
+            assert.strictEqual(odd.length, 3);
+            assert.strictEqual(odd[0], 1);
+            assert.strictEqual(odd[1], 3);
+            assert.strictEqual(odd[2], 5);
+        });
+
+        it('should not remove any element if returing false everytime', function () {
+            var integers = [1, 2, 3, 4, 5, 6];
+            var all = _.splice(integers, function (x) {
+                return false;
+            });
+            assert.strictEqual(_.isArray(all), true);
+            assert.strictEqual(all.length, 6);
+            assert.strictEqual(all[0], 1);
+            assert.strictEqual(all[1], 2);
+            assert.strictEqual(all[2], 3);
+            assert.strictEqual(all[3], 4);
+            assert.strictEqual(all[4], 5);
+            assert.strictEqual(all[5], 6);
+        });
+
+        it('should remove all elements if returing true everytime', function () {
+            var integers = [1, 2, 3, 4, 5, 6];
+            var empty = _.splice(integers, function (x) {
+                return true;
+            });
+            assert.strictEqual(_.isArray(empty), true);
+            assert.strictEqual(empty.length, 0);
+        });
+    });
+
+    describe('containsAsPartial()', function () {
+
+        it('should retrun true if matched exactly', function () {
+            var keyword = ['keyword'];
+            assert.strictEqual(_.containsAsPartial(keyword, 'keyword'), true);
+        });
+
+        it('should retrun true if matched partial', function () {
+            var keyword = ['this is keyword. '];
+            assert.strictEqual(_.containsAsPartial(keyword, 'keyword'), true);
+        });
+
+        it('should retrun false if not matched exactly', function () {
+            var keyword = ['keyword'];
+            assert.strictEqual(_.containsAsPartial(keyword, 'invalid word'), false);
+        });
+
+        it('should retrun true if some element is not matched exactly', function () {
+            var keywords = ['keyword', 'keyword1', 'invalid word'];
+            assert.strictEqual(_.containsAsPartial(keywords, 'keyword'), true);
         });
     });
 
@@ -601,6 +692,31 @@ describe('underscore.js', function () {
                 }
             }];
             assert.isOk(_.consistOf(testArray, ['field1', { field2: ['field3', 'field4', 'field5'] }]));
+        });
+    });
+
+    describe('includeString()', function () {
+        it('should return true if including string', function () {
+            assert.strictEqual(_.includeString('this is keyword', 'keyword'), true);
+        });
+        it('should return false if not including string', function () {
+            assert.strictEqual(_.includeString('this is keyword', 'invalid word'), false);
+        });
+
+        it('should not fail if empty string', function () {
+            assert.strictEqual(_.includeString('', 'invalid word'), false);
+        });
+
+        it('should return false if keyword is empty', function () {
+            assert.strictEqual(_.includeString('this is keyword', ''), false);
+        });
+
+        it('should return false if keyword is null', function () {
+            assert.strictEqual(_.includeString('this is keyword', null), false);
+        });
+
+        it('should return false if keyword is undefined', function () {
+            assert.strictEqual(_.includeString('this is keyword', undefined), false);
         });
     });
 });

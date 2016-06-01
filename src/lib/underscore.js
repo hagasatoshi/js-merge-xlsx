@@ -61,10 +61,18 @@ _.mixin({
         );
     },
 
+    arrayFrom: (length) => {
+        return Array.apply(null, {length}).map(Number.call, Number);
+    },
+
+    //non-destructive for arrayObj
     reduceInReverse: (arrayObj, fn, initialValue) => {
-        return _.reduce(
-            _.chain(arrayObj).reverse().value(), fn, initialValue
-        );
+        let indexes = _.arrayFrom(arrayObj.length);
+        indexes = _.chain(indexes).reverse().value();
+
+        return _.reduce(indexes, (x, index) => {
+            return fn(x, arrayObj[index], index);
+        }, initialValue);
     },
 
     nestedEach: (array1, array2, fn) => {
@@ -75,6 +83,7 @@ _.mixin({
         });
     },
 
+    //destructive change for arrayObj
     splice: (arrayObj, criteriaFn) => {
         return _.reduceInReverse(arrayObj, (array, elm, index) => {
             if(criteriaFn(elm)) {
@@ -84,9 +93,9 @@ _.mixin({
         }, arrayObj);
     },
 
-    containsAsPartialString: (array, str) => {
+    containsAsPartial: (array, str) => {
         return _.reduce(array, (contained, e) => {
-            return contained || (e.indexOf(str) !== -1);
+            return contained || _.includeString(e, str);
         }, false)
     },
 
@@ -111,6 +120,6 @@ _.mixin({
     },
 
     includeString: (str, keyword) => {
-        return str.indexOf(keyword) !== -1;
+        return !!keyword && str.indexOf(keyword) !== -1;
     }
 });
