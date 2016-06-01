@@ -755,6 +755,31 @@ describe('underscore.js', () => {
                 _.consistOf(testArray, ['field1', {field2: ['field3', 'field4', 'field5']}])
             );
         });
-
     });
+
+    describe('includeString()', () => {
+        it('should return true if including string', () => {
+            assert.strictEqual(_.includeString('this is keyword', 'keyword'), true);
+        });
+        it('should return false if not including string', () => {
+            assert.strictEqual(_.includeString('this is keyword', 'invalid word'), false);
+        });
+
+        it('should not fail if empty string', () => {
+            assert.strictEqual(_.includeString('', 'invalid word'), false);
+        });
+
+        it('should return false if keyword is empty', () => {
+            assert.strictEqual(_.includeString('this is keyword', ''), false);
+        });
+
+        it('should return false if keyword is null', () => {
+            assert.strictEqual(_.includeString('this is keyword', null), false);
+        });
+
+        it('should return false if keyword is undefined', () => {
+            assert.strictEqual(_.includeString('this is keyword', undefined), false);
+        });
+
+    })
 });

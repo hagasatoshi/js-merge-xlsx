@@ -95,7 +95,7 @@ _.mixin({
 
     containsAsPartial: (array, str) => {
         return _.reduce(array, (contained, e) => {
-            return contained || (e.indexOf(str) !== -1);
+            return contained || _.includeString(e, str);
         }, false)
     },
 
@@ -120,6 +120,6 @@ _.mixin({
     },
 
     includeString: (str, keyword) => {
-        return str.indexOf(keyword) !== -1;
+        return !!keyword && str.indexOf(keyword) !== -1;
     }
 });
