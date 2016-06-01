@@ -414,6 +414,39 @@ describe('underscore.js', () => {
         });
     });
 
+    describe('splice()', () => {
+        it('should remove each element valued as true by function', () => {
+            let integers = [1, 2, 3, 4, 5, 6];
+            let odd = _.splice(integers, (x) => (x % 2 === 0));
+            assert.strictEqual(_.isArray(odd), true);
+            assert.strictEqual(odd.length, 3);
+            assert.strictEqual(odd[0], 1);
+            assert.strictEqual(odd[1], 3);
+            assert.strictEqual(odd[2], 5);
+        });
+
+        it('should not remove any element if returing false everytime', () => {
+            let integers = [1, 2, 3, 4, 5, 6];
+            let all = _.splice(integers, (x) => false);
+            assert.strictEqual(_.isArray(all), true);
+            assert.strictEqual(all.length, 6);
+            assert.strictEqual(all[0], 1);
+            assert.strictEqual(all[1], 2);
+            assert.strictEqual(all[2], 3);
+            assert.strictEqual(all[3], 4);
+            assert.strictEqual(all[4], 5);
+            assert.strictEqual(all[5], 6);
+        });
+
+        it('should remove all elements if returing true everytime', () => {
+            let integers = [1, 2, 3, 4, 5, 6];
+            let empty = _.splice(integers, (x) => true);
+            assert.strictEqual(_.isArray(empty), true);
+            assert.strictEqual(empty.length, 0);
+        });
+
+    });
+
     describe('count()', () => {
         it('should count up by value-funciton', () => {
             assert.strictEqual(

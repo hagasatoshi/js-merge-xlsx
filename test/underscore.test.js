@@ -377,6 +377,44 @@ describe('underscore.js', function () {
         });
     });
 
+    describe('splice()', function () {
+        it('should remove each element valued as true by function', function () {
+            var integers = [1, 2, 3, 4, 5, 6];
+            var odd = _.splice(integers, function (x) {
+                return x % 2 === 0;
+            });
+            assert.strictEqual(_.isArray(odd), true);
+            assert.strictEqual(odd.length, 3);
+            assert.strictEqual(odd[0], 1);
+            assert.strictEqual(odd[1], 3);
+            assert.strictEqual(odd[2], 5);
+        });
+
+        it('should not remove any element if returing false everytime', function () {
+            var integers = [1, 2, 3, 4, 5, 6];
+            var all = _.splice(integers, function (x) {
+                return false;
+            });
+            assert.strictEqual(_.isArray(all), true);
+            assert.strictEqual(all.length, 6);
+            assert.strictEqual(all[0], 1);
+            assert.strictEqual(all[1], 2);
+            assert.strictEqual(all[2], 3);
+            assert.strictEqual(all[3], 4);
+            assert.strictEqual(all[4], 5);
+            assert.strictEqual(all[5], 6);
+        });
+
+        it('should remove all elements if returing true everytime', function () {
+            var integers = [1, 2, 3, 4, 5, 6];
+            var empty = _.splice(integers, function (x) {
+                return true;
+            });
+            assert.strictEqual(_.isArray(empty), true);
+            assert.strictEqual(empty.length, 0);
+        });
+    });
+
     describe('count()', function () {
         it('should count up by value-funciton', function () {
             assert.strictEqual(_.count([1, 2, 3, 4, 5], function (e) {

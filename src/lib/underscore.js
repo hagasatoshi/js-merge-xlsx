@@ -71,7 +71,7 @@ _.mixin({
         indexes = _.chain(indexes).reverse().value();
 
         return _.reduce(indexes, (x, index) => {
-            return fn(x, arrayObj[index]);
+            return fn(x, arrayObj[index], index);
         }, initialValue);
     },
 
@@ -83,6 +83,7 @@ _.mixin({
         });
     },
 
+    //destructive change for arrayObj
     splice: (arrayObj, criteriaFn) => {
         return _.reduceInReverse(arrayObj, (array, elm, index) => {
             if(criteriaFn(elm)) {
