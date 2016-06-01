@@ -75,9 +75,9 @@ describe('Excel.js', function () {
                 si = _.map(si, function (e) {
                     return _.stringValue(e.t);
                 });
-                assert.isOk(_.containsAsPartialString(si, '{{AccountName__c}}'));
-                assert.isOk(_.containsAsPartialString(si, '{{AccountAddress__c}}'));
-                assert.isOk(_.containsAsPartialString(si, '{{SalaryDate__c}}'));
+                assert.isOk(_.containsAsPartial(si, '{{AccountName__c}}'));
+                assert.isOk(_.containsAsPartial(si, '{{AccountAddress__c}}'));
+                assert.isOk(_.containsAsPartial(si, '{{SalaryDate__c}}'));
             })['catch'](function (err) {
                 console.log(err);
                 assert.isOk(false);
@@ -106,7 +106,7 @@ describe('Excel.js', function () {
                 si = _.map(si, function (e) {
                     return _.stringValue(e.t);
                 });
-                assert.isOk(_.containsAsPartialString(si, '雇用期間'));
+                assert.isOk(_.containsAsPartial(si, '雇用期間'));
             })['catch'](function (err) {
                 console.log(err);
                 assert.isOk(false);
@@ -124,7 +124,7 @@ describe('Excel.js', function () {
                 si = _.map(si, function (e) {
                     return _.stringValue(e.t);
                 });
-                assert.isOk(_.containsAsPartialString(si, '<>\"\\\&\''));
+                assert.isOk(_.containsAsPartial(si, '<>\"\\\&\''));
             })['catch'](function (err) {
                 console.log(err);
                 assert.isOk(false);
@@ -193,10 +193,10 @@ describe('Excel.js', function () {
                 relationships = _.map(relationships, function (e) {
                     return e['$'].Target;
                 });
-                assert.isOk(_.containsAsPartialString(relationships, 'styles.xml'));
-                assert.isOk(_.containsAsPartialString(relationships, 'sharedStrings.xml'));
-                assert.isOk(_.containsAsPartialString(relationships, 'worksheets/'));
-                assert.isOk(_.containsAsPartialString(relationships, 'theme/'));
+                assert.isOk(_.containsAsPartial(relationships, 'styles.xml'));
+                assert.isOk(_.containsAsPartial(relationships, 'sharedStrings.xml'));
+                assert.isOk(_.containsAsPartial(relationships, 'worksheets/'));
+                assert.isOk(_.containsAsPartial(relationships, 'theme/'));
             })['catch'](function (err) {
                 console.log(err);
                 assert.isOk(false);

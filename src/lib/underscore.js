@@ -93,7 +93,7 @@ _.mixin({
         }, arrayObj);
     },
 
-    containsAsPartialString: (array, str) => {
+    containsAsPartial: (array, str) => {
         return _.reduce(array, (contained, e) => {
             return contained || (e.indexOf(str) !== -1);
         }, false)
