@@ -444,6 +444,29 @@ describe('underscore.js', () => {
             assert.strictEqual(_.isArray(empty), true);
             assert.strictEqual(empty.length, 0);
         });
+    });
+
+    describe('containsAsPartial()', () => {
+
+        it('should retrun true if matched exactly', () => {
+            let keyword = ['keyword'];
+            assert.strictEqual(_.containsAsPartial(keyword, 'keyword'), true);
+        });
+
+        it('should retrun true if matched partial', () => {
+            let keyword = ['this is keyword. '];
+            assert.strictEqual(_.containsAsPartial(keyword, 'keyword'), true);
+        });
+
+        it('should retrun false if not matched exactly', () => {
+            let keyword = ['keyword'];
+            assert.strictEqual(_.containsAsPartial(keyword, 'invalid word'), false);
+        });
+
+        it('should retrun true if some element is not matched exactly', () => {
+            let keywords = ['keyword', 'keyword1', 'invalid word'];
+            assert.strictEqual(_.containsAsPartial(keywords, 'keyword'), true);
+        });
 
     });
 

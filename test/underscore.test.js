@@ -415,6 +415,29 @@ describe('underscore.js', function () {
         });
     });
 
+    describe('containsAsPartial()', function () {
+
+        it('should retrun true if matched exactly', function () {
+            var keyword = ['keyword'];
+            assert.strictEqual(_.containsAsPartial(keyword, 'keyword'), true);
+        });
+
+        it('should retrun true if matched partial', function () {
+            var keyword = ['this is keyword. '];
+            assert.strictEqual(_.containsAsPartial(keyword, 'keyword'), true);
+        });
+
+        it('should retrun false if not matched exactly', function () {
+            var keyword = ['keyword'];
+            assert.strictEqual(_.containsAsPartial(keyword, 'invalid word'), false);
+        });
+
+        it('should retrun true if some element is not matched exactly', function () {
+            var keywords = ['keyword', 'keyword1', 'invalid word'];
+            assert.strictEqual(_.containsAsPartial(keywords, 'keyword'), true);
+        });
+    });
+
     describe('count()', function () {
         it('should count up by value-funciton', function () {
             assert.strictEqual(_.count([1, 2, 3, 4, 5], function (e) {
