@@ -36,7 +36,6 @@ class WorkBookRels {
                 this.sheetRelationships.splice(index, 1);
             }
         });
-
     }
 
     findSheetPath(sheetId) {
@@ -49,7 +48,6 @@ class WorkBookRels {
         let nextId = 'rId' + ('00' + (((maxRel['$'].Id.replace('rId', '') >> 0))+1)).slice(-3);
         return nextId;
     }
-
 }
 
 module.exports = WorkBookRels;
