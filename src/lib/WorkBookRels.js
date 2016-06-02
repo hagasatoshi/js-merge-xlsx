@@ -6,7 +6,7 @@
  */
 
 const _ = require('underscore');
-const OPEN_XML_SCHEMA_DEFINITION = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet';
+const config = require('./Config');
 
 class WorkBookRels {
 
@@ -24,7 +24,7 @@ class WorkBookRels {
         this.sheetRelationships.push({
             '$': {
                 Id:     sheetId,
-                Type:   OPEN_XML_SCHEMA_DEFINITION,
+                Type:   config.OPEN_XML_SCHEMA_DEFINITION,
                 Target: `worksheets/sheet${sheetId}.xml`
             }
         });

@@ -24,5 +24,7 @@ module.exports =  {
         DATA:     './test/data/',
         OUTPUT:   './test/output/',
         XML:      './test/xml/'
-    }
+    },
+    OPEN_XML_SCHEMA_DEFINITION:
+        'http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet'
 };
