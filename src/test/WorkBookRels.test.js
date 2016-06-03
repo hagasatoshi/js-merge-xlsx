@@ -73,6 +73,82 @@ describe('WorkBookRels.js', () => {
                 assert.strictEqual(workBookXmRelslObj.sheetRelationships.length, 4);
             });
         });
+
+        it('should not throw error with invalid sheet name', () => {
+            return readFile('workbook.xml.rels')
+            .then((workBookXmlRels) => {
+                let workBookXmRelslObj = new WorkBookRels(workBookXmlRels);
+                assert.strictEqual(workBookXmRelslObj.sheetRelationships.length, 4);
+
+                workBookXmRelslObj.delete('worksheets/invalidSheetName.xml');
+                assert.strictEqual(workBookXmRelslObj.sheetRelationships.length, 4);
+            });
+        });
+
+        it('should not throw error by deleting last sheet', () => {
+            return readFile('workbookHaving1Element.xml.rels')
+            .then((workBookXmlRels) => {
+                let workBookXmRelslObj = new WorkBookRels(workBookXmlRels);
+                assert.strictEqual(workBookXmRelslObj.sheetRelationships.length, 1);
+
+                workBookXmRelslObj.delete('sharedStrings.xml');
+                assert.strictEqual(workBookXmRelslObj.sheetRelationships.length, 0);
+            });
+        });
     });
 
+    describe('findSheetPath()', () => {
+
+        it('should find by id', () => {
+            return readFile('workbook.xml.rels')
+            .then((workBookXmlRels) => {
+                let workBookXmRelslObj = new WorkBookRels(workBookXmlRels);
+                let sheet = workBookXmRelslObj.findSheetPath('rId1');
+                assert.strictEqual(sheet, 'worksheets/sheet1.xml');
+            });
+        });
+
+        it('should return null if invalid id', () => {
+            return readFile('workbook.xml.rels')
+            .then((workBookXmlRels) => {
+                let workBookXmRelslObj = new WorkBookRels(workBookXmlRels);
+                let sheet = workBookXmRelslObj.findSheetPath('invalid id');
+                assert.strictEqual(sheet, null);
+            });
+        })
+    });
+
+    describe('nextRelationshipId()', () => {
+        it('should return next id', () => {
+            return readFile('workbook.xml.rels')
+            .then((workBookXmlRels) => {
+                let nextId = new WorkBookRels(workBookXmlRels).nextRelationshipId();
+                assert.strictEqual(nextId, 'rId005');
+            });
+        });
+
+        it('next id should be sequencial', () => {
+            return readFile('workbook.xml.rels')
+            .then((workBookXmlRels) => {
+                let workBookXmlRelsObj = new WorkBookRels(workBookXmlRels);
+                let nextId = workBookXmlRelsObj.nextRelationshipId();
+                assert.strictEqual(nextId, 'rId005');
+                nextId = workBookXmlRelsObj.add(nextId).nextRelationshipId();
+                assert.strictEqual(nextId, 'rId006');
+                nextId = workBookXmlRelsObj.add(nextId).nextRelationshipId();
+                assert.strictEqual(nextId, 'rId007');
+                nextId = workBookXmlRelsObj.add(nextId).nextRelationshipId();
+                assert.strictEqual(nextId, 'rId008');
+                nextId = workBookXmlRelsObj.add(nextId).nextRelationshipId();
+                assert.strictEqual(nextId, 'rId009');
+                nextId = workBookXmlRelsObj.add(nextId).nextRelationshipId();
+                assert.strictEqual(nextId, 'rId010');
+                nextId = workBookXmlRelsObj.add(nextId).nextRelationshipId();
+                assert.strictEqual(nextId, 'rId011');
+                nextId = workBookXmlRelsObj.add(nextId).nextRelationshipId();
+                assert.strictEqual(nextId, 'rId012');
+            });
+        });
+
+    })
 });

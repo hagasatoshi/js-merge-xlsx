@@ -28,6 +28,7 @@ class WorkBookRels {
                 Target: `worksheets/sheet${sheetId}.xml`
             }
         });
+        return this;
     }
 
     delete(sheetPath) {
@@ -39,8 +40,8 @@ class WorkBookRels {
     }
 
     findSheetPath(sheetId) {
-
-        return _.max(this.sheetRelationships, (e) => (e['$'].Id === sheetId))['$'].Target;
+        let found = _.find(this.sheetRelationships, (e) => (e['$'].Id === sheetId));
+        return found ? found['$'].Target : null;
     }
 
     nextRelationshipId() {
