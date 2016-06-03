@@ -8,10 +8,13 @@ const Promise = require('bluebird');
 const _ = require('underscore');
 const JSZip = require('jszip');
 const Mustache = require('mustache');
-const {
-    Excel, WorkBookXml, WorkBookRels, SheetXmls,
-    SharedStrings, Config, underscore
-} = require('require-dir')('./lib');
+const Excel = require('./lib/Excel');
+const WorkBookXml = require('./lib/WorkBookXml');
+const WorkBookRels = require('./lib/WorkBookRels');
+const SheetXmls = require('./lib/SheetXmls');
+const SharedStrings = require('./lib/SharedStrings');
+const Config = require('./lib/Config');
+require('./lib/underscore');
 
 const ExcelMerge = {
 
