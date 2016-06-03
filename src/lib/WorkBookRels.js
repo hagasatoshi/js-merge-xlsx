@@ -28,6 +28,7 @@ class WorkBookRels {
                 Target: `worksheets/sheet${sheetId}.xml`
             }
         });
+        return this;
     }
 
     delete(sheetPath) {
@@ -36,12 +37,11 @@ class WorkBookRels {
                 this.sheetRelationships.splice(index, 1);
             }
         });
-
     }
 
     findSheetPath(sheetId) {
-
-        return _.max(this.sheetRelationships, (e) => (e['$'].Id === sheetId))['$'].Target;
+        let found = _.find(this.sheetRelationships, (e) => (e['$'].Id === sheetId));
+        return found ? found['$'].Target : null;
     }
 
     nextRelationshipId() {
@@ -49,7 +49,6 @@ class WorkBookRels {
         let nextId = 'rId' + ('00' + (((maxRel['$'].Id.replace('rId', '') >> 0))+1)).slice(-3);
         return nextId;
     }
-
 }
 
 module.exports = WorkBookRels;
