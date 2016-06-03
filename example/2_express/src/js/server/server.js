@@ -1,23 +1,24 @@
+const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
-const app = require('express')();
 
 const config = {
-    jadeFiles: './src/views',
-    publicDir: './public',
+    jadeDir: './src/views',
+    staticDir: 'public',
     indexFile: 'index'
 };
 
-app.set('views', config.jadeFiles);
+let app = express();
+app.set('views', path.join(__dirname, config.jadeDir));
 app.set('view engine', 'jade');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(express.static(config.publicDir));
+app.use(express.static(config.staticDir));
 
-app.get('/', (req, res)=> res.render(config.indexFile));
+app.get('/', (req, res) => res.render(config.indexFile));
 
-let port = process.env.PORT || 3000;
+var port = process.env.PORT || 3000;
 app.set('port', port);
-app.listen(app.get('port'), ()=>console.log('Listening on ' + port));
+app.listen(app.get('port'), () => console.log(`Listening on ${port}`));
 
 module.exports = app;
