@@ -53,7 +53,7 @@ gulp.task('mocha', () => {
 
 gulp.task('default', (cb) => {
     runSequence(
-        'lint', 'compile', 'compress', 'mocha', cb
+        'lint', 'compile', 'mocha', cb
     )
 });
 
